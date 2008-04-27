@@ -1,0 +1,12 @@
+= JsTestCore
+The JsTestCore library is the core javascript test server library used by several JS Test server libraries.
+
+To hook up your own JS Test framework:
+  * You will need to call either JsTestCore::Resources::WebRoot.dispatch_specs or JsTestCore::Resources::WebRoot.dispatch_tests
+    depending if you are serving specs or tests.
+  * Set JsTestCore.core_path to the directory of the client side test framework (javascript files)
+  * Override JsTestCore::Resources::Specs::SpecFile#get or JsTestCore::Resources::Specs::TestFile#get
+  * Override JsTestCore::Resources::Specs::SpecDir#get or JsTestCore::Resources::Specs::TestDir#get
+
+NOTE: The current version of JsTestCore does not yet support tests. Support will be added soon.
+      I just wanted the test stuff to be in the docs to establish the current architectural direction.
