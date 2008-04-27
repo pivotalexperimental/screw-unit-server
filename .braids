@@ -7,4 +7,4 @@ core:
   local_branch: braid/git/core/master
   type: git
   branch: master
-  remote: git://github.com/nkallen/screw-unit.git
+  remote: git://github.com/btakita/screw-unit.git
