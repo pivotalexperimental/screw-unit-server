@@ -3,8 +3,3 @@ vendor/js_test_core:
   local_branch: braid/svn/vendor/js-test-core
   type: svn
   remote: http://pivotalrb.rubyforge.org/svn/js_test_core/trunk
-core: 
-  local_branch: braid/git/core/master
-  type: git
-  branch: master
-  remote: git://github.com/btakita/screw-unit.git
