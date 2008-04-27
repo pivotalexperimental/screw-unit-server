@@ -1,4 +1,4 @@
-var Assets = {
+Screw.Assets = {
   require: function(path_from_javascripts, onload) {
     if(!Assets.required_paths[path_from_javascripts]) {
       var full_path = path_from_javascripts + ".js";
@@ -30,5 +30,5 @@ var Assets = {
   use_cache_buster: false, // TODO: NS/CTI - make this configurable from the UI.
   cache_buster: parseInt(new Date().getTime()/(1*1000))
 }
-var require = Assets.require;
-var stylesheet = Assets.stylesheet;
+var require = Screw.Assets.require;
+var stylesheet = Screw.Assets.stylesheet;
