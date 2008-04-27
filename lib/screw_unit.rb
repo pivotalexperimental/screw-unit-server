@@ -15,7 +15,7 @@ module ScrewUnit
   RailsServer = JsTestCore::RailsServer
   Client = JsTestCore::Client
 end
-JsTestCore.core_path = File.expand_path("#{dir}/../core")
+JsTestCore.core_path = File.expand_path("#{dir}/../core/lib")
 
 class JsTestCore::Resources::Specs::SpecFile
   include ScrewUnit::Resources::Spec

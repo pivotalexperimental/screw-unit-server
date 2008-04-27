@@ -15,6 +15,7 @@ module ScrewUnit
         <script src="/core/screw.builder.js"></script>
         <script src="/core/screw.events.js"></script>
         <script src="/core/screw.behaviors.js"></script>
+        <script src="/core/screw.server.js"></script>
         <link rel="stylesheet" href="/core/screw.css">
         HTML
         spec_files.each do |file|
