@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+dir = File.dirname(__FILE__)
+$LOAD_PATH.unshift("#{dir}/../lib")
+require "screw_unit"
+
+spec_root_path = ARGV[0] || raise("You need to pass in a spec root")
+implementation_root_path = ARGV[1] || raise("You need to pass in an implementation root")
+public_path = ARGV[2] || raise("You need to pass in a public path")
+ScrewUnit::Server.run(spec_root_path, implementation_root_path, public_path)
