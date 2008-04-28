@@ -19,14 +19,14 @@ module JsTestCore
         before do
           @request = Rack::Request.new( Rack::MockRequest.env_for('/runners/firefox') )
           @response = Rack::Response.new
-          @runner = Runners::FirefoxRunner.new(request, response)
+          @runner = Runners::FirefoxRunner.new
           stub(Thread).start.yields
         end
 
         it "keeps the connection open" do
           stub(driver).start
           stub(driver).open
-          stub(driver).session_id {session_id}
+          stub(driver).session_id {Guid.new.to_s}
           dont_allow(EventMachine).send_data
           dont_allow(EventMachine).close_connection
           runner.post(request, response)
@@ -39,7 +39,7 @@ module JsTestCore
             request['selenium_host'] = "another-machine"
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {session_id}
+            stub(driver).session_id {Guid.new.to_s}
           end
 
           it "starts the Selenium Driver with the passed in selenium_host" do
@@ -55,7 +55,7 @@ module JsTestCore
             request['selenium_host'].should be_nil
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {session_id}
+            stub(driver).session_id {Guid.new.to_s}
           end
 
           it "starts the Selenium Driver from localhost" do
@@ -71,7 +71,7 @@ module JsTestCore
             request['selenium_port'] = "4000"
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {session_id}
+            stub(driver).session_id {Guid.new.to_s}
           end
 
           it "starts the Selenium Driver with the passed in selenium_port" do
@@ -87,7 +87,7 @@ module JsTestCore
             request['selenium_port'].should be_nil
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {session_id}
+            stub(driver).session_id {Guid.new.to_s}
           end
 
           it "starts the Selenium Driver from localhost" do
@@ -109,7 +109,7 @@ module JsTestCore
             end
             mock(driver).start
             mock(driver).open("http://another-host:8080/specs/subdir")
-            mock(driver).session_id {session_id}
+            mock(driver).session_id {Guid.new.to_s}
 
             runner.post(request, response)
           end
@@ -126,7 +126,7 @@ module JsTestCore
           it "uses Selenium to run the entire spec suite in Firefox" do
             mock(driver).start
             mock(driver).open("http://0.0.0.0:8080/specs")
-            mock(driver).session_id {session_id}
+            mock(driver).session_id {Guid.new.to_s}
 
             runner.post(request, response)
           end
@@ -137,7 +137,7 @@ module JsTestCore
         before do
           @request = Rack::Request.new( Rack::MockRequest.env_for('/runners/firefox') )
           @response = Rack::Response.new
-          @runner = Runners::FirefoxRunner.new(request, response)
+          @runner = Runners::FirefoxRunner.new
           stub(driver).start
           stub(driver).open
           stub(driver).session_id {session_id}

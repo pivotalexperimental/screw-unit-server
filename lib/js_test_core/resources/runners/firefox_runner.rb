@@ -19,18 +19,18 @@ module JsTestCore
         end
 
         include FileUtils
-        attr_reader :session_id, :profile_dir, :request, :response, :connection, :driver
+        attr_reader :session_id, :profile_dir, :connection, :driver, :response
 
-        def initialize(request, response)
+        def initialize
           profile_base = "#{::Dir.tmpdir}/js_test_core/firefox"
           mkdir_p profile_base
           @profile_dir = "#{profile_base}/#{Time.now.to_i}"
-          @request = request
-          @response = response
           @connection = Server.connection
         end
 
         def post(request, response)
+          @response = response
+
           spec_url = (request && request['spec_url']) ? request['spec_url'] : spec_suite_url
           parsed_spec_url = URI.parse(spec_url)
           selenium_port = (request['selenium_port'] || 4444).to_i
