@@ -58,7 +58,6 @@ spec = Gem::Specification.new do |s|
   s.rubyforge_project = "pivotalrb"
   s.add_dependency('Selenium')
   s.add_dependency('thin', '=0.8.1')
-  s.add_dependency('guid', '=0.1.1')
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

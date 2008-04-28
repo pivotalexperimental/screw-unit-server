@@ -7,13 +7,11 @@ module JsTestCore
       end
 
       def post(request, response)
-        guid = request['guid']
-        if guid
-          Runners::FirefoxRunner.resume(guid, request['text'])
+        if session_id = request['session_id']
+          Runners::FirefoxRunner.resume(session_id, request['text'])
         else
           STDOUT.puts request['text']
         end
-        ""
       end
     end
   end

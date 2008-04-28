@@ -9,12 +9,12 @@ require "cgi"
 require "net/http"
 require "selenium"
 require "optparse"
-require "guid"
 
 dir = File.dirname(__FILE__)
 require "#{dir}/js_test_core/thin"
 require "#{dir}/js_test_core/rack"
 require "#{dir}/js_test_core/resources"
+require "#{dir}/js_test_core/selenium"
 
 require "#{dir}/js_test_core/client"
 require "#{dir}/js_test_core/server"

@@ -5,7 +5,7 @@ module JsTestCore
     class Runners
       def locate(name)
         if name == 'firefox'
-          FirefoxRunner.new(Server.request, Server.response)
+          FirefoxRunner.new
         else
           raise "Invalid path #{name}"
         end
