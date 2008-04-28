@@ -30,6 +30,10 @@ module Spec::Example::ExampleMethods
   include WaitFor
   attr_reader :spec_root_path, :implementation_root_path, :public_path
   before(:all) do
+    Lsof.kill(8080)
+    wait_for do
+      !Lsof.running?(8080)
+    end
     dir = File.dirname(__FILE__)
     @spec_root_path = "#{dir}/../example_specs"
     @public_path = "#{dir}/../example_public"

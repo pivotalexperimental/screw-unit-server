@@ -8,7 +8,7 @@ describe "ScrewUnit" do
 
   it "runs a full failing Suite" do
     mock(ScrewUnit::Client).puts("FAILURE")
-    mock(ScrewUnit::Client).puts(/A failing spec in foo fails/)
+    mock(ScrewUnit::Client).puts("expected [true] to equal [false]")
     ScrewUnit::Client.run(:spec_url => "#{root_url}/specs/foo/failing_spec")
   end
 end
