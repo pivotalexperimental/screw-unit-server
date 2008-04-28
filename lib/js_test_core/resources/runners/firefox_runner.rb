@@ -3,13 +3,13 @@ module JsTestCore
     class Runners
       class FirefoxRunner
         class << self
-          def resume(guid, text)
-            runner = instances.delete(guid)
+          def resume(session_id, text)
+            runner = instances.delete(session_id)
             runner.finalize(text)
           end
 
           def register_instance(runner)
-            instances[runner.guid] = runner
+            instances[runner.session_id] = runner
           end
 
           protected
@@ -19,20 +19,18 @@ module JsTestCore
         end
 
         include FileUtils
-        attr_reader :guid, :profile_dir, :request, :response, :connection, :driver
+        attr_reader :session_id, :profile_dir, :request, :response, :connection, :driver
 
         def initialize(request, response)
           profile_base = "#{::Dir.tmpdir}/js_test_core/firefox"
           mkdir_p profile_base
           @profile_dir = "#{profile_base}/#{Time.now.to_i}"
-          @guid = Guid.new.to_s
           @request = request
           @response = response
           @connection = Server.connection
         end
 
         def post(request, response)
-          FirefoxRunner.register_instance self
           spec_url = (request && request['spec_url']) ? request['spec_url'] : spec_suite_url
           parsed_spec_url = URI.parse(spec_url)
           selenium_port = (request['selenium_port'] || 4444).to_i
@@ -48,16 +46,20 @@ module JsTestCore
             raise Errno::ECONNREFUSED, "Cannot connect to Selenium Server on port #{selenium_port}. To start the selenium server, run `selenium`."
           end
           Thread.start do
-            url = "#{spec_url}?guid=#{guid}"
-            driver.open(url)
+            driver.open(spec_url)
           end
           response.status = 200
+          FirefoxRunner.register_instance self
         end
 
         def finalize(text)
           driver.stop
           response.body = text
           connection.send_body(response)
+        end
+
+        def session_id
+          driver.session_id
         end
 
         protected
