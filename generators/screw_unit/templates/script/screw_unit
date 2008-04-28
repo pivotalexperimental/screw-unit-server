@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+dir = File.dirname(__FILE__)
+root = File.expand_path("#{dir}/..")
+
+$LOAD_PATH.unshift("#{root}/vendor/plugins/screw_unit/lib")
+require "screw_unit"
+ScrewUnit::Client.run_argv(ARGV)
