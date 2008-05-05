@@ -12,6 +12,7 @@ module ScrewUnit
         <script src="/core/jquery.fn.js"></script>
         <script src="/core/jquery.print.js"></script>
         <script src="/core/screw.builder.js"></script>
+        <script src="/core/screw.matchers.js"></script>
         <script src="/core/screw.events.js"></script>
         <script src="/core/screw.behaviors.js"></script>
         <script src="/core/screw.assets.js"></script>
