@@ -9,9 +9,11 @@
       session_id = top.runOptions.getSessionId();
     }
 
-    jQuery.post('/suites/1/finish', {
-      "session_id": session_id,
-      "text": error_text
-    });
+    if(session_id) {
+      jQuery.post('/suites/1/finish', {
+        "session_id": session_id,
+        "text": error_text
+      });
+    }
   });
 })();
