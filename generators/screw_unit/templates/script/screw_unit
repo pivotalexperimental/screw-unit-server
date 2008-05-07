@@ -4,4 +4,4 @@ root = File.expand_path("#{dir}/..")
 
 $LOAD_PATH.unshift("#{root}/vendor/plugins/screw_unit/lib")
 require "screw_unit"
-ScrewUnit::Client.run_argv(ARGV)
+exit ScrewUnit::Client.run_argv(ARGV)
