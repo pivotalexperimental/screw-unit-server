@@ -4,16 +4,15 @@
       return element.innerHTML;
     }).get().join("\n");
 
-    var session_id;
+    var suite_id;
     if(top.runOptions) {
-      session_id = top.runOptions.getSessionId();
+      suite_id = top.runOptions.getSessionId();
+    } else {
+      suite_id = 'user';
     }
 
-    if(session_id) {
-      jQuery.post('/suites/1/finish', {
-        "session_id": session_id,
-        "text": error_text
-      });
-    }
+    jQuery.post('/suites/' + suite_id + '/finish', {
+      "text": error_text
+    });
   });
 })();

@@ -3,12 +3,12 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../../unit_spec_helper")
 module JsTestCore
   module Resources
     describe Runners::FirefoxRunner do
-      attr_reader :runner, :request, :response, :driver, :session_id
+      attr_reader :runner, :request, :response, :driver, :suite_id
       
       before do
         Thread.current[:connection] = connection
         @driver = "Selenium Driver"
-        @session_id = Guid.new.to_s
+        @suite_id = 12345
         stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
           driver
         end
@@ -26,7 +26,7 @@ module JsTestCore
         it "keeps the connection open" do
           stub(driver).start
           stub(driver).open
-          stub(driver).session_id {Guid.new.to_s}
+          stub(driver).session_id {suite_id}
           dont_allow(EventMachine).send_data
           dont_allow(EventMachine).close_connection
           runner.post(request, response)
@@ -39,7 +39,7 @@ module JsTestCore
             request['selenium_host'] = "another-machine"
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {Guid.new.to_s}
+            stub(driver).session_id {suite_id}
           end
 
           it "starts the Selenium Driver with the passed in selenium_host" do
@@ -55,7 +55,7 @@ module JsTestCore
             request['selenium_host'].should be_nil
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {Guid.new.to_s}
+            stub(driver).session_id {suite_id}
           end
 
           it "starts the Selenium Driver from localhost" do
@@ -71,7 +71,7 @@ module JsTestCore
             request['selenium_port'] = "4000"
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {Guid.new.to_s}
+            stub(driver).session_id {suite_id}
           end
 
           it "starts the Selenium Driver with the passed in selenium_port" do
@@ -87,7 +87,7 @@ module JsTestCore
             request['selenium_port'].should be_nil
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {Guid.new.to_s}
+            stub(driver).session_id {suite_id}
           end
 
           it "starts the Selenium Driver from localhost" do
@@ -109,7 +109,7 @@ module JsTestCore
             end
             mock(driver).start
             mock(driver).open("http://another-host:8080/specs/subdir")
-            mock(driver).session_id {Guid.new.to_s}
+            mock(driver).session_id {suite_id}
 
             runner.post(request, response)
           end
@@ -126,7 +126,7 @@ module JsTestCore
           it "uses Selenium to run the entire spec suite in Firefox" do
             mock(driver).start
             mock(driver).open("http://0.0.0.0:8080/specs")
-            mock(driver).session_id {Guid.new.to_s}
+            mock(driver).session_id {suite_id}
 
             runner.post(request, response)
           end
@@ -140,7 +140,7 @@ module JsTestCore
           @runner = Runners::FirefoxRunner.new
           stub(driver).start
           stub(driver).open
-          stub(driver).session_id {session_id}
+          stub(driver).session_id {suite_id}
           runner.post(request, response)
         end
 

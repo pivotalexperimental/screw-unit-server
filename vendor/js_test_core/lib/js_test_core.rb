@@ -1,5 +1,5 @@
 require "rubygems"
-gem "thin", "0.8.1"
+gem "thin", ">=0.8.0"
 
 require "thin"
 require "fileutils"
