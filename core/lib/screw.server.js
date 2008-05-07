@@ -1,6 +1,7 @@
-(function() {
-  jQuery(Screw).bind('after', function() {
-    var error_text = jQuery(".error").map(function(i, element) {
+(function($) {
+  var ajax = $.ajax;
+  $(Screw).bind('after', function() {
+    var error_text = $(".error").map(function(i, element) {
       return element.innerHTML;
     }).get().join("\n");
 
@@ -11,8 +12,10 @@
       suite_id = 'user';
     }
 
-    jQuery.post('/suites/' + suite_id + '/finish', {
-      "text": error_text
+    ajax({
+      type: "POST",
+      url: '/suites/' + suite_id + '/finish',
+      data: {"text": error_text}
     });
   });
-})();
+})(jQuery);
