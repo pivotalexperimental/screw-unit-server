@@ -57,7 +57,7 @@ spec = Gem::Specification.new do |s|
   s.homepage = "http://pivotallabs.com"
   s.rubyforge_project = "pivotalrb"
   s.add_dependency('Selenium')
-  s.add_dependency('thin', '=0.8.1')
+  s.add_dependency('thin', '>=0.8.0')
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|

@@ -1,3 +1,4 @@
+- Allowing 0.8.0 version of thin
 - Fixed suite finish notification issue when faking out jQuery.ajax
 
 0.1.0
