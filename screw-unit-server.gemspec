@@ -11,9 +11,9 @@ Gem::Specification.new do |s|
   s.files = Dir["[A-Z]*"] +
     Dir["*.rb"] +
     Dir["lib/**/*.rb"] +
-    Dir["core/**"] +
+    Dir["core/**/**"] +
     Dir["bin/**"] +
-    Dir["vendor/**"] +
+    Dir["vendor/**/**"] +
     Dir["spec/**"]
   p s.files
   s.test_files = Dir['spec/**/*.rb']
