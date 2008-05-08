@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
     Dir["lib/**/*.rb"] +
     Dir["core/**"] +
     Dir["bin/**"] +
+    Dir["vendor/**"] +
     Dir["spec/**"]
   p s.files
   s.test_files = Dir['spec/**/*.rb']
