@@ -1,4 +1,4 @@
-require("/implementations/foo");
+require("/specs/spec_helper");
 
 Screw.Unit(function() {
   describe("A failing spec in foo", function() {

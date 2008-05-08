@@ -1,3 +1,5 @@
+- Fixed suite finish notification issue when faking out jQuery.ajax
+
 0.1.0
 - Initial Release extracted from JsTestCore.
 - Added JsTestCore::WebRoot.dispatch_specs and .dispatch_strategy
