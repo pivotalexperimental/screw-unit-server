@@ -8,7 +8,7 @@ module Thin
       env['js_test_core.connection'] = self
       @response.status, @response.headers, @response.body = @app.call(env)
       send_data @response.head
-      unless @response.body.empty?
+      if !@response.body.empty? || @response.headers.to_s.include?("Content-Length: 0")
         send_body @response.body
       end
     rescue Exception => e

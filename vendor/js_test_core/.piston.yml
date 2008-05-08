@@ -1,7 +1,7 @@
 --- 
 format: 1
 handler: 
-  piston:remote-revision: 1546
+  piston:remote-revision: 1555
   piston:uuid: af276e61-6b34-4dac-905b-574b5f35ef33
 repository_url: http://pivotalrb.rubyforge.org/svn/js_test_core/trunk
 lock: false
