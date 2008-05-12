@@ -1,7 +1,7 @@
 --- 
 format: 1
 handler: 
-  commit: 2b4ae48f2f7916ea3c59bf89ccdf9977a83ec0d4
+  commit: d31f573aaba410281d3d1a6d37c09abebc83464d
 repository_url: git://github.com/btakita/screw-unit.git
 lock: false
 repository_class: Piston::Git::Repository

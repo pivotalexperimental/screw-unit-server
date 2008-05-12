@@ -1,24 +1,90 @@
 (function($) {
-  $.print = function(obj) {
-    if (obj instanceof Function) {
-      return obj.toString().match(/^([^\{]*) {/)[1];
-    } else if(obj instanceof Array) {
-      var result = [];
-      for (var i = 0; i < obj.length; i++) {
-        result.push($.print(obj[i]));
-      }
-      return "[" + result.join(", ") + "]";
-    } else if(obj instanceof HTMLElement) {
-      return "<" + obj.tagName + " " + (obj.className != "" ? "class='" + obj.className + "'" : "") +
-        (obj.id != "" ? "id='" + obj.id + "'" : "") + ">";
-    } else if(obj instanceof Object) {
-      var result = [];
-      for (var k in obj) {
-        result.push(k + ": " + $.print(obj[k]))
-      }
-      return "{" + result.join(", ") + "}" 
-    } else {
-      return obj.toString().replace(/\n\s*/g, "");
+
+  function print_array(obj, opts) {
+    var result = [];
+    for (var i = 0; i < Math.min(opts.max_array, obj.length); i++)
+      result.push($.print(obj[i], $.extend({}, opts, { max_array: 3, max_string: 25 })));
+
+    if (obj.length > opts.max_array)
+      result.push((obj.length - opts.max_array) + ' more...');
+    if (result.length == 0) return "[]"
+      return "[ " + result.join(", ") + " ]";
+  }
+
+  function print_element(obj) {
+    return "<" + obj.tagName.toLowerCase() +
+                 (obj.className != "" ? " class='" + obj.className + "'" : "") +
+                 (obj.id != "" ? " id='" + obj.id + "'" : "") +
+           ">";
+  }
+
+  function print_object(obj, opts) {
+    var seen = opts.seen || [];
+
+    var result = [], key, value;
+    for (var k in obj) {
+      if (seen.indexOf(obj[k]) < 0) {
+        seen.push(obj[k]);
+        value = $.print(obj[k], $.extend({}, opts, { max_array: 3, max_string: 25, seen: seen }));
+      } else
+        value = "...";
+      result.push(k + ": " + value);
     }
+    if (result.length == 0) return "{}";
+    return "{ " + result.join(", ") + " }";
+  }
+
+  function print_jquery(obj) {
+  }
+
+  function print_string(value, opts) {
+    var character_substitutions = {
+      '\b': '\\b',
+      '\t': '\\t',
+      '\n': '\\n',
+      '\f': '\\f',
+      '\r': '\\r',
+      '"' : '\\"',
+      '\\': '\\\\'
+    };
+    var r = /["\\\x00-\x1f\x7f-\x9f]/g;
+    
+    var str = r.test(value)
+      ? '"' + value.replace(r, function (a) {
+          var c = character_substitutions[a];
+          if (c) return c;
+          c = a.charCodeAt();
+          return '\\u00' + Math.floor(c / 16).toString(16) + (c % 16).toString(16);
+        }) + '"'
+      : '"' + value + '"';
+    if (str.length > opts.max_string)
+      return str.slice(0, opts.max_string + 1) + '..."';
+    else
+      return str;
+  }
+
+  $.print = function(obj, options) {
+    var opts = $.extend({}, { max_array: 6, max_string: 100 }, options);
+
+    if (typeof obj == 'undefined')
+      return "undefined";
+    else if (typeof obj == 'boolean')
+      return obj.toString();
+    else if (!obj)
+      return "null";
+    else if (typeof obj == 'string')
+      return print_string(obj, opts);
+    else if ($.isFunction(obj))
+      return obj.toString().match(/^([^)]*\))/)[1];
+    else if (obj instanceof Array)
+      return print_array(obj, opts);
+    else if (obj instanceof HTMLElement)
+      return print_element(obj);
+    else if (obj instanceof jQuery)
+      return "$(" + $.print(obj.get()) + ")";
+    else if (obj instanceof Object)
+      return print_object(obj, opts);
+    else
+      return obj.toString().replace(/\n\s*/g, '');
   }
 })(jQuery);
