@@ -48,7 +48,7 @@ module JsTestCore
           elsif ::File.exists?(potential_file_in_public_path)
             Resources::File.new(potential_file_in_public_path, "/#{name}")
           else
-            raise "Invalid path: #{name}"
+            Resources::FileNotFound.new(name)
           end
         end
       end

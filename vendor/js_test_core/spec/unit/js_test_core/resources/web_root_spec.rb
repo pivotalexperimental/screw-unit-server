@@ -58,10 +58,9 @@ module JsTestCore
         end
 
         describe "when passed an invalid option" do
-          it "raises an error" do
-            lambda do
-              web_root.locate('invalid')
-            end.should raise_error
+          it "returns a 404 response" do
+            resource = web_root.locate('invalid')
+            
           end
         end
       end
@@ -96,9 +95,7 @@ module JsTestCore
 
       describe "when .dispatch_specs is not called" do
         it "does not cause #locate to dispatch to /specs" do
-          lambda do
-            web_root.locate('specs')
-          end.should raise_error
+          web_root.locate('specs').should be_instance_of(FileNotFound)
         end
       end
     end
