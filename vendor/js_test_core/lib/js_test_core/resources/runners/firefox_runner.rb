@@ -4,8 +4,10 @@ module JsTestCore
       class FirefoxRunner
         class << self
           def resume(suite_id, text)
-            runner = instances.delete(suite_id)
-            runner.finalize(text)
+            if instances[suite_id]
+              runner = instances.delete(suite_id)
+              runner.finalize(text)
+            end
           end
 
           def register_instance(runner)

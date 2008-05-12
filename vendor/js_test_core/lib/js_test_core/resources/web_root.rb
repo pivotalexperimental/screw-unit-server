@@ -2,6 +2,9 @@ module JsTestCore
   module Resources
     class WebRoot
       LOCATIONS = [
+        ['', lambda do |web_root|
+          web_root
+        end],
         ['core', lambda do
           Resources::Dir.new(JsTestCore::Server.core_path, "/core")
         end],
@@ -37,7 +40,7 @@ module JsTestCore
           location.first == name
         end
         if initializer
-          initializer.call
+          initializer.call(self)
         else
           potential_file_in_public_path = "#{public_path}/#{name}"
           if ::File.directory?(potential_file_in_public_path)
@@ -48,6 +51,11 @@ module JsTestCore
             raise "Invalid path: #{name}"
           end
         end
+      end
+
+      def get(request, response)
+        response.status = 301
+        response['Location'] = "/#{self.class.dispatch_strategy}"
       end
     end
   end
