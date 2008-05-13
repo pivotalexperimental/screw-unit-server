@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "screw_unit"
-  s.version = "0.1.0"
+  s.version = "0.3.0"
   s.date = "2008-05-08"
   s.summary = "The ScrewUnit client library (http://github.com/nkallen/screw-unit) plus a convenient ruby server."
   s.email = "brian.takita@gmail.com"
