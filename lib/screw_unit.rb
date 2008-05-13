@@ -1,7 +1,7 @@
 require "rubygems"
 
 dir = File.dirname(__FILE__)
-$:.unshift(File.expand_path("#{dir}/../vendor/js_test_core/lib"))
+$:.unshift(File.expand_path("#{dir}/../vendor/js-test-core/lib"))
 require "js_test_core"
 JsTestCore::Resources::WebRoot.dispatch_specs
 
