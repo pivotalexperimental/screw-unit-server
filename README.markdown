@@ -1,7 +1,47 @@
+# Screw Unit Server
+The Screw Unit ruby library is a server runner for the Screw Unit javascript library.
+
+# Installing Screw Unit
+You can use Screw Unit as a gem or as a Rails plugin.
+To install the gem, run:
+  sudo gem install screw_unit
+
+To install the plugin, run:
+  script/plugin install git://github.com/btakita/screw-unit-server.git
+  script/generate screw_unit
+
+The Rails plugin gives you generators when using Screw Unit in a Rails environment.
+
+# Running Screw Unit Server
+First you need to start your Screw Unit server.
+
+If you are using screw_unit_server as a Rails plugin, you can simply run:
+  script/screw_unit_server
+
+If you are using the screw_unit gem, you can run:
+  screw_unit_server /path/to/your/javascript/spec/files /path/to/your/javascript/implementation/files
+
+Once the server is started, there are two possibly ways to run your js spec:
+  * Open your browser to http://localhost:8080/specs
+  * Start the Selenium server by running `selenium` from the command line, then running `screw_unit` from the command line
+
+# Screw Unit on CI
+JS spec uses the Selenium gem to automatically control browsers on different machines.
+
+To use Screw Unit in a CI environment,
+  * Install and run the selenium RC server on the machine that you want to run the browsers by using the command:
+    selenium
+  * Run the screw_unit_server on the machine that has the files.
+    script/screw_unit_server
+  * Run the screw_unit client. The screw_unit client has --selenium_host, --selenium_port, and --spec_url arguments to specify
+    where the Selenium server is relative to the screw_unit server, and where the screw_unit server is relative to the browser.
+
+# Screw Unit Library
+
 Screw.Unit is a Behavior-Driven Testing Framework for Javascript. It features nested describes. Its goals are to provide:
 
 * a DSL for elegant, readable, organized specs;
-* an interactive runner that can execute focused specs and describes; 
+* an interactive runner that can execute focused specs and describes;
 * and brief, extensible source-code.
 
 # What it is
@@ -21,7 +61,7 @@ A key feature of Screw.Unit are nested `describes` and the cascading `before` (a
 
     describe("a nested describe", function() {
       var invocations = [];
-      
+
       before(function() {
         invocations.push("before");
       });
@@ -52,7 +92,7 @@ A global `before` is a `before` block run before all tests in a test suite, rega
     Screw.Unit(function() {
       before(function() { ... });
     });
-    
+
 Note that you can have any number of `Screw.Unit(...)` blocks in one file. Thus, you can have multiple global `befores` and `afters`.
 
 # Custom Matchers
@@ -123,15 +163,15 @@ In addition to using nested describes to express context, use them to organize t
     describe("Car", function() {
       describe("#start", function() {
       });
-      
+
       describe("#stop", function() {
       });
-      
+
       describe("callbacks", function() {
         describe("after_purchase", function() {
         });
       });
-      
+
       describe("logging", function() {
       });
     });
@@ -167,7 +207,7 @@ If there is only one line of setup and it is used in only one test, it may be be
 
     it("decrements the man's luck by 5", function() {
       var man = new Man({luck: 5});
-      
+
       cat.cross_path(man);
       expect(man.luck()).to(equal, 0);
     });
@@ -179,7 +219,7 @@ But in general, it's nice to keep setup code in `before` blocks, especially if t
       before(function() {
         man = new Man({luck: 5});
       });
-  
+
       describe('#decrement_luck', function() {
         it("decrements the luck field by the given amount", function() {
           man.decrement_luck(3);
@@ -211,7 +251,7 @@ Behavioral testing, that is, asserting that certain functions are called rather 
       man.decrement_luck = function(amount) {
         decrement_luck_was_called = true;
       });
-      
+
       cat.cross_path(man);
       expect(decrement_luck_was_called).to(equal, true);
     });
@@ -231,7 +271,7 @@ In `spec_helper.js`:
         document.getElementById('dom_test').innerHTML = ''; // but use your favorite JS library here.
       });
     });
-    
+
 In `some_spec.js`:
 
     describe("something that manipulates the DOM", function() {
