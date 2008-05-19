@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name = "screw_unit"
+  s.name = "screw-unit-server"
   s.version = "0.3.0"
   s.date = "2008-05-08"
   s.summary = "The ScrewUnit client library (http://github.com/nkallen/screw-unit) plus a convenient ruby server."
@@ -16,6 +16,6 @@ Gem::Specification.new do |s|
     Dir["vendor/**/**"] +
     Dir["spec/**"]
   s.test_files = Dir['spec/**/*.rb']
-  s.rdoc_options = ["--main", "README"]
-  s.extra_rdoc_files = ["README", "CHANGES"]
+  s.rdoc_options = ["--main", "README.markdown"]
+  s.extra_rdoc_files = ["README.markdown", "CHANGES"]
 end
