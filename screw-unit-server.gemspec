@@ -15,7 +15,6 @@ Gem::Specification.new do |s|
     Dir["bin/**"] +
     Dir["vendor/**/**"] +
     Dir["spec/**"]
-  p s.files
   s.test_files = Dir['spec/**/*.rb']
   s.rdoc_options = ["--main", "README"]
   s.extra_rdoc_files = ["README", "CHANGES"]
