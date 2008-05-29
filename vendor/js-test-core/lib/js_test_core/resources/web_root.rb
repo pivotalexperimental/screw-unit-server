@@ -56,6 +56,7 @@ module JsTestCore
       def get(request, response)
         response.status = 301
         response['Location'] = "/#{self.class.dispatch_strategy}"
+        response.body = "<script type='text/javascript'>window.location.href='/specs';</script>"
       end
     end
   end

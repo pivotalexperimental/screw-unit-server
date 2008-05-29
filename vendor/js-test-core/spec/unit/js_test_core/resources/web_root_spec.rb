@@ -60,7 +60,7 @@ module JsTestCore
         describe "when passed an invalid option" do
           it "returns a 404 response" do
             resource = web_root.locate('invalid')
-            
+
           end
         end
       end
@@ -79,6 +79,7 @@ module JsTestCore
             web_root.get(request, response)
             response.should be_redirect
             response.headers["Location"].should == "/specs"
+            response.body.should == "<script type='text/javascript'>window.location.href='/specs';</script>"
           end
         end
 
