@@ -3,5 +3,7 @@ dir = File.dirname(__FILE__)
 root = File.expand_path("#{dir}/..")
 
 require "#{root}/config/boot"
+require "activesupport"
+Rails::Initializer.run(:add_plugin_load_paths)
 require "screw_unit"
 ScrewUnit::RailsServer.run(root)
