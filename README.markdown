@@ -6,8 +6,14 @@ You can use Screw Unit as a gem or as a Rails plugin.
 To install the gem, run:
   sudo gem install screw_unit
 
-To install the plugin, run:
-  script/plugin install git://github.com/btakita/screw-unit-server.git
+To install the plugin with Rails 2.1.0:
+  script/plugin install git://github.com/pivotal/screw-unit-server.git
+
+To install the plugin with Rails <2.1.0:b
+  cd vendor/plugins
+  git clone git://github.com/pivotal/screw-unit-server.git
+
+After installing screw unit server, run:
   script/generate screw_unit
 
 The Rails plugin gives you generators when using Screw Unit in a Rails environment.
