@@ -9,7 +9,7 @@ To install the gem, run:
 To install the plugin with Rails 2.1.0:
   script/plugin install git://github.com/pivotal/screw-unit-server.git
 
-To install the plugin with Rails <2.1.0:b
+To install the plugin with Rails <2.1.0:
   cd vendor/plugins
   git clone git://github.com/pivotal/screw-unit-server.git
 
