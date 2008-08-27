@@ -3,134 +3,154 @@ require File.expand_path("#{File.dirname(__FILE__)}/../unit_spec_helper")
 module JsTestCore
   describe Client do
     describe '.run' do
-      describe 'when successful' do
+      attr_reader :stdout, :request
+      before do
+        @stdout = StringIO.new
+        Client.const_set(:STDOUT, stdout)
+        @request = "http request"
+        mock(Net::HTTP).start(DEFAULT_HOST, DEFAULT_PORT).yields(request)
+      end
+
+      after do
+        Client.__send__(:remove_const, :STDOUT)
+      end
+
+      it "tells the server to start a suite run in Firefox and polls the status of the suite until the suite is complete" do
+        mock_post_to_firefox_runner
+        mock_polling_returns([running_status, running_status, success_status])
+        Client.run
+      end
+
+      context "when the Suite run ends in 'success'" do
         before do
-          request = Object.new
-          mock(request).post("/runners/firefox", "selenium_host=localhost&selenium_port=4444")
-          response = Object.new
-          mock(response).body {""}
-          mock(Net::HTTP).start(DEFAULT_HOST, DEFAULT_PORT).yields(request) {response}
-          stub(Client).puts
+          mock_post_to_firefox_runner
+          mock_polling_returns([running_status, running_status, success_status])
+        end
+
+        it "reports success" do
+          Client.run
+          stdout.string.strip.should == "SUCCESS"
         end
 
         it "returns true" do
           Client.run.should be_true
         end
-
-        it "prints 'SUCCESS'" do
-          mock(Client).puts("SUCCESS")
-          Client.run
-        end
       end
 
-      describe 'when unsuccessful' do
+      context "when the Suite run ends in 'failure'" do
+        attr_reader :failure_reason
         before do
-          request = Object.new
-          mock(request).post("/runners/firefox", "selenium_host=localhost&selenium_port=4444")
-          response = Object.new
-          mock(response).body {"the failure message"}
-          mock(Net::HTTP).start(DEFAULT_HOST, DEFAULT_PORT).yields(request) {response}
-          stub(Client).puts
+          mock_post_to_firefox_runner
+          @failure_reason = "I have a failed test"
+          mock_polling_returns([running_status, running_status, failure_status(failure_reason)])
+        end
+
+        it "reports failure" do
+          Client.run
+          stdout.string.strip.should == "FAILURE"
         end
 
         it "returns false" do
           Client.run.should be_false
         end
 
-        it "prints 'FAILURE' and the error message(s)" do
-          mock(Client).puts("FAILURE")
-          mock(Client).puts("the failure message")
-          Client.run
+        it "reports the reason for failure"
+      end
+
+      context "when the Suite is not found" do
+        it "raises a SuiteNotFound error" do
+          mock_post_to_firefox_runner
+          mock(request).get("/suites/my_suite_id") do
+            stub(suite_response = Object.new).code {"404"}
+            suite_response
+          end
+          lambda {Client.run}.should raise_error(Client::SuiteNotFound)
         end
       end
 
-      describe "arguments" do
-        attr_reader :request, :response
-        before do
-          @request = Object.new
-          @response = Object.new
-          mock(response).body {""}
-          mock(Net::HTTP).start(DEFAULT_HOST, DEFAULT_PORT).yields(request) {response}
-          stub(Client).puts
-        end
-
-        describe "when passed a custom spec_url" do
-          it "passes the spec_url as a post parameter" do
-            spec_url = 'http://foobar.com/foo'
-            mock(request).post(
-              "/runners/firefox",
-              "selenium_host=localhost&selenium_port=4444&spec_url=#{CGI.escape(spec_url)}"
-            )
-            Client.run(:spec_url => spec_url)
-          end
-        end
-
-        describe "when passed a custom selenium host" do
-          it "passes the selenium_host as a post parameter" do
-            selenium_host = 'test-runner'
-            mock(request).post(
-              "/runners/firefox",
-              "selenium_host=test-runner&selenium_port=4444"
-            )
-            Client.run(:selenium_host => selenium_host)
-          end
-        end
-
-        describe "when passed a custom selenium port" do
-          it "passes the selenium_port as a post parameter" do
-            selenium_port = 5000
-            mock(request).post(
-              "/runners/firefox",
-              "selenium_host=localhost&selenium_port=5000"
-            )
-            Client.run(:selenium_port => selenium_port)
-          end
+      context "when the Suite run ends in with invalid status" do
+        it "raises an InvalidStatusResponse" do
+          mock_post_to_firefox_runner
+          mock_polling_returns([running_status, running_status, "status=this is an unexpected status result"])
+          lambda {Client.run}.should raise_error(Client::InvalidStatusResponse)
         end
       end
 
+      def mock_post_to_firefox_runner
+        mock(start_suite_response = Object.new).body {"suite_id=my_suite_id"}
+        mock(request).post("/runners/firefox", "selenium_host=localhost&selenium_port=4444") do
+          start_suite_response
+        end
+      end
+
+      def mock_polling_returns(suite_statuses=[])
+        mock(request).get("/suites/my_suite_id") do
+          stub(suite_response = Object.new).body {suite_statuses.shift}
+          stub(suite_response).code {"200"}
+          suite_response
+        end.times(suite_statuses.length)
+      end
+
+      def running_status
+        "status=#{Resources::Suite::RUNNING}"
+      end
+
+      def success_status
+        "status=#{Resources::Suite::SUCCESSFUL_COMPLETION}"
+      end
+
+      def failure_status(reason)
+        "status=#{Resources::Suite::FAILURE_COMPLETION}&reason=#{reason}"
+      end
     end
-    
+
     describe ".run_argv" do
       attr_reader :request, :response
       before do
-          @request = Object.new
-          @response = Object.new
-          mock(response).body {""}
-          mock(Net::HTTP).start(DEFAULT_HOST, DEFAULT_PORT).yields(request) {response}
-          stub(Client).puts
-        end
+        stub(Client).puts
+      end
 
       describe "when passed a custom spec_url" do
         it "passes the spec_url as a post parameter" do
           spec_url = 'http://foobar.com/foo'
-          mock(request).post(
-            "/runners/firefox",
-            "selenium_host=localhost&selenium_port=4444&spec_url=#{CGI.escape(spec_url)}"
-          )
-          Client.run_argv(['--spec_url', spec_url])
+          mock(Client).run(:spec_url => spec_url)
+          client = Client.run_argv(['--spec_url', spec_url])
         end
       end
 
       describe "when passed a custom selenium host" do
         it "passes the selenium_host as a post parameter" do
           selenium_host = 'test-runner'
-          mock(request).post(
-            "/runners/firefox",
-            "selenium_host=test-runner&selenium_port=4444"
-          )
-          Client.run_argv(['--selenium_host', selenium_host])
+          mock(Client).run(:selenium_host => selenium_host)
+          client = Client.run_argv(['--selenium_host', selenium_host])
         end
       end
 
       describe "when passed a custom selenium port" do
         it "passes the selenium_port as a post parameter" do
-          selenium_port = 5000
-          mock(request).post(
-            "/runners/firefox",
-            "selenium_host=localhost&selenium_port=5000"
-          )
-          Client.run_argv(['--selenium_port', selenium_port.to_s])
+          selenium_port = "5000"
+          mock(Client).run(:selenium_port => selenium_port)
+          client = Client.run_argv(['--selenium_port', selenium_port])
         end
+      end
+    end
+
+    describe '#parts_from_query' do
+      attr_reader :client
+      before do
+        @client = Client.new(params_does_not_matter = {})
+      end
+
+      it "parses empty query into an empty hash" do
+        client.parts_from_query("").should == {}
+      end
+
+      it "parses a single key value pair into a single-element hash" do
+        client.parts_from_query("foo=bar").should == {'foo' => 'bar'}
+      end
+
+      it "parses a multiple key value pairs into a multi-element hash" do
+        client.parts_from_query("foo=bar&baz=quux").should == {'foo' => 'bar', 'baz' => 'quux'}
       end
     end
   end

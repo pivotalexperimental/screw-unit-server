@@ -1,7 +1,8 @@
 --- 
 format: 1
 handler: 
-  commit: 2eebcdfc72b6c2fd13e652445caf981f53961569
-repository_url: git://github.com/pivotal/js-test-core.git
+  commit: 533a770ca2adec513188f585dbbbe31ed4638981
+  branch: HEAD
 lock: false
+repository_url: git://github.com/pivotal/js-test-core.git
 repository_class: Piston::Git::Repository

@@ -1,14 +1,10 @@
 module JsTestCore
   module Resources
-    class FileNotFound
-      attr_reader :name
-      def initialize(name)
-        @name = name
-      end
-
-      def get(request, response)
-        response.status = 404
-        response.body = "Path #{name} not found. You may want to try the /#{WebRoot.dispatch_strategy} directory."
+    class FileNotFound < ThinRest::Resource
+      property :name
+      def get
+        connection.send_head(404)
+        connection.send_body("Path #{rack_request.path_info} not found. You may want to try the /#{WebRoot.dispatch_strategy} directory.")
       end
     end
   end

@@ -1,23 +1,39 @@
 module JsTestCore
   module Resources
-    class Suite
-      class << self
-        def locate(id)
-          new id
+    class Suite < ThinRest::Resource
+      class Collection < ThinRest::Resource
+        route ANY do |env, id|
+          Suite.new(env.merge(:id => id))
         end
       end
 
-      attr_reader :id
-      def initialize(id)
-        @id = id
-      end
+      RUNNING = 'running'
+      SUCCESSFUL_COMPLETION = 'success'
+      FAILURE_COMPLETION = 'failure'
 
-      def locate(name)
-        if name == 'finish'
-          SuiteFinish.new self
+      property :id
+
+      def get
+        runner = Runners::FirefoxRunner.find(id)
+        if runner
+          connection.send_head
+          if runner.running?
+            connection.send_body("status=#{RUNNING}")
+          else
+            if runner.successful?
+              connection.send_body("status=#{SUCCESSFUL_COMPLETION}")
+            else
+              connection.send_body("status=#{FAILURE_COMPLETION}&reason=#{runner.suite_run_result}")
+            end
+          end
         else
-          raise ArgumentError, "Invalid path: #{name}"
+          connection.send_head(404)
+          connection.send_body("")
         end
+      end
+
+      route 'finish' do |env, name|
+        SuiteFinish.new(env.merge(:suite => self))
       end
     end
   end

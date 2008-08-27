@@ -2,7 +2,7 @@ module JsTestCore
   module Resources
     module Specs
       class SpecDirSuperclass < ::JsTestCore::Resources::Dir
-        def get(request, response)
+        def get
           raise NotImplementedError, "#{self.class}#get needs to be implemented"
         end
       end
@@ -30,7 +30,7 @@ module JsTestCore
         def subdir(name)
           absolute_dir_path, relative_dir_path = determine_child_paths(name)
           if ::File.directory?(absolute_dir_path)
-            SpecDir.new(absolute_dir_path, relative_dir_path)
+            SpecDir.new(env.merge(:absolute_path => absolute_dir_path, :relative_path => relative_dir_path))
           else
             nil
           end
@@ -39,7 +39,7 @@ module JsTestCore
         def spec_file(name)
           absolute_file_path, relative_file_path = determine_child_paths("#{name}.js")
           if ::File.exists?(absolute_file_path) && !::File.directory?(absolute_file_path)
-            SpecFile.new(absolute_file_path, relative_file_path)
+            SpecFile.new(env.merge(:absolute_path => absolute_dir_path, :relative_path => relative_dir_path))
           else
             nil
           end

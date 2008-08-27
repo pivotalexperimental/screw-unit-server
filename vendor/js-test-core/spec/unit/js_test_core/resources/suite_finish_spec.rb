@@ -3,7 +3,7 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../unit_spec_helper")
 module JsTestCore
   module Resources
     describe SuiteFinish do
-      attr_reader :stdout, :suite_finish, :suite
+      attr_reader :stdout
       before do
         @stdout = StringIO.new
         SuiteFinish.const_set(:STDOUT, stdout)
@@ -13,39 +13,32 @@ module JsTestCore
         SuiteFinish.__send__(:remove_const, :STDOUT)
       end
 
-      describe ".post" do
-        describe "when Suite#id == 'user'" do
-          before do
-            @suite = Suite.new('user')
-            @suite_finish = SuiteFinish.new(suite)
-          end
-
+      describe "POST /suites/:suite_id/finish" do
+        context "when :suite_id == 'user'" do
           it "writes the body of the request to stdout" do
-            body = "The text in the POST body"
-            request = Rack::Request.new({'rack.input' => StringIO.new("text=#{body}")})
-            request.body.string.should == "text=#{body}"
-            response = Rack::Response.new
+            stub(connection).send_head
+            stub(connection).send_body
 
-            suite_finish.post(request, response)
-            stdout.string.should == "#{body}\n"
+            text = "The text in the POST body"
+            body = "text=#{text}"
+            connection.receive_data("POST /suites/user/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            stdout.string.should == "#{text}\n"
           end
 
-          it "sets the Content-Length to be 0" do
-            request = Rack::Request.new('rack.input' => StringIO.new(""))
-            response = Rack::Response.new
+          it "sends an empty body" do
+            text = "The text in the POST body"
+            body = "text=#{text}"
 
-            response.headers["Content-Length"].should be_nil
-            suite_finish.post(request, response)
-            response.headers["Content-Length"].should == "0"
+            mock(connection).send_head
+            mock(connection).send_body("")
+            connection.receive_data("POST /suites/user/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
           end
         end
 
-        describe "when Suite#id is not 'user'" do
-          attr_reader :request, :response, :runner, :suite_id, :driver
+        context "when :suite_id != 'user'" do
+          attr_reader :suite_id, :driver
           before do
-            runner_request = Rack::Request.new( Rack::MockRequest.env_for('/runners/firefox') )
-            runner_response = Rack::Response.new
-            @suite_id = '12345'
+            @suite_id = 12345
             @driver = "Selenium Driver"
             stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
@@ -54,38 +47,34 @@ module JsTestCore
             stub(driver).open
             stub(driver).session_id {suite_id}
             stub(Thread).start.yields
-            Thread.current[:connection] = connection
 
-            @runner = Runners::FirefoxRunner.new
-            runner.post(runner_request, runner_response)
-
-            @suite = Suite.new(suite_id)
-            @suite_finish = SuiteFinish.new(suite)
+            firefox_connection = Thin::JsTestCoreConnection.new(Guid.new)
+            stub(firefox_connection).send_head
+            stub(firefox_connection).send_body
+            stub(firefox_connection).close_connection
+            firefox_connection.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\n\r\n")
           end
 
           it "resumes the FirefoxRunner" do
-            body = "The text in the POST body"
-            request = Rack::Request.new({'rack.input' => StringIO.new("text=#{body}")})
-            response = Rack::Response.new
-            mock.proxy(Runners::FirefoxRunner).resume(suite_id, body)
+            text = "The text in the POST body"
+            body = "text=#{text}"
+            stub(connection).send_head
+            stub(connection).send_body
+            mock.proxy(Runners::FirefoxRunner).finalize(suite_id.to_s, text)
             mock(driver).stop
-            stub(connection).send_data.once
-            stub(connection).close_connection.once
-
-            suite_finish.post(request, response)
-          end
-
-          it "sets the Content-Length to be 0" do
-            request = Rack::Request.new('rack.input' => StringIO.new(""))
-            response = Rack::Response.new
-            stub(Runners::FirefoxRunner).resume
-            stub(driver).stop
-            stub(connection).send_data
             stub(connection).close_connection
 
-            response.headers["Content-Length"].should be_nil
-            suite_finish.post(request, response)
-            response.headers["Content-Length"].should == "0"
+            connection.receive_data("POST /suites/#{suite_id}/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+          end
+
+          it "responds with a blank body" do
+            stub(Runners::FirefoxRunner).resume
+            stub(driver).stop
+            stub(connection).close_connection
+
+            mock(connection).send_head
+            mock(connection).send_body("")
+            connection.receive_data("POST /suites/#{suite_id}/finish HTTP/1.1\r\nHost: _\r\nContent-Length: 0\r\n\r\n")
           end
         end
       end

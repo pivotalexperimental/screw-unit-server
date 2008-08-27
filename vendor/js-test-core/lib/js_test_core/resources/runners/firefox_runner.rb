@@ -1,16 +1,19 @@
 module JsTestCore
   module Resources
     class Runners
-      class FirefoxRunner
+      class FirefoxRunner < ThinRest::Resource
         class << self
-          def resume(suite_id, text)
-            if instances[suite_id]
-              runner = instances.delete(suite_id)
+          def find(id)
+            instances[Integer(id)]
+          end
+
+          def finalize(suite_id, text)
+            if runner = find(suite_id)
               runner.finalize(text)
             end
           end
 
-          def register_instance(runner)
+          def register(runner)
             instances[runner.suite_id] = runner
           end
 
@@ -21,23 +24,21 @@ module JsTestCore
         end
 
         include FileUtils
-        attr_reader :profile_dir, :connection, :driver, :response
+        attr_reader :profile_dir, :driver, :suite_run_result
 
-        def initialize
+        def after_initialize
           profile_base = "#{::Dir.tmpdir}/js_test_core/firefox"
           mkdir_p profile_base
           @profile_dir = "#{profile_base}/#{Time.now.to_i}"
-          @connection = Server.connection
         end
 
-        def post(request, response)
-          @response = response
-
-          spec_url = (request && request['spec_url']) ? request['spec_url'] : spec_suite_url
+        def post
+          spec_url = rack_request['spec_url'].to_s == "" ? spec_suite_url : rack_request['spec_url']
           parsed_spec_url = URI.parse(spec_url)
-          selenium_port = (request['selenium_port'] || 4444).to_i
+          selenium_host = rack_request['selenium_host'].to_s == "" ? 'localhost' : rack_request['selenium_host'].to_s
+          selenium_port = rack_request['selenium_port'].to_s == "" ? 4444 : Integer(rack_request['selenium_port'])
           @driver = Selenium::SeleniumDriver.new(
-            request['selenium_host'] || 'localhost',
+            selenium_host,
             selenium_port,
             '*firefox',
             "#{parsed_spec_url.scheme}://#{parsed_spec_url.host}:#{parsed_spec_url.port}"
@@ -50,14 +51,26 @@ module JsTestCore
           Thread.start do
             driver.open(spec_url)
           end
-          response.status = 200
-          FirefoxRunner.register_instance self
+          connection.send_head
+          connection.send_body("")
+          FirefoxRunner.register self
         end
 
-        def finalize(text)
+        def finalize(suite_run_result)
           driver.stop
-          response.body = text
-          connection.send_body(response)
+          @suite_run_result = suite_run_result
+        end
+
+        def running?
+          suite_run_result.nil?
+        end
+
+        def successful?
+          !running? && suite_run_result.empty?
+        end
+
+        def failed?
+          !running? && !successful?
         end
 
         def suite_id

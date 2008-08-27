@@ -14,9 +14,6 @@ module JsTestCore
       def implementation_root_path; instance.implementation_root_path; end
       def public_path; instance.public_path; end
       def core_path; instance.core_path; end
-      def test_dir_class; instance.test_dir_class; end
-      def test_file_class; instance.test_file_class; end
-      def connection; instance.connection; end
       def request; instance.request; end
       def response; instance.response; end
       def root_url; instance.root_url; end
@@ -34,35 +31,10 @@ module JsTestCore
     end
 
     def run(options)
-      server = ::Thin::Server.new(options[:Host], options[:Port], self)
+      server = ::Thin::Server.new(options[:Host], options[:Port])
       server.backend = ::Thin::Backends::JsTestCoreServer.new(options[:Host], options[:Port])
       server.backend.server = server
       server.start!
-    end
-
-    def call(env)
-      self.connection = env['js_test_core.connection']
-      self.request = Rack::Request.new(env)
-      self.response = Rack::Response.new
-      method = request.request_method.downcase.to_sym
-      get_resource(request).send(method, request, response)
-      response.finish
-    ensure
-      self.connection = nil
-      self.request = nil
-      self.response = nil
-    end
-
-    def connection
-      Thread.current[:connection]
-    end
-
-    def request
-      Thread.current[:request]
-    end
-
-    def response
-      Thread.current[:response]
     end
 
     def root_url
@@ -71,41 +43,6 @@ module JsTestCore
 
     def core_path
       JsTestCore.core_path
-    end
-
-    def test_dir_class
-      JsTestCore.adapter.test_dir_class
-    end
-
-    def test_file_class
-      JsTestCore.adapter.test_file_class
-    end
-    
-    protected
-    def connection=(connection)
-      Thread.current[:connection] = connection
-    end
-
-    def request=(request)
-      Thread.current[:request] = request
-    end
-
-    def response=(response)
-      Thread.current[:response] = response
-    end
-
-    def path_parts(req)
-      request.path_info.split('/').reject { |part| part == "" }
-    end
-
-    def get_resource(request)
-      path_parts(request).inject(Resources::WebRoot.new(public_path)) do |resource, child_resource_name|
-        resource.locate(child_resource_name)
-      end
-    rescue Exception => e
-      detailed_exception = Exception.new("Error handling path #{request.path_info}\n#{e.message}")
-      detailed_exception.set_backtrace(e.backtrace)
-      raise detailed_exception
     end
   end
 end

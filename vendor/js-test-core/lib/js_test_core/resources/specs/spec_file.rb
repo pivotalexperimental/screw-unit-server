@@ -2,7 +2,7 @@ module JsTestCore
   module Resources
     module Specs
       class SpecFileSuperclass < ::JsTestCore::Resources::File
-        def get(request, response)
+        def get
           raise NotImplementedError, "#{self.class}#get needs to be implemented"
         end
       end

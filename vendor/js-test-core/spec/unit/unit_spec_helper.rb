@@ -2,7 +2,7 @@ require "rubygems"
 require "spec"
 
 dir = File.dirname(__FILE__)
-$LOAD_PATH.unshift "#{dir}/../../lib"
+$LOAD_PATH.unshift File.expand_path("#{dir}/../../lib")
 require "js_test_core"
 require "hpricot"
 require "guid"
@@ -34,7 +34,7 @@ class Spec::Example::ExampleGroup
 end
 
 class JsTestCoreTestDir < JsTestCore::Resources::Dir
-  def get(request, response)
+  def get
 
   end
 end
@@ -61,7 +61,7 @@ module Spec::Example::ExampleMethods
     stub(EventMachine).send_data do
       raise "Calls to EventMachine.send_data must be mocked or stubbed"
     end
-    @connection = Thin::JsTestCoreConnection.new(Guid.new)
+    @connection = create_connection
     stub(EventMachine).send_data {raise "EventMachine.send_data must be handled"}
     stub(EventMachine).close_connection {raise "EventMachine.close_connection must be handled"}
     @server = JsTestCore::Server.instance
@@ -73,6 +73,10 @@ module Spec::Example::ExampleMethods
     JsTestCore::Resources::WebRoot.dispatch_strategy = nil
     Thin::Logging.silent = true
     Thin::Logging.debug = false
+  end
+
+  def create_connection(guid=Guid.new)
+    Thin::JsTestCoreConnection.new(Guid.new)
   end
 
   def get(url, params={})
@@ -95,9 +99,12 @@ module Spec::Example::ExampleMethods
     Rack::MockRequest.env_for(url, params.merge({:method => method.to_s.upcase, 'js_test_core.connection' => connection}))
   end
 
-  def create_request(method, url, params={})
-    env = env_for(method, url, params)
-    server.call(env)[2]
+  def create_request(method, path, params={})
+    body = params.map do |key, value|
+      "#{URI.escape(key)}=#{URI.escape(value)}"
+    end.join("&")
+    connection.receive_data "#{method.to_s.upcase} #{path} HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}"
+    connection.response
   end
   alias_method :request, :create_request
 
@@ -108,7 +115,7 @@ module Spec::Example::ExampleMethods
 
   def spec_dir(relative_path="")
     absolute_path = spec_root_path + relative_path
-    JsTestCore::Resources::Specs::SpecDir.new(absolute_path, "/specs#{relative_path}")
+    JsTestCore::Resources::Specs::SpecDir.new(:connection => connection, :absolute_path => absolute_path, :relative_path => "/specs#{relative_path}")
   end
 
   def contain_spec_file_with_correct_paths(path_relative_to_spec_root)
@@ -119,7 +126,14 @@ module Spec::Example::ExampleMethods
       file = globbed_files.find do |file|
         file.absolute_path == expected_absolute_path
       end
-      file && file.relative_path == expected_relative_path
+      raise "Did not find file with absolute path of #{expected_absolute_path.inspect}" unless file
+      file.relative_path == expected_relative_path
+    end
+  end
+
+  def stub_send_data
+    stub(EventMachine).send_data do |signature, data, data_length|
+      data_length
     end
   end
 end
