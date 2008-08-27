@@ -36,6 +36,18 @@ module JsTestCore
               end
             end
 
+            context "when name corresponds to a .js file" do
+              it "returns a SpecFile for the .js file" do
+                spec_file_name = "failing_spec"
+                subdir = dir.locate(spec_file_name)
+                subdir.should == JsTestCore::Resources::Specs::SpecFile.new(
+                  :connection => connection,
+                  :absolute_path => "#{spec_root_path}/#{spec_file_name}.js",
+                  :relative_path => "/specs/#{spec_file_name}.js"
+                )
+              end
+            end
+
             context "when name does not correspond to a .js file or directory" do
               it "raises an error" do
                 lambda do

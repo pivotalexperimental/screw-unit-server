@@ -4,21 +4,17 @@ module JsTestCore
   module Resources
     module Specs
       describe SpecDir do
-        attr_reader :dir
 
-        before do
-          stub(EventMachine).send_data
-          stub(EventMachine).close_connection
-          @dir = SpecDir.new(spec_root_path, '/specs')
-        end
+        describe "GET /specs" do
+          attr_reader :dir, :html, :doc
 
-        describe "#get" do
-          attr_reader :html, :doc
           before do
-            request = request('get', '/specs')
-            response = Rack::Response.new
-            dir.get(request, response)
-            @html = response.body
+            mock(connection).send_head
+            mock(connection).send_body(anything) do |@html|
+              # do nothing
+            end
+
+            connection.receive_data("GET /specs HTTP/1.1\r\nHost: _\r\n\r\n")
             @doc = Hpricot(html)
           end
 

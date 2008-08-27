@@ -108,11 +108,6 @@ module Spec::Example::ExampleMethods
   end
   alias_method :request, :create_request
 
-  def spec_file(relative_path)
-    absolute_path = spec_root_path + relative_path
-    JsTestCore::Resources::File.new(absolute_path, "/specs#{relative_path}")
-  end
-
   def spec_dir(relative_path="")
     absolute_path = spec_root_path + relative_path
     JsTestCore::Resources::Specs::SpecDir.new(:connection => connection, :absolute_path => absolute_path, :relative_path => "/specs#{relative_path}")

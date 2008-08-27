@@ -12,13 +12,9 @@ module JsTestCore
           glob("/**/*_spec.js")
         end
 
-        def locate(name)
-          if file = file(name)
-            file
-          elsif subdir = subdir(name)
-            subdir
-          elsif spec_file = spec_file(name)
-            spec_file
+        route ANY do |env, name|
+          if result = (file(name) || subdir(name) || spec_file(name))
+            result
           else
             base_path = "#{relative_path}/#{name}"
             raise "No file or directory found at #{base_path} or spec found at #{base_path}.js."
@@ -28,18 +24,18 @@ module JsTestCore
         protected
 
         def subdir(name)
-          absolute_dir_path, relative_dir_path = determine_child_paths(name)
-          if ::File.directory?(absolute_dir_path)
-            SpecDir.new(env.merge(:absolute_path => absolute_dir_path, :relative_path => relative_dir_path))
+          absolute_path, relative_path = determine_child_paths(name)
+          if ::File.directory?(absolute_path)
+            SpecDir.new(env.merge(:absolute_path => absolute_path, :relative_path => relative_path))
           else
             nil
           end
         end
 
         def spec_file(name)
-          absolute_file_path, relative_file_path = determine_child_paths("#{name}.js")
-          if ::File.exists?(absolute_file_path) && !::File.directory?(absolute_file_path)
-            SpecFile.new(env.merge(:absolute_path => absolute_dir_path, :relative_path => relative_dir_path))
+          absolute_path, relative_path = determine_child_paths("#{name}.js")
+          if ::File.exists?(absolute_path) && !::File.directory?(absolute_path)
+            SpecFile.new(env.merge(:absolute_path => absolute_path, :relative_path => relative_path))
           else
             nil
           end
