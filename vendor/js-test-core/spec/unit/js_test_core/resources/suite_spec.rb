@@ -8,7 +8,7 @@ module JsTestCore
 
         context "when there is no Runner with the :suite_id" do
           it "responds with a 404" do
-            suite_id = "66666666"
+            suite_id = "invalid_suite_id"
             Runners::FirefoxRunner.find(suite_id).should be_nil
 
             mock(connection).send_head(404)
@@ -21,7 +21,7 @@ module JsTestCore
         context "when a Runner with the :suite_id is running" do
           before do
             @driver = "Selenium Driver"
-            @suite_id = 12345
+            @suite_id = "DEADBEEF"
             stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
             end
@@ -44,7 +44,7 @@ module JsTestCore
         context "when a Runner with the :suite_id has completed" do
           before do
             @driver = "Selenium Driver"
-            @suite_id = 12345
+            @suite_id = "DEADBEEF"
             stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
             end

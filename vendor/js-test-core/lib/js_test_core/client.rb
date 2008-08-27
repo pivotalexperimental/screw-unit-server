@@ -40,7 +40,7 @@ module JsTestCore
       end
     end
 
-    attr_reader :parameters, :query_string, :http, :suite_start_response, :last_poll_result, :last_poll
+    attr_reader :parameters, :query_string, :http, :suite_start_response, :last_poll_status, :last_poll_reason, :last_poll
     def initialize(parameters)
       @parameters = parameters
       @query_string = SeleniumServerConfiguration.query_string_from(parameters)
@@ -72,26 +72,29 @@ module JsTestCore
     end
 
     def report_result
-      case last_poll_result
+      case last_poll_status
       when Resources::Suite::SUCCESSFUL_COMPLETION
         STDOUT.puts "SUCCESS"
         true
       when Resources::Suite::FAILURE_COMPLETION
         STDOUT.puts "FAILURE"
+        STDOUT.puts last_poll_reason
         false
       else
-        raise InvalidStatusResponse, "Invalid Status: #{last_poll_result}"
+        raise InvalidStatusResponse, "Invalid Status: #{last_poll_status}"
       end
     end
 
     def suite_not_completed?
-      last_poll_result.nil? || last_poll_result == Resources::Suite::RUNNING
+      last_poll_status.nil? || last_poll_status == Resources::Suite::RUNNING
     end
 
     def poll
       @last_poll = http.get("/suites/#{suite_id}")
       ensure_suite_exists!
-      @last_poll_result = parts_from_query(last_poll.body)['status']
+      parts = parts_from_query(last_poll.body)
+      @last_poll_status = parts['status']
+      @last_poll_reason = parts['reason']
     end
 
     def ensure_suite_exists!

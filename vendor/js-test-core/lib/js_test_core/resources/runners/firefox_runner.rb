@@ -4,7 +4,7 @@ module JsTestCore
       class FirefoxRunner < ThinRest::Resource
         class << self
           def find(id)
-            instances[Integer(id)]
+            instances[id.to_s]
           end
 
           def finalize(suite_id, text)
@@ -52,7 +52,7 @@ module JsTestCore
             driver.open(spec_url)
           end
           connection.send_head
-          connection.send_body("")
+          connection.send_body("suite_id=#{suite_id}")
           FirefoxRunner.register self
         end
 

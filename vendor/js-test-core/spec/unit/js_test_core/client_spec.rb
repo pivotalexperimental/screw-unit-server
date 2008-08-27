@@ -45,9 +45,10 @@ module JsTestCore
           mock_polling_returns([running_status, running_status, failure_status(failure_reason)])
         end
 
-        it "reports failure" do
+        it "reports failure and reason" do
           Client.run
-          stdout.string.strip.should == "FAILURE"
+          stdout.string.strip.should include("FAILURE")
+          stdout.string.strip.should include(failure_reason)
         end
 
         it "returns false" do

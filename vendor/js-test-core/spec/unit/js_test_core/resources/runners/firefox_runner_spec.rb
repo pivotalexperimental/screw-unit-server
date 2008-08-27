@@ -7,7 +7,7 @@ module JsTestCore
 
       before do
         @driver = "Selenium Driver"
-        @suite_id = 12345
+        @suite_id = "DEADBEEF"
         stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
           driver
         end
@@ -22,15 +22,9 @@ module JsTestCore
           Runners::FirefoxRunner.register(runner)
         end
         
-        context "when passed an Integer that corresponds to a Runner that exists" do
+        context "when passed an id for which there is a corresponding Runner" do
           it "returns the Runner" do
             Runners::FirefoxRunner.find(suite_id).should == runner
-          end
-        end
-
-        context "when passed a String representation of an Integer that corresponds to a Runner that exists" do
-          it "returns the Runner" do
-            Runners::FirefoxRunner.find(suite_id.to_s).should == runner
           end
         end
 
@@ -86,13 +80,13 @@ module JsTestCore
           stub(connection).send_body
         end
 
-        it "responds with a 200" do
+        it "responds with a 200 and the suite_id" do
           stub(driver).start
           stub(driver).open
           stub(driver).session_id {suite_id}
 
           mock(connection).send_head
-          mock(connection).send_body("")
+          mock(connection).send_body("suite_id=#{suite_id}")
           connection.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\n\r\n")
         end
 
@@ -167,7 +161,7 @@ module JsTestCore
             end
             mock(driver).start
             mock(driver).open("http://another-host:8080/specs/subdir")
-            mock(driver).session_id {suite_id}
+            mock(driver).session_id {suite_id}.at_least(1)
 
             body = "spec_url=http://another-host:8080/specs/subdir"
             connection.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -184,7 +178,7 @@ module JsTestCore
           it "uses Selenium to run the entire spec suite in Firefox" do
             mock(driver).start
             mock(driver).open("http://0.0.0.0:8080/specs")
-            mock(driver).session_id {suite_id}
+            mock(driver).session_id {suite_id}.at_least(1)
 
             body = "spec_url="
             connection.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")

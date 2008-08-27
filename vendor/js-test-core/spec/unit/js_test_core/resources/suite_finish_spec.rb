@@ -38,7 +38,7 @@ module JsTestCore
         context "when :suite_id != 'user'" do
           attr_reader :suite_id, :driver
           before do
-            @suite_id = 12345
+            @suite_id = "DEADBEEF"
             @driver = "Selenium Driver"
             stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
