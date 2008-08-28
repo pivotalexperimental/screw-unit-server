@@ -68,6 +68,28 @@ module ThinRest
           mock(EventMachine).send_data( connection.signature, expected_header, expected_header.length ) {expected_header.length}
           connection.send_head(301, :Location => "http://google.com")
         end
+
+        context "when not passed Content-length" do
+          it 'does not end with \r\n\r\n' do
+            expected_header = "HTTP/1.1 301 OK\r\nConnection: close\r\nServer: Thin Rest Server\r\nLocation: http://google.com\r\n"
+            mock(EventMachine).send_data( connection.signature, expected_header, expected_header.length ) {expected_header.length}
+            connection.send_head(301, :Location => "http://google.com")
+          end
+        end
+
+        context "when passed Content-length" do
+          it 'when passed a Symbol representation of Content-Length ends with \r\n\r\n' do
+            expected_header = "HTTP/1.1 301 OK\r\nConnection: close\r\nServer: Thin Rest Server\r\nLocation: http://google.com\r\nContent-Length: 10\r\n\r\n"
+            mock(EventMachine).send_data( connection.signature, expected_header, expected_header.length ) {expected_header.length}
+            connection.send_head(301, :Location => "http://google.com", :'Content-Length' => 10)
+          end
+
+          it 'when passed a String representation of Content-Length ends with \r\n\r\n' do
+            expected_header = "HTTP/1.1 301 OK\r\nConnection: close\r\nServer: Thin Rest Server\r\nLocation: http://google.com\r\nContent-Length: 10\r\n\r\n"
+            mock(EventMachine).send_data( connection.signature, expected_header, expected_header.length ) {expected_header.length}
+            connection.send_head(301, :Location => "http://google.com", 'Content-Length' => 10)
+          end
+        end
       end
     end
 

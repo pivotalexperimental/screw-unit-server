@@ -15,8 +15,14 @@ module JsTestCore
       def get
         extension = ::File.extname(absolute_path)
         content_type = MIME_TYPES[extension] || 'text/html'
-        connection.send_head(200, 'Content-Type' => content_type)
-        connection.send_body(::File.read(absolute_path))
+        connection.send_head(200, 'Content-Type' => content_type, 'Content-Length' => ::File.size(absolute_path))
+        connection.terminate_after_sending do
+          ::File.open(absolute_path) do |file|
+            while !file.eof?
+              connection.send_data(file.read(1024))
+            end
+          end
+        end
       end
 
       def ==(other)

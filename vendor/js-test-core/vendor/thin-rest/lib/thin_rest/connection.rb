@@ -19,14 +19,24 @@ module ThinRest
     end
 
     def head(status, additional_parameters)
-      additional_parameters.inject("HTTP/1.1 #{status} OK\r\nConnection: close\r\nServer: Thin Rest Server\r\n") do |header, parameters|
+      head_output = additional_parameters.inject("HTTP/1.1 #{status} OK\r\nConnection: close\r\nServer: Thin Rest Server\r\n") do |header, parameters|
         header << "#{parameters[0]}: #{parameters[1]}\r\n"
       end
+      if additional_parameters[:'Content-Length'] || additional_parameters['Content-Length']
+        head_output << "\r\n"
+      end
+      head_output
     end
 
     def send_body(data)
-      length = send_data("Content-Length: #{data.length}\r\n\r\n")
-      length += send_data(data)
+      terminate_after_sending do
+        send_data("Content-Length: #{data.length}\r\n\r\n")
+        send_data(data)
+      end
+    end
+
+    def terminate_after_sending
+      yield
       close_connection_after_writing
     ensure
       terminate_request
@@ -56,7 +66,7 @@ module ThinRest
       wrapped_error.set_backtrace(e.backtrace)
       handle_error wrapped_error
     end
-    
+
     def get_resource
       path_parts.inject(root_resource) do |resource, child_resource_name|
         resource.locate(child_resource_name)
