@@ -23,6 +23,15 @@ module JsTestCore
         end
       end
 
+      describe "GET /javascripts/i_dont_exist - FileNotFound" do
+        it "returns a 404 error" do
+          mock(connection).send_head(404)
+          mock(connection).send_body("")
+
+          connection.receive_data("GET /javascripts/i_dont_exist HTTP/1.1\r\nHost: _\r\n\r\n")
+        end
+      end
+
       describe "#glob" do
         before do
           @absolute_path = spec_root_path

@@ -4,7 +4,7 @@ module JsTestCore
       property :name
       def get
         connection.send_head(404)
-        connection.send_body("Path #{rack_request.path_info} not found. You may want to try the /#{WebRoot.dispatch_strategy} directory.")
+        connection.send_body("")
       end
     end
   end

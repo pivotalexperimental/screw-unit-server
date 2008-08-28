@@ -7,7 +7,7 @@ module JsTestCore
         elsif subdir = subdir(name)
           subdir
         else
-          raise "No file or directory found at #{relative_path}/#{name}."
+          FileNotFound.new(env.merge(:name => name))
         end
       end
 
