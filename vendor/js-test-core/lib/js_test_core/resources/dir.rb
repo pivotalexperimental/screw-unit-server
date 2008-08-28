@@ -38,11 +38,12 @@ module JsTestCore
       end
 
       def file(name)
-        absolute_path, relative_path = determine_child_paths(name)
-        if ::File.exists?(absolute_path) && !::File.directory?(absolute_path)
+        # N.B. Absolute_path and relative_path are methods. Do not shadow.
+        absolute_file_path, relative_file_path = determine_child_paths(name)
+        if ::File.exists?(absolute_file_path) && !::File.directory?(absolute_file_path)
           Resources::File.new(env.merge(
-            :absolute_path => absolute_path,
-            :relative_path => relative_path
+            :absolute_path => absolute_file_path,
+            :relative_path => relative_file_path
           ))
         else
           nil
@@ -50,11 +51,12 @@ module JsTestCore
       end
 
       def subdir(name)
+        # N.B. Absolute_path and relative_path are methods. Do not shadow.
         absolute_dir_path, relative_dir_path = determine_child_paths(name)
         if ::File.directory?(absolute_dir_path)
           Resources::Dir.new(env.merge(
-            :absolute_path => absolute_path,
-            :relative_path => relative_path
+            :absolute_path => absolute_dir_path,
+            :relative_path => relative_dir_path
           ))
         else
           nil

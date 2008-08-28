@@ -5,12 +5,21 @@ module JsTestCore
     describe Dir do
       attr_reader :dir, :absolute_path, :relative_path
 
-      describe "GET /stylesheets" do
+      describe "GET /stylesheets - Top level directory" do
         it "returns a page with a of files in the directory" do
           mock(connection).send_head()
-          mock(connection).send_body(Regexp.new('<a href="example.css">example.css</a>'))
+          mock(connection).send_body(%r(<a href="example.css">example.css</a>))
 
           connection.receive_data("GET /stylesheets HTTP/1.1\r\nHost: _\r\n\r\n")
+        end
+      end
+
+      describe "GET /javascripts/subdir - Subdirectory" do
+        it "returns a page with a of files in the directory" do
+          mock(connection).send_head()
+          mock(connection).send_body(%r(<a href="bar.js">bar.js</a>))
+
+          connection.receive_data("GET /javascripts/subdir HTTP/1.1\r\nHost: _\r\n\r\n")
         end
       end
 

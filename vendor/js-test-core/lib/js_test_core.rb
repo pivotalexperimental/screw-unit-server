@@ -5,6 +5,10 @@ dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift File.expand_path("#{dir}/../vendor/thin-rest/lib")
 require "thin_rest"
 
+# This causes errors to be printed to STDOUT.
+Thin::Logging.silent = false
+Thin::Logging.debug = true
+
 require "fileutils"
 require "tmpdir"
 require "timeout"

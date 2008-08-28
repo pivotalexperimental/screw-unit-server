@@ -27,6 +27,15 @@ module JsTestCore
         end
       end
 
+      describe "GET /javascripts/subdir/bar.js - Subdirectory" do
+        it "returns a page with a of files in the directory" do
+          mock(connection).send_head(200, 'Content-Type' => "text/javascript")
+          mock(connection).send_body(::File.read("#{public_path}/javascripts/subdir/bar.js"))
+
+          connection.receive_data("GET /javascripts/subdir/bar.js HTTP/1.1\r\nHost: _\r\n\r\n")
+        end
+      end
+
       describe "==" do
         attr_reader :file, :absolute_path, :relative_path
 
