@@ -37,7 +37,9 @@ module ThinRest
 
     def terminate_after_sending
       yield
-      close_connection_after_writing
+      unless request.persistent?
+        close_connection_after_writing
+      end
     ensure
       terminate_request
     end

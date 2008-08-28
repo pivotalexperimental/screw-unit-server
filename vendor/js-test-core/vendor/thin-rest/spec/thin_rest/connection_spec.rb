@@ -17,9 +17,17 @@ module ThinRest
       end
 
       context "when the call is successful" do
-        context "when the body is not empty" do
+        context "when the request has Connection: close" do
           it "sends the response to the socket and closes the connection" do
             mock(connection).close_connection_after_writing
+            connection.receive_data "GET /subresource HTTP/1.1\r\nConnection: close\r\nHost: _\r\n\r\n"
+            result.should include("GET response")
+          end
+        end
+
+        context "when the request does not have Connection: close" do
+          it "sends the response to the socket and does not close the connection" do
+            dont_allow(connection).close_connection_after_writing
             connection.receive_data "GET /subresource HTTP/1.1\r\nHost: _\r\n\r\n"
             result.should include("GET response")
           end
@@ -77,17 +85,17 @@ module ThinRest
           end
         end
 
-        context "when passed Content-length" do
+        context "when passed Content-Length" do
           it 'when passed a Symbol representation of Content-Length ends with \r\n\r\n' do
-            expected_header = "HTTP/1.1 301 OK\r\nConnection: close\r\nServer: Thin Rest Server\r\nLocation: http://google.com\r\nContent-Length: 10\r\n\r\n"
+            expected_header = "HTTP/1.1 301 OK\r\nConnection: close\r\nServer: Thin Rest Server\r\nContent-Length: 10\r\n\r\n"
             mock(EventMachine).send_data( connection.signature, expected_header, expected_header.length ) {expected_header.length}
-            connection.send_head(301, :Location => "http://google.com", :'Content-Length' => 10)
+            connection.send_head(301, :'Content-Length' => 10)
           end
 
           it 'when passed a String representation of Content-Length ends with \r\n\r\n' do
-            expected_header = "HTTP/1.1 301 OK\r\nConnection: close\r\nServer: Thin Rest Server\r\nLocation: http://google.com\r\nContent-Length: 10\r\n\r\n"
+            expected_header = "HTTP/1.1 301 OK\r\nConnection: close\r\nServer: Thin Rest Server\r\nContent-Length: 10\r\n\r\n"
             mock(EventMachine).send_data( connection.signature, expected_header, expected_header.length ) {expected_header.length}
-            connection.send_head(301, :Location => "http://google.com", 'Content-Length' => 10)
+            connection.send_head(301, 'Content-Length' => 10)
           end
         end
       end
