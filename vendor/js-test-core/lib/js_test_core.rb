@@ -17,6 +17,7 @@ require "net/http"
 require "selenium"
 require "optparse"
 
+require "#{dir}/js_test_core/extensions"
 require "#{dir}/js_test_core/thin"
 require "#{dir}/js_test_core/rack"
 require "#{dir}/js_test_core/resources"

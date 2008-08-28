@@ -15,7 +15,12 @@ module JsTestCore
       def get
         extension = ::File.extname(absolute_path)
         content_type = MIME_TYPES[extension] || 'text/html'
-        connection.send_head(200, 'Content-Type' => content_type, 'Content-Length' => ::File.size(absolute_path))
+        connection.send_head(
+          200,
+          'Content-Type' => content_type,
+          'Last-Modified' => ::File.mtime(absolute_path).rfc822,
+          'Content-Length' => ::File.size(absolute_path)
+        )
         connection.terminate_after_sending do
           ::File.open(absolute_path) do |file|
             while !file.eof?

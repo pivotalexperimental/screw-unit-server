@@ -12,7 +12,7 @@ module JsTestCore
       describe "GET /stylesheets/example.css" do
         it "returns a page with a of files in the directory" do
           path = "#{public_path}/stylesheets/example.css"
-          mock(connection).send_head(200, 'Content-Type' => "text/css", 'Content-Length' => ::File.size(path))
+          mock(connection).send_head(200, 'Content-Type' => "text/css", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
           mock(connection).send_data(::File.read(path))
 
           connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\n\r\n")
@@ -22,7 +22,7 @@ module JsTestCore
       describe "GET /implementations/foo.js" do
         it "returns a page with a of files in the directory" do
           path = "#{public_path}/javascripts/foo.js"
-          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path))
+          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
           mock(connection).send_data(::File.read(path))
 
           connection.receive_data("GET /implementations/foo.js HTTP/1.1\r\nHost: _\r\n\r\n")
@@ -32,7 +32,7 @@ module JsTestCore
       describe "GET /javascripts/subdir/bar.js - Subdirectory" do
         it "returns a page with a of files in the directory" do
           path = "#{public_path}/javascripts/subdir/bar.js"
-          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path))
+          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
           mock(connection).send_data(::File.read(path))
 
           connection.receive_data("GET /javascripts/subdir/bar.js HTTP/1.1\r\nHost: _\r\n\r\n")
@@ -43,7 +43,7 @@ module JsTestCore
         it "returns a page in 1024 byte chunks" do
           chunk_count = 0
           path = "#{public_path}/javascripts/large_file.js"
-          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path))
+          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
           ::File.open(path) do |file|
             while !file.eof?
               chunk_count += 1
