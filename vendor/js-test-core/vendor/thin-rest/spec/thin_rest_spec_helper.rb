@@ -55,6 +55,7 @@ end
 class Root < ThinRest::Resource
   property :connection
   route 'subresource', 'Subresource'
+  route 'another_subresource', 'AnotherSubresource'
   route 'block_subresource' do |properties, name|
     BlockSubresource.new(properties.merge(:foobar => foobar))
   end
@@ -84,6 +85,24 @@ class Subresource < ThinRest::Resource
 
   def do_delete
     "DELETE response"
+  end
+end
+
+class AnotherSubresource < ThinRest::Resource
+  def do_get
+    "Another GET response"
+  end
+
+  def do_post
+    "Another POST response"
+  end
+
+  def do_put
+    "Another PUT response"
+  end
+
+  def do_delete
+    "Another DELETE response"
   end
 end
 

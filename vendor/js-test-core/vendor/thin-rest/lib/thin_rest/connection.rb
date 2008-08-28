@@ -54,6 +54,24 @@ module ThinRest
       handle_error e
     end
 
+    def terminate_request
+      persistent = persistent?
+      @resource = nil
+      @rack_request = nil
+      @request.close  rescue nil
+      @response.close rescue nil
+
+      # Prepare the connection for another request if the client
+      # supports HTTP pipelining (persistent connection).
+      if persistent
+        post_init
+      end
+    end
+
+    def persistent?
+      request.persistent?
+    end
+
     def handle_error(error)
       log_error error
       close_connection rescue nil

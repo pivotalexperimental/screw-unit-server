@@ -5,7 +5,7 @@ module ThinRest
     attr_reader :connection
 
     describe "#process" do
-      attr_reader :connection, :result
+      attr_reader :result
       before do
         @connection = create_connection
         stub(connection).socket_address {'0.0.0.0'}
@@ -41,6 +41,17 @@ module ThinRest
           it "does not close the connection" do
             dont_allow(connection).close_connection_after_writing
             connection.receive_data "GET /subresource HTTP/1.1\r\nHost: _\r\n\r\n"
+          end
+
+          context "when a second request is made" do
+            it "sends the response for the second request and not for the first request" do
+              connection.receive_data "GET /subresource HTTP/1.1\r\nHost: _\r\n\r\n"
+              result.should include("GET response")
+              result.should_not include("Another GET response")
+
+              connection.receive_data "GET /another_subresource HTTP/1.1\r\nHost: _\r\n\r\n"
+              result.should include("Another GET response")
+            end
           end
         end
       end
@@ -169,6 +180,27 @@ module ThinRest
         mock.proxy(connection).log_error(anything)
 
         connection.handle_error(error)
+      end
+    end
+
+    describe "#persistent?" do
+      before do
+        @connection = create_connection
+        stub(connection).socket_address {'0.0.0.0'}
+      end
+
+      context "when #request.persistent? is true" do
+        it "returns true" do
+          stub(connection.request).persistent? {true}
+          connection.should be_persistent
+        end
+      end
+
+      context "when #request.persistent? is false" do
+        it "returns false" do
+          stub(connection.request).persistent? {false}
+          connection.should_not be_persistent
+        end
       end
     end
   end
