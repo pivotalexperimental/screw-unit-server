@@ -8,7 +8,7 @@ module ScrewUnit
         <head>
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
         <title>ScrewUnit results</title>
-        <script src="/core/jquery-1.2.3.js"></script>
+        <script src="/core/jquery-1.2.6.js"></script>
         <script src="/core/jquery.fn.js"></script>
         <script src="/core/jquery.print.js"></script>
         <script src="/core/screw.builder.js"></script>
