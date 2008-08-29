@@ -8,53 +8,84 @@ module JsTestCore
         stub_send_data
         stub(EventMachine).close_connection
       end
+      
+      describe "GET" do
+        context "when If-Modified-Since header is == the File's mtime" do
+          it "returns a 304 response with Content-Length: 0 and Last-Modified: File.mtime" do
+            path = "#{public_path}/stylesheets/example.css"
+            mock(connection).send_head(304, 'Content-Type' => "text/css", 'Content-Length' => 0, 'Last-Modified' => ::File.mtime(path).rfc822)
 
-      describe "GET /stylesheets/example.css" do
-        it "returns a page with a of files in the directory" do
-          path = "#{public_path}/stylesheets/example.css"
-          mock(connection).send_head(200, 'Content-Type' => "text/css", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
-          mock(connection).send_data(::File.read(path))
-
-          connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\n\r\n")
-        end
-      end
-
-      describe "GET /implementations/foo.js" do
-        it "returns a page with a of files in the directory" do
-          path = "#{public_path}/javascripts/foo.js"
-          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
-          mock(connection).send_data(::File.read(path))
-
-          connection.receive_data("GET /implementations/foo.js HTTP/1.1\r\nHost: _\r\n\r\n")
-        end
-      end
-
-      describe "GET /javascripts/subdir/bar.js - Subdirectory" do
-        it "returns a page with a of files in the directory" do
-          path = "#{public_path}/javascripts/subdir/bar.js"
-          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
-          mock(connection).send_data(::File.read(path))
-
-          connection.receive_data("GET /javascripts/subdir/bar.js HTTP/1.1\r\nHost: _\r\n\r\n")
-        end
-      end
-
-      describe "GET /implementations/large_file.js - Large files" do
-        it "returns a page in 1024 byte chunks" do
-          chunk_count = 0
-          path = "#{public_path}/javascripts/large_file.js"
-          mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
-          ::File.open(path) do |file|
-            while !file.eof?
-              chunk_count += 1
-              mock(connection).send_data(file.read(1024))
-            end
+            connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{::File.mtime(path).rfc822}\r\n\r\n")
           end
+        end
 
-          chunk_count.should == (::File.size(path) / 1024.0).ceil.to_i
-          connection.receive_data("GET /javascripts/large_file.js HTTP/1.1\r\nHost: _\r\n\r\n")
+        context "when If-Modified-Since header is > the File's mtime" do
+          it "returns a 304 response with Content-Length: 0 and Last-Modified: File.mtime" do
+            path = "#{public_path}/stylesheets/example.css"
+            mock(connection).send_head(304, 'Content-Type' => "text/css", 'Content-Length' => 0, 'Last-Modified' => ::File.mtime(path).rfc822)
+
+            connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{(::File.mtime(path) + 10).rfc822}\r\n\r\n")
+          end
+        end
+
+        context "when If-Modified-Since header is < the File's mtime" do
+          it "returns a 200 response with the file's contents" do
+            path = "#{public_path}/stylesheets/example.css"
+            mock(connection).send_head(200, 'Content-Type' => "text/css", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
+            mock(connection).send_data(::File.read(path))
+
+            connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{(::File.mtime(path) - 10).rfc822}\r\n\r\n")
+          end
+        end
+        
+        describe "GET /stylesheets/example.css" do
+          it "returns a page with a of files in the directory" do
+            path = "#{public_path}/stylesheets/example.css"
+            mock(connection).send_head(200, 'Content-Type' => "text/css", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
+            mock(connection).send_data(::File.read(path))
+
+            connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\n\r\n")
+          end
+        end
+
+        describe "GET /implementations/foo.js" do
+          it "returns a page with a of files in the directory" do
+            path = "#{public_path}/javascripts/foo.js"
+            mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
+            mock(connection).send_data(::File.read(path))
+
+            connection.receive_data("GET /implementations/foo.js HTTP/1.1\r\nHost: _\r\n\r\n")
+          end
+        end
+
+        describe "GET /javascripts/subdir/bar.js - Subdirectory" do
+          it "returns a page with a of files in the directory" do
+            path = "#{public_path}/javascripts/subdir/bar.js"
+            mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
+            mock(connection).send_data(::File.read(path))
+
+            connection.receive_data("GET /javascripts/subdir/bar.js HTTP/1.1\r\nHost: _\r\n\r\n")
+          end
+        end
+
+        describe "GET /implementations/large_file.js - Large files" do
+          it "returns a page in 1024 byte chunks" do
+            chunk_count = 0
+            path = "#{public_path}/javascripts/large_file.js"
+            mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
+            ::File.open(path) do |file|
+              while !file.eof?
+                chunk_count += 1
+                mock(connection).send_data(file.read(1024))
+              end
+            end
+
+            chunk_count.should == (::File.size(path) / 1024.0).ceil.to_i
+            connection.receive_data("GET /javascripts/large_file.js HTTP/1.1\r\nHost: _\r\n\r\n")
+          end
         end
       end
+
 
       describe "==" do
         attr_reader :file, :absolute_path, :relative_path
