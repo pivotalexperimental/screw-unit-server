@@ -3,6 +3,6 @@ format: 1
 handler: 
   commit: cc41f3cf373d804b11519704faf1971370f43760
   branch: HEAD
-lock: 
+lock: false
 repository_url: git://github.com/pivotal/screw-unit.git
 repository_class: Piston::Git::Repository

@@ -17,20 +17,19 @@ Screw.Matchers = (function($) {
     
     equal: {
       match: function(expected, actual) {
-        if(expected == actual) return true;
-
         if (expected instanceof Array) {
           for (var i = 0; i < actual.length; i++)
             if (!Screw.Matchers.equal.match(expected[i], actual[i])) return false;
           return actual.length == expected.length;
         } else if (expected instanceof Object) {
           for (var key in expected)
-            if (!this.match(expected[key], actual[key])) return false;
+            if (expected[key] != actual[key]) return false;
           for (var key in actual)
-            if (!this.match(actual[key], expected[key])) return false;
+            if (actual[key] != expected[key]) return false;
           return true;
+        } else {
+          return expected == actual;
         }
-        return false;
       },
       
       failure_message: function(expected, actual, not) {
