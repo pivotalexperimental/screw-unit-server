@@ -1,5 +1,6 @@
 dir = File.dirname(__FILE__)
 require "#{dir}/resources/runners"
+require "#{dir}/resources/runners/runner"
 require "#{dir}/resources/runners/firefox_runner"
 require "#{dir}/resources/file"
 require "#{dir}/resources/dir"
