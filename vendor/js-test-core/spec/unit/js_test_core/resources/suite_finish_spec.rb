@@ -55,12 +55,12 @@ module JsTestCore
             firefox_connection.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\n\r\n")
           end
 
-          it "resumes the FirefoxRunner" do
+          it "calls Runner.finalize" do
             text = "The text in the POST body"
             body = "text=#{text}"
             stub(connection).send_head
             stub(connection).send_body
-            mock.proxy(Runners::FirefoxRunner).finalize(suite_id.to_s, text)
+            mock.proxy(Runners::Runner).finalize(suite_id.to_s, text)
             mock(driver).stop
             stub(connection).close_connection
 
@@ -68,7 +68,6 @@ module JsTestCore
           end
 
           it "responds with a blank body" do
-            stub(Runners::FirefoxRunner).resume
             stub(driver).stop
             stub(connection).close_connection
 

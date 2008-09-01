@@ -53,7 +53,7 @@ module JsTestCore
           end
           connection.send_head
           connection.send_body("suite_id=#{suite_id}")
-          FirefoxRunner.register self
+          Runner.register self
         end
 
         def finalize(suite_run_result)
