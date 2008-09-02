@@ -25,40 +25,9 @@ def run_suite
   system("ruby #{dir}/spec/spec_suite.rb") || raise("Example Suite failed")
 end
 
-PKG_NAME = "screw_unit"
-PKG_VERSION = "0.2.0"
-PKG_FILES = FileList[
-  '[A-Z]*',
-  '*.rb',
-  'lib/**/*.rb',
-  'core/**',
-  'bin/**',
-  'spec/**/*.rb'
-]
-
-spec = Gem::Specification.new do |s|
-  s.name = PKG_NAME
-  s.version = PKG_VERSION
-  s.summary = "The ScrewUnit client library (http://github.com/nkallen/screw-unit) plus a convenient ruby server."
-  s.test_files = "spec/spec_suite.rb"
-  s.description = s.summary
-
-  s.files = PKG_FILES.to_a
-  s.require_path = 'lib'
-
-  s.has_rdoc = true
-  s.extra_rdoc_files = [ "README", "CHANGES" ]
-  s.rdoc_options = ["--main", "README", "--inline-source", "--line-numbers"]
-
-  s.test_files = Dir.glob('spec/*_spec.rb')
-  s.require_path = 'lib'
-  s.author = "Brian Takita"
-  s.email = "brian@pivotallabs.com"
-  s.homepage = "http://pivotallabs.com"
-  s.rubyforge_project = "pivotalrb"
-  s.add_dependency('Selenium')
-  s.add_dependency('thin', '>=0.8.0')
-end
+spec = eval(File.read("#{File.dirname(__FILE__)}/screw-unit-server.gemspec"))
+PKG_NAME = spec.name
+PKG_VERSION = spec.version
 
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_zip = true
