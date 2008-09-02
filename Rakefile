@@ -66,5 +66,6 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 def tag_release
+  dashed_version = PKG_VERSION.gsub('.', '-')
   system("git tag #{dashed_version} -m 'Version #{PKG_VERSION}'")
 end
