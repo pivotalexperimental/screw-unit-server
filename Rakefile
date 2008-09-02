@@ -67,5 +67,5 @@ end
 
 def tag_release
   dashed_version = PKG_VERSION.gsub('.', '-')
-  system("git tag #{dashed_version} -m 'Version #{PKG_VERSION}'")
+  system("git tag REL-#{dashed_version} -m 'Version #{PKG_VERSION}'")
 end
