@@ -39,8 +39,9 @@ To use Screw Unit in a CI environment,
     selenium
   * Run the screw_unit_server on the machine that has the files.
     script/screw_unit_server
-  * Run the screw_unit client. The screw_unit client has --selenium_host, --selenium_port, and --spec_url arguments to specify
+  * Run the screw_unit client. The screw_unit client has --selenium_browser_start_command, --selenium_host, --selenium_port, and --spec_url arguments to specify
     where the Selenium server is relative to the screw_unit server, and where the screw_unit server is relative to the browser.
+  * Running `script/screw_unit_server` is equivalent to running `script/screw_unit_server --selenium_browser_start_command *firefox --selenium_host localhost --selenium_port 4444 --spec_url http://localhost:8080/specs`
 
 # Screw Unit Library
 
