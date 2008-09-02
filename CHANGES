@@ -1,3 +1,8 @@
+- Client accepts selenium_server_start_command parameter, which allows the user to parameterize the selenium_server_start_command
+- Added support for running specs in Internet Explorer via POST /runners/iexplore
+- Resource file download performance improvements via caching and chunked sending
+- Fixed false positive bug when Client connection times out
+
 0.3.0
 - Uses ScrewUnit 0.3.0
 

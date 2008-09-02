@@ -60,7 +60,7 @@ module JsTestCore
             body = "text=#{text}"
             stub(connection).send_head
             stub(connection).send_body
-            mock.proxy(Runners::Runner).finalize(suite_id.to_s, text)
+            mock.proxy(Runner).finalize(suite_id.to_s, text)
             mock(driver).stop
             stub(connection).close_connection
 

@@ -21,6 +21,10 @@ module JsTestCore
           o.banner << "\nUsage: #{$0} [options] [-- untouched arguments]"
 
           o.on
+          o.on('-s', '--selenium_browser_start_command=selenium_browser_start_command', "The Selenium server command to start the browser. See http://selenium-rc.openqa.org/") do |selenium_browser_start_command|
+            params[:selenium_browser_start_command] = selenium_browser_start_command
+          end
+
           o.on('-h', '--selenium_host=SELENIUM_HOST', "The host name of the Selenium Server relative to where this file is executed") do |host|
             params[:selenium_host] = host
           end
@@ -48,7 +52,7 @@ module JsTestCore
 
     def run
       Net::HTTP.start(DEFAULT_HOST, DEFAULT_PORT) do |@http|
-        start_firefox_runner
+        start_runner
         wait_for_suite_to_finish
       end
       report_result
@@ -63,8 +67,8 @@ module JsTestCore
     end
     
     protected
-    def start_firefox_runner
-      @suite_start_response = http.post('/runners/firefox', query_string)
+    def start_runner
+      @suite_start_response = http.post('/runners', query_string)
     end
 
     def wait_for_suite_to_finish

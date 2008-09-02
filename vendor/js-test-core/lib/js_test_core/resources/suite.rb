@@ -14,7 +14,7 @@ module JsTestCore
       property :id
 
       def get
-        runner = Runners::Runner.find(id)
+        runner = Runner.find(id)
         if runner
           connection.send_head
           if runner.running?

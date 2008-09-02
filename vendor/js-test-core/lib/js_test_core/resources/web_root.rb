@@ -17,7 +17,7 @@ module JsTestCore
         ))
       end
       route "suites", "JsTestCore::Resources::Suite::Collection"
-      route "runners", "JsTestCore::Resources::Runners"
+      route "runners", "JsTestCore::Resources::Runner::Collection"
       route "specs" do |env, name|
         if self.class.dispatch_strategy == :specs
           Resources::Specs::SpecDir.new(env.merge(

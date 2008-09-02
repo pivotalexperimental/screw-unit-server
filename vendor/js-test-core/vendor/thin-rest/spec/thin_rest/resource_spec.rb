@@ -10,6 +10,20 @@ module ThinRest
       @root = Root.new(:connection => connection)
     end
 
+    describe ".property" do
+      it "creates a reader that takes its value from its env property" do
+        root.env[:connection].should == connection
+        root.connection.should == root.env[:connection]
+      end
+
+      it "creates a writer that sets its passed in value to its env property" do
+        another_connection = create_connection
+        root.connection = another_connection
+        root.connection.should == another_connection
+        root.env[:connection].should == another_connection
+      end
+    end
+
     describe "#locate" do
       context "/subresource - route is defined using a String" do
         it "returns an instance of Subresource" do

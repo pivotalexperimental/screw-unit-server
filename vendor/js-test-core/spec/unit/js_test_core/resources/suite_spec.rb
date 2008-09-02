@@ -9,7 +9,7 @@ module JsTestCore
         context "when there is no Runner with the :suite_id" do
           it "responds with a 404" do
             suite_id = "invalid_suite_id"
-            Runners::Runner.find(suite_id).should be_nil
+            Runner.find(suite_id).should be_nil
 
             mock(connection).send_head(404)
             mock(connection).send_body("")
@@ -33,7 +33,7 @@ module JsTestCore
             stub(connection_that_starts_firefox).send_head
             stub(connection_that_starts_firefox).send_body
             connection_that_starts_firefox.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\nContent-Length: 0\r\n\r\n")
-            @suite_runner = Runners::Runner.find(suite_id)
+            @suite_runner = Runner.find(suite_id)
             suite_runner.should be_running
           end
 

@@ -4,8 +4,15 @@ module ThinRest
       def property(*names)
         names.each do |name|
           my_properties << name.to_sym
+
+          define_method name do
+            env[name]
+          end
+
+          define_method "#{name}=" do |new_value|
+            env[name] = new_value
+          end
         end
-        attr_reader *names
       end
 
       def properties
