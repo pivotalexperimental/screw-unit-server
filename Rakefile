@@ -26,7 +26,7 @@ def run_suite
 end
 
 PKG_NAME = "screw_unit"
-PKG_VERSION = "0.1.0"
+PKG_VERSION = "0.2.0"
 PKG_FILES = FileList[
   '[A-Z]*',
   '*.rb',

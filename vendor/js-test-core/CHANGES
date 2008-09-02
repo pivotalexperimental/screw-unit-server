@@ -1,3 +1,4 @@
+0.2.0
 - Client accepts selenium_browser_start_command parameter, which allows the user to parameterize the selenium_browser_start_command
 - Added support for running specs in Internet Explorer via POST /runners/iexplore
 - Resource file download performance improvements via caching and chunked sending
