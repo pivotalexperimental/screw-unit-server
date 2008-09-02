@@ -25,7 +25,6 @@ module JsTestCore
             doc.at("script[@src='/core/screw.builder.js']").should exist
             doc.at("script[@src='/core/screw.events.js']").should exist
             doc.at("script[@src='/core/screw.behaviors.js']").should exist
-            doc.at("script[@src='/core/screw.assets.js']").should exist
             doc.at("body/#screw_unit_content").should_not be_nil
           end
         end
