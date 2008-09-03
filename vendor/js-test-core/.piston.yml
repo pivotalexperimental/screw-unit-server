@@ -1,7 +1,7 @@
 --- 
 format: 1
 handler: 
-  commit: 77ae58f17f5ca7d81f5d4bedd3f537d608f44cd4
+  commit: 6503abd30c2742b241bff5b0253edff1714ebad8
   branch: HEAD
 lock: false
 repository_url: git://github.com/pivotal/js-test-core.git

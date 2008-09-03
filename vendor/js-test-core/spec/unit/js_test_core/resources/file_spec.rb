@@ -10,44 +10,6 @@ module JsTestCore
       end
       
       describe "GET" do
-        context "when If-Modified-Since header is == the File's mtime" do
-          it "returns a 304 response with Content-Length: 0 and Last-Modified: File.mtime" do
-            path = "#{public_path}/stylesheets/example.css"
-            mock(connection).send_head(304, 'Content-Type' => "text/css", 'Content-Length' => 0, 'Last-Modified' => ::File.mtime(path).rfc822)
-            connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{::File.mtime(path).rfc822}\r\n\r\n")
-
-            path_2 = "#{public_path}/javascripts/foo.js"
-            mock(connection).send_head(304, 'Content-Type' => "text/javascript", 'Content-Length' => 0, 'Last-Modified' => ::File.mtime(path_2).rfc822)
-            connection.receive_data("GET /javascripts/foo.js HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{::File.mtime(path_2).rfc822}\r\n\r\n")
-          end
-        end
-
-        context "when If-Modified-Since header is > the File's mtime" do
-          it "returns a 304 response with Content-Length: 0 and Last-Modified: File.mtime" do
-            path = "#{public_path}/stylesheets/example.css"
-            mock(connection).send_head(304, 'Content-Type' => "text/css", 'Content-Length' => 0, 'Last-Modified' => ::File.mtime(path).rfc822)
-            connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{(::File.mtime(path) + 10).rfc822}\r\n\r\n")
-
-            path_2 = "#{public_path}/javascripts/foo.js"
-            mock(connection).send_head(304, 'Content-Type' => "text/javascript", 'Content-Length' => 0, 'Last-Modified' => ::File.mtime(path_2).rfc822)
-            connection.receive_data("GET /javascripts/foo.js HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{(::File.mtime(path_2) + 10).rfc822}\r\n\r\n")
-          end
-        end
-
-        context "when If-Modified-Since header is < the File's mtime" do
-          it "returns a 200 response with the file's contents" do
-            path = "#{public_path}/stylesheets/example.css"
-            mock(connection).send_head(200, 'Content-Type' => "text/css", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
-            mock(connection).send_data(::File.read(path))
-            connection.receive_data("GET /stylesheets/example.css HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{(::File.mtime(path) - 10).rfc822}\r\n\r\n")
-
-            path_2 = "#{public_path}/javascripts/foo.js"
-            mock(connection).send_head(200, 'Content-Type' => "text/javascript", 'Content-Length' => ::File.size(path_2), 'Last-Modified' => ::File.mtime(path_2).rfc822)
-            mock(connection).send_data(::File.read(path_2))
-            connection.receive_data("GET /javascripts/foo.js HTTP/1.1\r\nHost: _\r\nIf-Modified-Since: #{(::File.mtime(path_2) - 10).rfc822}\r\n\r\n")
-          end
-        end
-        
         describe "GET /stylesheets/example.css" do
           it "returns a page with a of files in the directory" do
             path = "#{public_path}/stylesheets/example.css"
