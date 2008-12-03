@@ -48,9 +48,9 @@ Screw.Unit(function() {
     
     describe('when given a function', function() {
       it("returns the function's signature", function() {
-        expect($.print(function() {})).to(equal, 'function ()');
-        expect($.print(function foo() {})).to(equal, 'function foo()');
-        expect($.print(function foo(bar) {})).to(equal, 'function foo(bar)');
+        expect($.print(function() {})).to(match, /function\s*\(\)/);
+        expect($.print(function foo() {})).to(match, /function\s*foo\(\)/);
+        expect($.print(function foo(bar) {})).to(match, /function\s*foo\(bar\)/);
       });        
     });
 
@@ -66,16 +66,22 @@ Screw.Unit(function() {
       });
     });
 
+    describe('when given 0', function() {
+      it('should print the string "0"', function() {
+        expect($.print(0)).to(equal, '0');
+      });
+    });
+    
     describe('when given an element', function() {
       it("returns the string representation of the element", function() {
-        expect($.print($('<div>').get(0))).to(equal, '<div>');
-        expect($.print($('<div foo="bar">').get(0))).to(equal, '<div>');
-        expect($.print($('<div class="foo" id="bar">').get(0))).to(equal, '<div class="foo" id="bar">');
+        expect($.print($('<div></div>').get(0))).to(equal, '<div>');
+        expect($.print($('<div foo="bar"></div>').get(0))).to(equal, '<div>');
+        expect($.print($('<div class="foo" id="bar"></div>').get(0))).to(equal, '<div class="foo" id="bar">');
       });
 
       describe('when the element is an img', function() {
         it('prints out the img src attribute', function() {
-          expect($.print($('<img src="test.png">'))).to(match, /<img src=".+?test.png">/);
+          expect($.print($('<img src="test.png"/>'))).to(match, /<img src=".+?test.png">/);
         })
       });
     });
@@ -118,7 +124,7 @@ Screw.Unit(function() {
 
     describe('when given a jQuery', function() {
       it("returns the printed array of elements engirthed in '$()'", function() {
-        expect($.print($('<div>'))).to(equal, '$([ <div> ])');
+        expect($.print($('<div></div>'))).to(equal, '$([ <div> ])');
       });
     });
     

@@ -8,8 +8,8 @@ function Man(options) {
     return luck;
   };
   this.render = function() {
-    return $('<ul class="man">')
-      .append('<li class="hair">')
+    return $('<ul class="man"></ul>')
+      .append('<li class="hair"></li>')
       .click(function() {
         $(this).children('.hair').remove();
       });

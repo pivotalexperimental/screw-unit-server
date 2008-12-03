@@ -18,12 +18,12 @@ var Screw = (function($) {
       context: [],
 
       describe: function(name, fn) {
-        var describe = $('<li class="describe">')
-          .append($('<h1>').text(name))
-          .append('<ol class="befores">')
-          .append('<ul class="its">')
-          .append('<ul class="describes">')
-          .append('<ol class="afters">');
+        var describe = $('<li class="describe"></li>')
+          .append($('<h1></h1>').text(name))
+          .append('<ol class="befores"></ol>')
+          .append('<ul class="its"></ul>')
+          .append('<ul class="describes"></ul>')
+          .append('<ol class="afters"></ol>');
 
         this.context.push(describe);
         fn.call();
@@ -35,8 +35,8 @@ var Screw = (function($) {
       },
 
       it: function(name, fn) {
-        var it = $('<li class="it">')
-          .append($('<h2>').text(name))
+        var it = $('<li class="it"></li>')
+          .append($('<h2></h2>').text(name))
           .data('screwunit.run', fn);
 
         this.context[this.context.length-1]
@@ -45,7 +45,7 @@ var Screw = (function($) {
       },
 
       before: function(fn) {
-        var before = $('<li class="before">')
+        var before = $('<li class="before"></li>')
           .data('screwunit.run', fn);
 
         this.context[this.context.length-1]
@@ -54,7 +54,7 @@ var Screw = (function($) {
       },
 
       after: function(fn) {
-        var after = $('<li class="after">')
+        var after = $('<li class="after"></li>')
           .data('screwunit.run', fn);
 
         this.context[this.context.length-1]
@@ -66,11 +66,11 @@ var Screw = (function($) {
 
   $(screw).queue(function() { $(screw).trigger('loading') });
   $(function() {
-    $('<div class="describe">')
-      .append('<h3 class="status">')
-      .append('<ol class="befores">')
-      .append('<ul class="describes">')
-      .append('<ol class="afters">')
+    $('<div class="describe"></div>')
+      .append('<h3 class="status"></h3>')
+      .append('<ol class="befores"></ol>')
+      .append('<ul class="describes"></ul>')
+      .append('<ol class="afters"></ol>')
       .appendTo('body');
 
     $(screw).dequeue();

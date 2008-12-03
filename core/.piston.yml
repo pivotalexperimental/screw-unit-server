@@ -1,8 +1,8 @@
 --- 
 format: 1
 handler: 
-  commit: cc41f3cf373d804b11519704faf1971370f43760
-  branch: HEAD
+  commit: 939926541ba16d0b56f06f43851cea65ed246276
+  branch: master
 lock: false
 repository_url: git://github.com/pivotal/screw-unit.git
 repository_class: Piston::Git::Repository

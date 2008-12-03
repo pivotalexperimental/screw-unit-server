@@ -1,0 +1,7 @@
+0.3.2
+- Adding IE support
+- Fix printing of 0 as 'NaN'
+
+0.2.0
+- Added elapsed time information in test suite run.
+- Equal matchers works with complex hash structures
