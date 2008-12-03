@@ -1,3 +1,6 @@
+0.3.2
+- Upgrading to ScrewUnit 0.3.2
+
 0.3.1
 - Client accepts selenium_server_start_command parameter, which allows the user to parameterize the selenium_server_start_command
 - Added support for running specs in Internet Explorer via POST /runners/iexplore
