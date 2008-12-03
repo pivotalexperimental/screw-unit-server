@@ -2,3 +2,4 @@ pkg/
 *.iml
 *.ipr
 *.iws
+.idea
