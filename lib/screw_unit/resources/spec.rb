@@ -72,16 +72,16 @@ module ScrewUnit
                 return element.innerHTML;
               }).get().join("\\n");
 
-              var suite_id;
+              var session_id;
               if(top.runOptions) {
-                suite_id = top.runOptions.getSessionId();
+                session_id = top.runOptions.getSessionId();
               } else {
-                suite_id = 'user';
+                session_id = 'user';
               }
 
               ajax({
                 type: "POST",
-                url: '/suites/' + suite_id + '/finish',
+                url: '/suites/' + session_id + '/finish',
                 data: {"text": error_text}
               });
             });
