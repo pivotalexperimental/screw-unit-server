@@ -1,8 +1,0 @@
---- 
-format: 1
-handler: 
-  commit: dcd08e14ce4c19520fb2ae1cc68eb0e63730eaa7
-  branch: HEAD
-lock: false
-repository_url: git://github.com/pivotal/js-test-core.git
-repository_class: Piston::Git::Repository
