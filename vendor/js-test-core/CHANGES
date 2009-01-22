@@ -1,3 +1,7 @@
+- Renamed Suite to Session to follow Selenium conventions
+- Renamed SuiteFinish to SessionFinish to follow Selenium conventions
+- Added /session, which uses the session_id cookie to derive the current session.
+- Added /session/finished to be used to simplify client/server interactions.
 - Remove File caching because it doesn't cause a noticable performance benefit over a local network and because it sometimes doesn't write over stale files.
 - Client accepts selenium_browser_start_command parameter, which allows the user to parameterize the selenium_browser_start_command
 - Added support for running specs in Internet Explorer via POST /runners/iexplore

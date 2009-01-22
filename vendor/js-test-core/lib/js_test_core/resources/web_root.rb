@@ -17,6 +17,9 @@ module JsTestCore
         ))
       end
       route "sessions", "JsTestCore::Resources::Session::Collection"
+      route "session" do |env, name|
+        Session.new(env.merge(:id => rack_request.cookies["session_id"]))
+      end
       route "runners", "JsTestCore::Resources::Runner::Collection"
       route "specs" do |env, name|
         if self.class.dispatch_strategy == :specs

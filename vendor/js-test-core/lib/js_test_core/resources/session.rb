@@ -35,6 +35,10 @@ module JsTestCore
       route 'finish' do |env, name|
         SessionFinish.new(env.merge(:session => self))
       end
+
+      def associated_with_a_runner?
+        id.to_s != ""
+      end
     end
   end
 end

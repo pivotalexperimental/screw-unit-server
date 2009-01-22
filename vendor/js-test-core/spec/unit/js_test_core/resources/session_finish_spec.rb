@@ -13,15 +13,16 @@ module JsTestCore
         SessionFinish.__send__(:remove_const, :STDOUT)
       end
 
-      describe "POST /sessions/:session_id/finish" do
-        context "when :session_id == 'user'" do
+
+      describe "POST /session/finish" do
+        context "when session_id cookie is not set" do
           it "writes the body of the request to stdout" do
             stub(connection).send_head
             stub(connection).send_body
 
             text = "The text in the POST body"
             body = "text=#{text}"
-            connection.receive_data("POST /sessions/user/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            connection.receive_data("POST /session/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
             stdout.string.should == "#{text}\n"
           end
 
@@ -31,11 +32,11 @@ module JsTestCore
 
             mock(connection).send_head
             mock(connection).send_body("")
-            connection.receive_data("POST /sessions/user/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            connection.receive_data("POST /session/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
           end
         end
 
-        context "when :session_id != 'user'" do
+        context "when session_id cookie is set'" do
           attr_reader :session_id, :driver
           before do
             @session_id = "DEADBEEF"
@@ -64,7 +65,7 @@ module JsTestCore
             mock(driver).stop
             stub(connection).close_connection
 
-            connection.receive_data("POST /sessions/#{session_id}/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            connection.receive_data("POST /session/finish HTTP/1.1\r\nCookie: session_id=#{session_id}\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
           end
 
           it "responds with a blank body" do
@@ -73,7 +74,7 @@ module JsTestCore
 
             mock(connection).send_head
             mock(connection).send_body("")
-            connection.receive_data("POST /sessions/#{session_id}/finish HTTP/1.1\r\nHost: _\r\nContent-Length: 0\r\n\r\n")
+            connection.receive_data("POST /session/finish HTTP/1.1\r\nCookie: session_id=#{session_id}\r\nHost: _\r\nContent-Length: 0\r\n\r\n")
           end
         end
       end
