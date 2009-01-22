@@ -21,14 +21,12 @@ module JsTestCore
         context "when there is a Runner with the :session_id" do
           attr_reader :session_runner
           before do
-            @driver = "Selenium Driver"
-            @session_id = "DEADBEEF"
+            @driver = FakeSeleniumDriver.new
+            @session_id = FakeSeleniumDriver::SESSION_ID
             stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
             end
 
-            stub(driver).start
-            stub(driver).session_id {session_id}
             connection_that_starts_firefox = create_connection
             stub(connection_that_starts_firefox).send_head
             stub(connection_that_starts_firefox).send_body
@@ -49,7 +47,6 @@ module JsTestCore
           context "when a Runner with the :session_id has completed" do
             context "when the session has a status of 'success'" do
               before do
-                stub(driver).stop
                 session_runner.finalize("")
                 session_runner.should be_successful
               end
@@ -65,7 +62,6 @@ module JsTestCore
             context "when the session has a status of 'failure'" do
               attr_reader :reason
               before do
-                stub(driver).stop
                 @reason = "Failure stuff"
                 session_runner.finalize(reason)
                 session_runner.should be_failed

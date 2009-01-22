@@ -7,8 +7,8 @@ module JsTestCore
 
       def self.before_with_selenium_browser_start_command(selenium_browser_start_command="selenium browser start command")
         before do
-          @driver = "Selenium Driver"
-          @session_id = "DEADBEEF"
+          @driver = FakeSeleniumDriver.new
+          @session_id = FakeSeleniumDriver::SESSION_ID
           @selenium_browser_start_command = selenium_browser_start_command
           @body = "selenium_browser_start_command=#{selenium_browser_start_command}"
           stub(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
@@ -59,7 +59,7 @@ module JsTestCore
           end
 
           it "finalizes the Runner that has the session_id and keeps the Runner in memory" do
-            mock(driver).stop
+            mock.proxy(driver).stop
             mock.proxy(runner).finalize("Browser output")
             Runner.find(session_id).should == runner
             Runner.finalize(session_id, "Browser output")
@@ -85,8 +85,6 @@ module JsTestCore
         end
 
         it "responds with a 200 and the session_id" do
-          stub_selenium_interactions
-
           mock(connection).send_head
           mock(connection).send_body("session_id=#{session_id}")
           connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -107,7 +105,6 @@ module JsTestCore
 
         describe "when a selenium_host parameter is passed into the request" do
           before do
-            stub_selenium_interactions
             body << "&selenium_host=another-machine"
           end
 
@@ -121,7 +118,6 @@ module JsTestCore
 
         describe "when a selenium_host parameter is not passed into the request" do
           before do
-            stub_selenium_interactions
             body << "&selenium_host="
           end
 
@@ -135,7 +131,6 @@ module JsTestCore
 
         describe "when a selenium_port parameter is passed into the request" do
           before do
-            stub_selenium_interactions
             body << "&selenium_port=4000"
           end
 
@@ -149,7 +144,6 @@ module JsTestCore
 
         describe "when a selenium_port parameter is not passed into the request" do
           before do
-            stub_selenium_interactions
             body << "&selenium_port="
           end
 
@@ -205,8 +199,6 @@ module JsTestCore
           stub(connection).send_head
           stub(connection).send_body
 
-          stub_selenium_interactions
-
           mock(connection).send_head
           mock(connection).send_body("session_id=#{session_id}")
 
@@ -226,8 +218,6 @@ module JsTestCore
           stub(connection).send_head
           stub(connection).send_body
 
-          stub_selenium_interactions
-
           mock(connection).send_head
           mock(connection).send_body("session_id=#{session_id}")
 
@@ -239,18 +229,46 @@ module JsTestCore
         end
       end
 
+      describe "#running?" do
+        before_with_selenium_browser_start_command
+        context "when the driver#session_started? is true" do
+          it "returns true" do
+            create_runner_connection = create_connection
+            stub(create_runner_connection).send_head
+            stub(create_runner_connection).send_body
+            create_runner_connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+
+            runner = Resources::Runner.find(session_id)
+            runner.driver.session_started?.should be_true
+            runner.should be_running
+          end
+        end
+
+        context "when the driver#session_started? is false" do
+          it "returns false" do
+            create_runner_connection = create_connection
+            stub(create_runner_connection).send_head
+            stub(create_runner_connection).send_body
+            create_runner_connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+
+            runner = Resources::Runner.find(session_id)
+            runner.driver.stop
+            runner.driver.session_started?.should be_false
+            runner.should_not be_running
+          end
+        end
+      end
+
       describe "#finalize" do
         attr_reader :runner
         before_with_selenium_browser_start_command
         before do
-          stub_selenium_interactions
-
           create_runner_connection = create_connection
           stub(create_runner_connection).send_head
           stub(create_runner_connection).send_body
           create_runner_connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
           @runner = Resources::Runner.find(session_id)
-          mock(driver).stop
+          mock.proxy(driver).stop
         end
 
         it "kills the browser and stores the #session_run_result" do
@@ -259,8 +277,9 @@ module JsTestCore
           runner.session_run_result.should == session_run_result
         end
 
-        it "causes #running? to be false" do
-          runner.finalize("")
+        it "sets #session_run_result" do
+          runner.finalize("the result")
+          runner.session_run_result.should == "the result"
         end
 
         context "when passed an empty string" do

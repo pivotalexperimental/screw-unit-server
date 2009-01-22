@@ -39,12 +39,11 @@ module JsTestCore
         context "when session_id cookie is set'" do
           attr_reader :session_id, :driver
           before do
-            @session_id = "DEADBEEF"
-            @driver = "Selenium Driver"
+            @session_id = FakeSeleniumDriver::SESSION_ID
+            @driver = FakeSeleniumDriver.new
             stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
             end
-            stub_selenium_interactions
 
             firefox_connection = Thin::JsTestCoreConnection.new(Guid.new)
             stub(firefox_connection).send_head

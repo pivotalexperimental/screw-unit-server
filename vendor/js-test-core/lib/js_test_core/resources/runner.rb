@@ -84,11 +84,11 @@ module JsTestCore
 
       def finalize(session_run_result)
         driver.stop
-        @session_run_result = session_run_result
+        @session_run_result = session_run_result.to_s
       end
 
       def running?
-        session_run_result.nil?
+        driver.session_started?
       end
 
       def successful?
