@@ -1,3 +1,5 @@
+- Fixed for latest version of Selenium, Rack, and Thin
+
 0.3.2
 - Upgrading to ScrewUnit 0.3.2
 
