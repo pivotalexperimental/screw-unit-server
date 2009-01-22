@@ -129,4 +129,12 @@ class Spec::ExampleGroup
       data_length
     end
   end
+
+  def stub_selenium_interactions
+    stub(driver).start
+    stub(driver).create_cookie
+    stub(driver).open
+    stub(driver).session_id {session_id}
+    stub(Thread).start.yields
+  end
 end

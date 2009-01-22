@@ -85,20 +85,28 @@ module JsTestCore
         end
 
         it "responds with a 200 and the session_id" do
-          stub(driver).start
-          stub(driver).open
-          stub(driver).session_id {session_id}
+          stub_selenium_interactions
 
           mock(connection).send_head
           mock(connection).send_body("session_id=#{session_id}")
           connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
         end
 
+        it "starts the Selenium Driver, creates a SessionID cookie, and opens the spec page" do
+          mock(driver).start
+          stub(driver).session_id {session_id}
+          mock(driver).create_cookie("session_id=#{session_id}")
+          mock(driver).open("http://0.0.0.0:8080/specs")
+
+          mock(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
+            driver
+          end
+          connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+        end
+
         describe "when a selenium_host parameter is passed into the request" do
           before do
-            stub(driver).start
-            stub(driver).open
-            stub(driver).session_id {session_id}
+            stub_selenium_interactions
             body << "&selenium_host=another-machine"
           end
 
@@ -112,9 +120,7 @@ module JsTestCore
 
         describe "when a selenium_host parameter is not passed into the request" do
           before do
-            stub(driver).start
-            stub(driver).open
-            stub(driver).session_id {session_id}
+            stub_selenium_interactions
             body << "&selenium_host="
           end
 
@@ -128,9 +134,7 @@ module JsTestCore
 
         describe "when a selenium_port parameter is passed into the request" do
           before do
-            stub(driver).start
-            stub(driver).open
-            stub(driver).session_id {session_id}
+            stub_selenium_interactions
             body << "&selenium_port=4000"
           end
 
@@ -144,9 +148,7 @@ module JsTestCore
 
         describe "when a selenium_port parameter is not passed into the request" do
           before do
-            stub(driver).start
-            stub(driver).open
-            stub(driver).session_id {session_id}
+            stub_selenium_interactions
             body << "&selenium_port="
           end
 
@@ -164,6 +166,7 @@ module JsTestCore
               driver
             end
             mock(driver).start
+            stub(driver).create_cookie
             mock(driver).open("http://another-host:8080/specs/subdir")
             mock(driver).session_id {session_id}.at_least(1)
 
@@ -181,6 +184,7 @@ module JsTestCore
 
           it "uses Selenium to run the entire spec session in Firefox" do
             mock(driver).start
+            stub(driver).create_cookie
             mock(driver).open("http://0.0.0.0:8080/specs")
             mock(driver).session_id {session_id}.at_least(1)
 
@@ -198,9 +202,7 @@ module JsTestCore
           stub(connection).send_head
           stub(connection).send_body
 
-          stub(driver).start
-          stub(driver).open
-          stub(driver).session_id {session_id}
+          stub_selenium_interactions
 
           mock(connection).send_head
           mock(connection).send_body("session_id=#{session_id}")
@@ -221,9 +223,7 @@ module JsTestCore
           stub(connection).send_head
           stub(connection).send_body
 
-          stub(driver).start
-          stub(driver).open
-          stub(driver).session_id {session_id}
+          stub_selenium_interactions
 
           mock(connection).send_head
           mock(connection).send_body("session_id=#{session_id}")
@@ -240,9 +240,7 @@ module JsTestCore
         attr_reader :runner
         before_with_selenium_browser_start_command
         before do
-          stub(driver).start
-          stub(driver).open
-          stub(driver).session_id {session_id}
+          stub_selenium_interactions
 
           create_runner_connection = create_connection
           stub(create_runner_connection).send_head

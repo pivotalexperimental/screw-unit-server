@@ -34,11 +34,12 @@ module JsTestCore
           rescue Errno::ECONNREFUSED => e
             raise Errno::ECONNREFUSED, "Cannot connect to Selenium Server at #{http_address}. To start the selenium server, run `selenium`."
           end
+          runner = Runner.new(:driver => driver)
+          Runner.register(runner)          
           Thread.start do
+            driver.create_cookie("session_id=#{runner.session_id}")
             driver.open(spec_url)
           end
-          runner = Runner.new(:driver => driver)
-          Runner.register(runner)
           connection.send_head
           connection.send_body("session_id=#{runner.session_id}")
         end

@@ -44,10 +44,7 @@ module JsTestCore
             stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
             end
-            stub(driver).start
-            stub(driver).open
-            stub(driver).session_id {session_id}
-            stub(Thread).start.yields
+            stub_selenium_interactions
 
             firefox_connection = Thin::JsTestCoreConnection.new(Guid.new)
             stub(firefox_connection).send_head
