@@ -71,17 +71,10 @@ module ScrewUnit
               var error_text = $(".error").map(function(i, element) {
                 return element.innerHTML;
               }).get().join("\\n");
-
-              var session_id;
-              if(top.runOptions) {
-                session_id = top.runOptions.getSessionId();
-              } else {
-                session_id = 'user';
-              }
-
+        
               ajax({
                 type: "POST",
-                url: '/suites/' + session_id + '/finish',
+                url: '/session/finish',
                 data: {"text": error_text}
               });
             });
