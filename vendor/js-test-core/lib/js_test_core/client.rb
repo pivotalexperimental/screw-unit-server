@@ -72,7 +72,10 @@ module JsTestCore
     end
 
     def wait_for_session_to_finish
-      poll while session_not_completed?
+      while session_not_completed?
+        poll
+        sleep 0.25
+      end
     end
 
     def report_result

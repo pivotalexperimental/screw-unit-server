@@ -9,6 +9,7 @@ module JsTestCore
         Client.const_set(:STDOUT, stdout)
         @request = "http request"
         mock(Net::HTTP).start(DEFAULT_HOST, DEFAULT_PORT).yields(request)
+        stub.instance_of(Client).sleep
       end
 
       after do
