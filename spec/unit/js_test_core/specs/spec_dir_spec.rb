@@ -19,16 +19,16 @@ module JsTestCore
           end
 
           it "returns script tags for each test javascript file" do
-            doc.at("script[@src='/specs/failing_spec.js']").should exist
-            doc.at("script[@src='/specs/foo/failing_spec.js']").should exist
-            doc.at("script[@src='/specs/foo/passing_spec.js']").should exist
+            doc.at("script[@src='/specs/failing_spec.js']").should_not be_nil
+            doc.at("script[@src='/specs/foo/failing_spec.js']").should_not be_nil
+            doc.at("script[@src='/specs/foo/passing_spec.js']").should_not be_nil
           end
 
           it "returns the screw unit template" do
-            doc.at("link[@href='/core/screw.css']").should exist
-            doc.at("script[@src='/core/screw.builder.js']").should exist
-            doc.at("script[@src='/core/screw.events.js']").should exist
-            doc.at("script[@src='/core/screw.behaviors.js']").should exist
+            doc.at("link[@href='/core/screw.css']").should_not be_nil
+            doc.at("script[@src='/core/screw.builder.js']").should_not be_nil
+            doc.at("script[@src='/core/screw.events.js']").should_not be_nil
+            doc.at("script[@src='/core/screw.behaviors.js']").should_not be_nil
             doc.at("body/#screw_unit_content").should_not be_nil
           end
         end

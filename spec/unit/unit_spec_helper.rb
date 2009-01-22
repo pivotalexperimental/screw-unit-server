@@ -22,7 +22,7 @@ module Spec
   end
 end
 
-class Spec::Example::ExampleGroup
+class Spec::ExampleGroup
   class << self
     def thin_logging
       @thin_logging = true if @thin_logging.nil?
@@ -31,9 +31,7 @@ class Spec::Example::ExampleGroup
 
     attr_writer :thin_logging
   end
-end
 
-module Spec::Example::ExampleMethods
   attr_reader :spec_root_path, :implementation_root_path, :public_path, :server, :connection
   before(:all) do
     dir = File.dirname(__FILE__)

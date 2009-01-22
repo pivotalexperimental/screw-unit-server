@@ -26,7 +26,7 @@ module WaitFor
   end
 end
 
-module Spec::Example::ExampleMethods
+class Spec::ExampleGroup
   include WaitFor
   attr_reader :spec_root_path, :implementation_root_path, :public_path
   before(:all) do
