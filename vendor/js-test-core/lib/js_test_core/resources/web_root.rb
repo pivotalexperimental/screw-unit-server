@@ -58,8 +58,8 @@ module JsTestCore
       property :public_path
 
       def get
-        connection.send_head(301, :Location => "/#{self.class.dispatch_strategy}")
-        connection.send_body("<script type='text/javascript'>window.location.href='/specs';</script>")
+        connection.send_head(200, :Location => "/#{self.class.dispatch_strategy}")
+        connection.send_body("<html><head></head><body>Welcome to the Js Test Server. Click the following link to run you <a href=/specs>spec suite</a>.</body></html>")
       end
     end
   end

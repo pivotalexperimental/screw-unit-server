@@ -97,6 +97,10 @@ module ThinRest
     def unbind
     end
 
+    def ==(other)
+      other.class == self.class && other.env == env 
+    end
+
     protected
     def after_initialize
     end

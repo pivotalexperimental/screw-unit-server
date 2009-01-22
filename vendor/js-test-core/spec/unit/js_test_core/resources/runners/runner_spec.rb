@@ -96,7 +96,8 @@ module JsTestCore
           mock(driver).start
           stub(driver).session_id {session_id}
           mock(driver).create_cookie("session_id=#{session_id}")
-          mock(driver).open("http://0.0.0.0:8080/specs")
+          mock(driver).open("/")
+          mock(driver).open("/specs")
 
           mock(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
             driver
@@ -167,7 +168,8 @@ module JsTestCore
             end
             mock(driver).start
             stub(driver).create_cookie
-            mock(driver).open("http://another-host:8080/specs/subdir")
+            mock(driver).open("/")
+            mock(driver).open("/specs/subdir")
             mock(driver).session_id {session_id}.at_least(1)
 
             body << "&spec_url=http://another-host:8080/specs/subdir"
@@ -185,7 +187,8 @@ module JsTestCore
           it "uses Selenium to run the entire spec session in Firefox" do
             mock(driver).start
             stub(driver).create_cookie
-            mock(driver).open("http://0.0.0.0:8080/specs")
+            mock(driver).open("/")
+            mock(driver).open("/specs")
             mock(driver).session_id {session_id}.at_least(1)
 
             body << "&spec_url="
