@@ -1,9 +1,9 @@
 module JsTestCore
   module Resources
-    class Suite < ThinRest::Resource
+    class Session < ThinRest::Resource
       class Collection < ThinRest::Resource
         route ANY do |env, id|
-          Suite.new(env.merge(:id => id))
+          Session.new(env.merge(:id => id))
         end
       end
 
@@ -23,7 +23,7 @@ module JsTestCore
             if runner.successful?
               connection.send_body("status=#{SUCCESSFUL_COMPLETION}")
             else
-              connection.send_body("status=#{FAILURE_COMPLETION}&reason=#{runner.suite_run_result}")
+              connection.send_body("status=#{FAILURE_COMPLETION}&reason=#{runner.session_run_result}")
             end
           end
         else
@@ -33,7 +33,7 @@ module JsTestCore
       end
 
       route 'finish' do |env, name|
-        SuiteFinish.new(env.merge(:suite => self))
+        SessionFinish.new(env.merge(:session => self))
       end
     end
   end

@@ -18,7 +18,7 @@ module JsTestCore
         end
 
         def post
-          spec_url = rack_request['spec_url'].to_s == "" ? spec_suite_url : rack_request['spec_url']
+          spec_url = rack_request['spec_url'].to_s == "" ? full_spec_suite_url : rack_request['spec_url']
           parsed_spec_url = URI.parse(spec_url)
           selenium_host = rack_request['selenium_host'].to_s == "" ? 'localhost' : rack_request['selenium_host'].to_s
           selenium_port = rack_request['selenium_port'].to_s == "" ? 4444 : Integer(rack_request['selenium_port'])
@@ -40,11 +40,11 @@ module JsTestCore
           runner = Runner.new(:driver => driver)
           Runner.register(runner)
           connection.send_head
-          connection.send_body("suite_id=#{runner.suite_id}")
+          connection.send_body("session_id=#{runner.session_id}")
         end
 
         protected
-        def spec_suite_url
+        def full_spec_suite_url
           "#{Server.root_url}/specs"
         end
       end
@@ -54,14 +54,14 @@ module JsTestCore
           instances[id.to_s]
         end
 
-        def finalize(suite_id, text)
-          if runner = find(suite_id)
+        def finalize(session_id, text)
+          if runner = find(session_id)
             runner.finalize(text)
           end
         end
 
         def register(runner)
-          instances[runner.suite_id] = runner
+          instances[runner.session_id] = runner
         end
 
         protected
@@ -72,7 +72,7 @@ module JsTestCore
 
       include FileUtils
       property :driver
-      attr_reader :profile_dir, :suite_run_result
+      attr_reader :profile_dir, :session_run_result
 
       def after_initialize
         profile_base = "#{::Dir.tmpdir}/js_test_core/#{self.class.name}"
@@ -80,24 +80,24 @@ module JsTestCore
         @profile_dir = "#{profile_base}/#{Time.now.to_i}"
       end
 
-      def finalize(suite_run_result)
+      def finalize(session_run_result)
         driver.stop
-        @suite_run_result = suite_run_result
+        @session_run_result = session_run_result
       end
 
       def running?
-        suite_run_result.nil?
+        session_run_result.nil?
       end
 
       def successful?
-        !running? && suite_run_result.empty?
+        !running? && session_run_result.empty?
       end
 
       def failed?
         !running? && !successful?
       end
 
-      def suite_id
+      def session_id
         driver.session_id
       end
     end

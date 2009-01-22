@@ -3,12 +3,12 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../../unit_spec_helper")
 module JsTestCore
   module Resources
     describe Runner do
-      attr_reader :request, :driver, :suite_id, :selenium_browser_start_command, :body
+      attr_reader :request, :driver, :session_id, :selenium_browser_start_command, :body
 
       def self.before_with_selenium_browser_start_command(selenium_browser_start_command="selenium browser start command")
         before do
           @driver = "Selenium Driver"
-          @suite_id = "DEADBEEF"
+          @session_id = "DEADBEEF"
           @selenium_browser_start_command = selenium_browser_start_command
           @body = "selenium_browser_start_command=#{selenium_browser_start_command}"
           stub(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
@@ -27,13 +27,13 @@ module JsTestCore
         before do
           @runner = Runner.new(:connection => connection, :selenium_browser_start_command => selenium_browser_start_command)
           stub(runner).driver {driver}
-          stub(driver).session_id {suite_id}
+          stub(driver).session_id {session_id}
           Runner.register(runner)
         end
         
         context "when passed an id for which there is a corresponding Runner" do
           it "returns the Runner" do
-            Runner.find(suite_id).should == runner
+            Runner.find(session_id).should == runner
           end
         end
 
@@ -48,26 +48,26 @@ module JsTestCore
       describe ".finalize" do
         attr_reader :runner
         before_with_selenium_browser_start_command
-        describe "when there is a runner for the passed in suite_id" do
+        describe "when there is a runner for the passed in session_id" do
           before do
             @runner = Runner.new(:connection => connection, :selenium_browser_start_command => selenium_browser_start_command)
             stub(runner).driver {driver}
             stub(driver).session_id {"DEADBEEF"}
 
             Runner.register(runner)
-            runner.suite_id.should == suite_id
+            runner.session_id.should == session_id
           end
 
-          it "finalizes the Runner that has the suite_id and keeps the Runner in memory" do
+          it "finalizes the Runner that has the session_id and keeps the Runner in memory" do
             mock(driver).stop
             mock.proxy(runner).finalize("Browser output")
-            Runner.find(suite_id).should == runner
-            Runner.finalize(suite_id, "Browser output")
-            Runner.find(suite_id).should == runner
+            Runner.find(session_id).should == runner
+            Runner.finalize(session_id, "Browser output")
+            Runner.find(session_id).should == runner
           end
         end
 
-        describe "when there is not a runner for the passed in suite_id" do
+        describe "when there is not a runner for the passed in session_id" do
           it "does nothing" do
             lambda do
               Runner.finalize("6666666", "nothing happens")
@@ -84,13 +84,13 @@ module JsTestCore
           stub(connection).send_body
         end
 
-        it "responds with a 200 and the suite_id" do
+        it "responds with a 200 and the session_id" do
           stub(driver).start
           stub(driver).open
-          stub(driver).session_id {suite_id}
+          stub(driver).session_id {session_id}
 
           mock(connection).send_head
-          mock(connection).send_body("suite_id=#{suite_id}")
+          mock(connection).send_body("session_id=#{session_id}")
           connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
         end
 
@@ -98,7 +98,7 @@ module JsTestCore
           before do
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {suite_id}
+            stub(driver).session_id {session_id}
             body << "&selenium_host=another-machine"
           end
 
@@ -114,7 +114,7 @@ module JsTestCore
           before do
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {suite_id}
+            stub(driver).session_id {session_id}
             body << "&selenium_host="
           end
 
@@ -130,7 +130,7 @@ module JsTestCore
           before do
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {suite_id}
+            stub(driver).session_id {session_id}
             body << "&selenium_port=4000"
           end
 
@@ -146,7 +146,7 @@ module JsTestCore
           before do
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {suite_id}
+            stub(driver).session_id {session_id}
             body << "&selenium_port="
           end
 
@@ -159,13 +159,13 @@ module JsTestCore
         end
 
         describe "when a spec_url is passed into the request" do
-          it "runs Selenium with the passed in host and part to run the specified spec suite in Firefox" do
+          it "runs Selenium with the passed in host and part to run the specified spec session in Firefox" do
             mock(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://another-host:8080') do
               driver
             end
             mock(driver).start
             mock(driver).open("http://another-host:8080/specs/subdir")
-            mock(driver).session_id {suite_id}.at_least(1)
+            mock(driver).session_id {session_id}.at_least(1)
 
             body << "&spec_url=http://another-host:8080/specs/subdir"
             connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -179,10 +179,10 @@ module JsTestCore
             end
           end
 
-          it "uses Selenium to run the entire spec suite in Firefox" do
+          it "uses Selenium to run the entire spec session in Firefox" do
             mock(driver).start
             mock(driver).open("http://0.0.0.0:8080/specs")
-            mock(driver).session_id {suite_id}.at_least(1)
+            mock(driver).session_id {session_id}.at_least(1)
 
             body << "&spec_url="
             connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -200,14 +200,14 @@ module JsTestCore
 
           stub(driver).start
           stub(driver).open
-          stub(driver).session_id {suite_id}
+          stub(driver).session_id {session_id}
 
           mock(connection).send_head
-          mock(connection).send_body("suite_id=#{suite_id}")
+          mock(connection).send_body("session_id=#{session_id}")
 
-          Runner.find(suite_id).should be_nil
+          Runner.find(session_id).should be_nil
           connection.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\n\r\n")
-          runner = Runner.find(suite_id)
+          runner = Runner.find(session_id)
           runner.class.should == Runner
           runner.driver.should == driver
         end
@@ -223,14 +223,14 @@ module JsTestCore
 
           stub(driver).start
           stub(driver).open
-          stub(driver).session_id {suite_id}
+          stub(driver).session_id {session_id}
 
           mock(connection).send_head
-          mock(connection).send_body("suite_id=#{suite_id}")
+          mock(connection).send_body("session_id=#{session_id}")
 
-          Runner.find(suite_id).should be_nil
+          Runner.find(session_id).should be_nil
           connection.receive_data("POST /runners/iexplore HTTP/1.1\r\nHost: _\r\n\r\n")
-          runner = Runner.find(suite_id)
+          runner = Runner.find(session_id)
           runner.class.should == Runner
           runner.driver.should == driver
         end
@@ -242,20 +242,20 @@ module JsTestCore
         before do
           stub(driver).start
           stub(driver).open
-          stub(driver).session_id {suite_id}
+          stub(driver).session_id {session_id}
 
           create_runner_connection = create_connection
           stub(create_runner_connection).send_head
           stub(create_runner_connection).send_body
           create_runner_connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
-          @runner = Resources::Runner.find(suite_id)
+          @runner = Resources::Runner.find(session_id)
           mock(driver).stop
         end
 
-        it "kills the browser and stores the #suite_run_result" do
-          suite_run_result = "The suite run result"
-          runner.finalize(suite_run_result)
-          runner.suite_run_result.should == suite_run_result
+        it "kills the browser and stores the #session_run_result" do
+          session_run_result = "The session run result"
+          runner.finalize(session_run_result)
+          runner.session_run_result.should == session_run_result
         end
 
         it "causes #running? to be false" do

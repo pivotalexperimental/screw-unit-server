@@ -6,7 +6,7 @@ module JsTestCore
     class InvalidStatusResponse < ClientException
     end
 
-    class SuiteNotFound < ClientException
+    class SessionNotFound < ClientException
     end
 
     class << self
@@ -44,7 +44,7 @@ module JsTestCore
       end
     end
 
-    attr_reader :parameters, :query_string, :http, :suite_start_response, :last_poll_status, :last_poll_reason, :last_poll
+    attr_reader :parameters, :query_string, :http, :session_start_response, :last_poll_status, :last_poll_reason, :last_poll
     def initialize(parameters)
       @parameters = parameters
       @query_string = SeleniumServerConfiguration.query_string_from(parameters)
@@ -53,7 +53,7 @@ module JsTestCore
     def run
       Net::HTTP.start(DEFAULT_HOST, DEFAULT_PORT) do |@http|
         start_runner
-        wait_for_suite_to_finish
+        wait_for_session_to_finish
       end
       report_result
     end
@@ -68,19 +68,19 @@ module JsTestCore
     
     protected
     def start_runner
-      @suite_start_response = http.post('/runners', query_string)
+      @session_start_response = http.post('/runners', query_string)
     end
 
-    def wait_for_suite_to_finish
-      poll while suite_not_completed?
+    def wait_for_session_to_finish
+      poll while session_not_completed?
     end
 
     def report_result
       case last_poll_status
-      when Resources::Suite::SUCCESSFUL_COMPLETION
+      when Resources::Session::SUCCESSFUL_COMPLETION
         STDOUT.puts "SUCCESS"
         true
-      when Resources::Suite::FAILURE_COMPLETION
+      when Resources::Session::FAILURE_COMPLETION
         STDOUT.puts "FAILURE"
         STDOUT.puts last_poll_reason
         false
@@ -89,26 +89,26 @@ module JsTestCore
       end
     end
 
-    def suite_not_completed?
-      last_poll_status.nil? || last_poll_status == Resources::Suite::RUNNING
+    def session_not_completed?
+      last_poll_status.nil? || last_poll_status == Resources::Session::RUNNING
     end
 
     def poll
-      @last_poll = http.get("/suites/#{suite_id}")
-      ensure_suite_exists!
+      @last_poll = http.get("/sessions/#{session_id}")
+      ensure_session_exists!
       parts = parts_from_query(last_poll.body)
       @last_poll_status = parts['status']
       @last_poll_reason = parts['reason']
     end
 
-    def ensure_suite_exists!
+    def ensure_session_exists!
       if (400..499).include?(Integer(last_poll.code))
-        raise SuiteNotFound, "Could not find suite with id #{suite_id}"
+        raise SessionNotFound, "Could not find session with id #{session_id}"
       end
     end
 
-    def suite_id
-      @suite_id ||= parts_from_query(suite_start_response.body)['suite_id']
+    def session_id
+      @session_id ||= parts_from_query(session_start_response.body)['session_id']
     end
   end
 end

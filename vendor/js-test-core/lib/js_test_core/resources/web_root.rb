@@ -16,7 +16,7 @@ module JsTestCore
           :relative_path => "/implementations"
         ))
       end
-      route "suites", "JsTestCore::Resources::Suite::Collection"
+      route "sessions", "JsTestCore::Resources::Session::Collection"
       route "runners", "JsTestCore::Resources::Runner::Collection"
       route "specs" do |env, name|
         if self.class.dispatch_strategy == :specs

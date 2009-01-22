@@ -1,13 +1,13 @@
 module JsTestCore
   module Resources
-    class SuiteFinish < ThinRest::Resource
-      property :suite
+    class SessionFinish < ThinRest::Resource
+      property :session
       
       def post
-        if suite.id == 'user'
+        if session.id == 'user'
           STDOUT.puts rack_request['text']
         else
-          Runner.finalize(suite.id, rack_request['text'])
+          Runner.finalize(session.id, rack_request['text'])
         end
         connection.send_head
         connection.send_body("")

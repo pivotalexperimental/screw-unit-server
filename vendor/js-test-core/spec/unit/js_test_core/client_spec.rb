@@ -15,13 +15,13 @@ module JsTestCore
         Client.__send__(:remove_const, :STDOUT)
       end
 
-      it "tells the server to start a suite run in Firefox and polls the status of the suite until the suite is complete" do
+      it "tells the server to start a session run in Firefox and polls the status of the session until the session is complete" do
         mock_post_to_runner("*firefox")
         mock_polling_returns([running_status, running_status, success_status])
         Client.run
       end
 
-      context "when the Suite run ends in 'success'" do
+      context "when the Session run ends in 'success'" do
         before do
           mock_post_to_runner("*firefox")
           mock_polling_returns([running_status, running_status, success_status])
@@ -37,7 +37,7 @@ module JsTestCore
         end
       end
 
-      context "when the Suite run ends in 'failure'" do
+      context "when the Session run ends in 'failure'" do
         attr_reader :failure_reason
         before do
           mock_post_to_runner("*firefox")
@@ -58,18 +58,18 @@ module JsTestCore
         it "reports the reason for failure"
       end
 
-      context "when the Suite is not found" do
-        it "raises a SuiteNotFound error" do
+      context "when the Session is not found" do
+        it "raises a SessionNotFound error" do
           mock_post_to_runner("*firefox")
-          mock(request).get("/suites/my_suite_id") do
-            stub(suite_response = Object.new).code {"404"}
-            suite_response
+          mock(request).get("/sessions/my_session_id") do
+            stub(session_response = Object.new).code {"404"}
+            session_response
           end
-          lambda {Client.run}.should raise_error(Client::SuiteNotFound)
+          lambda {Client.run}.should raise_error(Client::SessionNotFound)
         end
       end
 
-      context "when the Suite run ends in with invalid status" do
+      context "when the Session run ends in with invalid status" do
         it "raises an InvalidStatusResponse" do
           mock_post_to_runner("*firefox")
           mock_polling_returns([running_status, running_status, "status=this is an unexpected status result"])
@@ -78,30 +78,30 @@ module JsTestCore
       end
 
       def mock_post_to_runner(selenium_browser_start_command)
-        mock(start_suite_response = Object.new).body {"suite_id=my_suite_id"}
+        mock(start_session_response = Object.new).body {"session_id=my_session_id"}
         mock(request).post("/runners", "selenium_browser_start_command=#{CGI.escape(selenium_browser_start_command)}&selenium_host=localhost&selenium_port=4444") do
-          start_suite_response
+          start_session_response
         end
       end
 
-      def mock_polling_returns(suite_statuses=[])
-        mock(request).get("/suites/my_suite_id") do
-          stub(suite_response = Object.new).body {suite_statuses.shift}
-          stub(suite_response).code {"200"}
-          suite_response
-        end.times(suite_statuses.length)
+      def mock_polling_returns(session_statuses=[])
+        mock(request).get("/sessions/my_session_id") do
+          stub(session_response = Object.new).body {session_statuses.shift}
+          stub(session_response).code {"200"}
+          session_response
+        end.times(session_statuses.length)
       end
 
       def running_status
-        "status=#{Resources::Suite::RUNNING}"
+        "status=#{Resources::Session::RUNNING}"
       end
 
       def success_status
-        "status=#{Resources::Suite::SUCCESSFUL_COMPLETION}"
+        "status=#{Resources::Session::SUCCESSFUL_COMPLETION}"
       end
 
       def failure_status(reason)
-        "status=#{Resources::Suite::FAILURE_COMPLETION}&reason=#{reason}"
+        "status=#{Resources::Session::FAILURE_COMPLETION}&reason=#{reason}"
       end
     end
 

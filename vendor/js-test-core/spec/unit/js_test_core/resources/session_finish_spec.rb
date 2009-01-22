@@ -2,26 +2,26 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../unit_spec_helper")
 
 module JsTestCore
   module Resources
-    describe SuiteFinish do
+    describe SessionFinish do
       attr_reader :stdout
       before do
         @stdout = StringIO.new
-        SuiteFinish.const_set(:STDOUT, stdout)
+        SessionFinish.const_set(:STDOUT, stdout)
       end
 
       after do
-        SuiteFinish.__send__(:remove_const, :STDOUT)
+        SessionFinish.__send__(:remove_const, :STDOUT)
       end
 
-      describe "POST /suites/:suite_id/finish" do
-        context "when :suite_id == 'user'" do
+      describe "POST /sessions/:session_id/finish" do
+        context "when :session_id == 'user'" do
           it "writes the body of the request to stdout" do
             stub(connection).send_head
             stub(connection).send_body
 
             text = "The text in the POST body"
             body = "text=#{text}"
-            connection.receive_data("POST /suites/user/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            connection.receive_data("POST /sessions/user/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
             stdout.string.should == "#{text}\n"
           end
 
@@ -31,21 +31,21 @@ module JsTestCore
 
             mock(connection).send_head
             mock(connection).send_body("")
-            connection.receive_data("POST /suites/user/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            connection.receive_data("POST /sessions/user/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
           end
         end
 
-        context "when :suite_id != 'user'" do
-          attr_reader :suite_id, :driver
+        context "when :session_id != 'user'" do
+          attr_reader :session_id, :driver
           before do
-            @suite_id = "DEADBEEF"
+            @session_id = "DEADBEEF"
             @driver = "Selenium Driver"
             stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
             end
             stub(driver).start
             stub(driver).open
-            stub(driver).session_id {suite_id}
+            stub(driver).session_id {session_id}
             stub(Thread).start.yields
 
             firefox_connection = Thin::JsTestCoreConnection.new(Guid.new)
@@ -60,11 +60,11 @@ module JsTestCore
             body = "text=#{text}"
             stub(connection).send_head
             stub(connection).send_body
-            mock.proxy(Runner).finalize(suite_id.to_s, text)
+            mock.proxy(Runner).finalize(session_id.to_s, text)
             mock(driver).stop
             stub(connection).close_connection
 
-            connection.receive_data("POST /suites/#{suite_id}/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            connection.receive_data("POST /sessions/#{session_id}/finish HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
           end
 
           it "responds with a blank body" do
@@ -73,7 +73,7 @@ module JsTestCore
 
             mock(connection).send_head
             mock(connection).send_body("")
-            connection.receive_data("POST /suites/#{suite_id}/finish HTTP/1.1\r\nHost: _\r\nContent-Length: 0\r\n\r\n")
+            connection.receive_data("POST /sessions/#{session_id}/finish HTTP/1.1\r\nHost: _\r\nContent-Length: 0\r\n\r\n")
           end
         end
       end
