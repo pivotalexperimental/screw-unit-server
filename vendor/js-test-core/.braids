@@ -1,0 +1,8 @@
+--- 
+vendor/thin-rest: 
+  squashed: true
+  url: git://github.com/pivotal/thin-rest.git
+  branch: master
+  type: git
+  revision: 906a2b90007ffbe2b6ccbc5d17170492bf27cfc6
+  remote: braid/vendor/thin-rest

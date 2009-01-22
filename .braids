@@ -1,0 +1,8 @@
+--- 
+vendor/js-test-core: 
+  squashed: true
+  url: git://github.com/pivotal/js-test-core.git
+  branch: master
+  type: git
+  revision: 6dbd82311c6996c3194fb8147f927f5950fc1853
+  remote: braid/vendor/js-test-core
