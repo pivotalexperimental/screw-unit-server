@@ -1,3 +1,5 @@
+
+
 0.3.2
 - Adding IE support
 - Fix printing of 0 as 'NaN'
