@@ -1,3 +1,4 @@
+0.2.0
 - Renamed Suite to Session to follow Selenium conventions
 - Renamed SuiteFinish to SessionFinish to follow Selenium conventions
 - Added /session, which uses the session_id cookie to derive the current session.
