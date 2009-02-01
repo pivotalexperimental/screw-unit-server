@@ -4,5 +4,5 @@ vendor/thin-rest:
   url: /home/btakita/workspace/thin-rest
   branch: master
   type: git
-  revision: 9f51d8adf993222fea5a24765a577486111af98d
+  revision: 40d3ea031057fd4736d854a8ae989db3f1188056
   remote: braid/vendor/thin-rest
