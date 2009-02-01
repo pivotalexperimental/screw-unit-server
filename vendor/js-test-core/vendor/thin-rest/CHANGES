@@ -1,2 +1,0 @@
-- Resource.property creates a reader that reads directly from the env hash
-- Resource.property creates a writer that updates the env hash directly

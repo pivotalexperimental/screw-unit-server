@@ -1,3 +1,0 @@
-var Foo = {
-  value: true
-}
