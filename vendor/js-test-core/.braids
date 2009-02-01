@@ -1,8 +1,0 @@
---- 
-vendor/thin-rest: 
-  squashed: true
-  url: /home/btakita/workspace/thin-rest
-  branch: master
-  type: git
-  revision: 40d3ea031057fd4736d854a8ae989db3f1188056
-  remote: braid/vendor/thin-rest
