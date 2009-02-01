@@ -4,6 +4,8 @@ module Representations
       html do
         head do
           title
+          script_elements
+          link_elements
         end
         body do
           body_content(&block)
@@ -22,6 +24,12 @@ module Representations
 
     def title
       element("title", "Thin Rest")
+    end
+
+    def script_elements
+    end
+
+    def link_elements
     end
   end
 end
