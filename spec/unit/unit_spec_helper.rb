@@ -4,7 +4,7 @@ dir = File.dirname(__FILE__)
 
 $LOAD_PATH.unshift "#{dir}/../../lib"
 require "screw_unit"
-require "hpricot"
+require "nokogiri"
 require "guid"
 
 Spec::Runner.configure do |config|
