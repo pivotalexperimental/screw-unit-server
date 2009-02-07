@@ -6,6 +6,7 @@ require "js_test_core"
 JsTestCore::Resources::WebRoot.dispatch_specs
 
 require "#{dir}/screw_unit/resources"
+require "#{dir}/screw_unit/representations"
 
 module ScrewUnit
   DEFAULT_HOST = JsTestCore::DEFAULT_HOST
@@ -16,11 +17,4 @@ module ScrewUnit
   Client = JsTestCore::Client
 end
 JsTestCore.core_path = File.expand_path("#{dir}/../core/lib")
-
-class JsTestCore::Resources::Specs::SpecFile
-  include ScrewUnit::Resources::Spec
-end
-
-class JsTestCore::Resources::Specs::SpecDir
-  include ScrewUnit::Resources::Spec
-end
+JsTestCore::Resources::Specs::Spec.spec_representation_class = ScrewUnit::Representations::Spec
