@@ -1,5 +1,6 @@
 require "rubygems"
 gem "thin", ">=0.8.0"
+gem "selenium-client"
 
 dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift File.expand_path("#{dir}/../vendor/thin-rest/lib")
@@ -14,7 +15,6 @@ require "tmpdir"
 require "timeout"
 require "cgi"
 require "net/http"
-gem "selenium-client"
 require "selenium/client"
 require "optparse"
 require "erector"
