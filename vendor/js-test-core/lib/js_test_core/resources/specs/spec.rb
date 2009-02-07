@@ -3,10 +3,10 @@ module JsTestCore
     module Specs
       module Spec
         class << self
-          def spec_resource_class
-            @spec_resource_class ||= JsTestCore::Representations::Spec
+          def spec_representation_class
+            @spec_representation_class ||= JsTestCore::Representations::Spec
           end
-          attr_writer :spec_resource_class
+          attr_writer :spec_representation_class
         end
 
         def get_generated_spec
@@ -23,7 +23,7 @@ module JsTestCore
         end
 
         def render_spec
-          spec_resource_class.new(self, :spec_files => spec_files).to_s
+          Spec.spec_representation_class.new(self, :spec_files => spec_files).to_s
         end
       end
     end
