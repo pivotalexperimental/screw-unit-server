@@ -41,7 +41,7 @@ module JsTestCore
           before do
             @session_id = FakeSeleniumDriver::SESSION_ID
             @driver = FakeSeleniumDriver.new
-            stub(Selenium::SeleniumDriver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
+            stub(Selenium::Client::Driver).new('localhost', 4444, '*firefox', 'http://0.0.0.0:8080') do
               driver
             end
 

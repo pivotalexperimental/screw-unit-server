@@ -11,7 +11,7 @@ module JsTestCore
           @session_id = FakeSeleniumDriver::SESSION_ID
           @selenium_browser_start_command = selenium_browser_start_command
           @body = "selenium_browser_start_command=#{selenium_browser_start_command}"
-          stub(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
+          stub(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
             driver
           end
         end
@@ -97,7 +97,7 @@ module JsTestCore
           mock(driver).open("/")
           mock(driver).open("/specs")
 
-          mock(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
+          mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
             driver
           end
           connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -109,7 +109,7 @@ module JsTestCore
           end
 
           it "starts the Selenium Driver with the passed in selenium_host" do
-            mock(Selenium::SeleniumDriver).new('another-machine', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
+            mock(Selenium::Client::Driver).new('another-machine', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
             connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -122,7 +122,7 @@ module JsTestCore
           end
 
           it "starts the Selenium Driver from localhost" do
-            mock(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
+            mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
             connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -135,7 +135,7 @@ module JsTestCore
           end
 
           it "starts the Selenium Driver with the passed in selenium_port" do
-            mock(Selenium::SeleniumDriver).new('localhost', 4000, selenium_browser_start_command, 'http://0.0.0.0:8080') do
+            mock(Selenium::Client::Driver).new('localhost', 4000, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
             connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -148,7 +148,7 @@ module JsTestCore
           end
 
           it "starts the Selenium Driver from localhost" do
-            mock(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
+            mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
             connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
@@ -157,7 +157,7 @@ module JsTestCore
 
         describe "when a spec_url is passed into the request" do
           it "runs Selenium with the passed in host and part to run the specified spec session in Firefox" do
-            mock(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://another-host:8080') do
+            mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://another-host:8080') do
               driver
             end
             mock(driver).start
@@ -173,7 +173,7 @@ module JsTestCore
 
         describe "when a spec_url is not passed into the request" do
           before do
-            mock(Selenium::SeleniumDriver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
+            mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
           end
