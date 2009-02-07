@@ -13,7 +13,7 @@ module ScrewUnit
         script :src => "/core/screw.matchers.js"
         script :src => "/core/screw.events.js"
         script :src => "/core/screw.behaviors.js"
-        script(<<-JS, :type => "text/javascript")
+        script(raw(<<-JS), :type => "text/javascript")
           (function($) {
             Screw.Assets = {};
             Screw.Assets.use_cache_buster = false; // TODO: NS/CTI - make this configurable from the UI.

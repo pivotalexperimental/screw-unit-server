@@ -10,6 +10,7 @@ module JsTestCore
 
           before do
             mock(connection).send_head(200, is_a(Hash))
+            mock(connection).send_data(/Content-Length:/)
             mock(connection).send_data(anything) do |@html|
               # do nothing
             end
