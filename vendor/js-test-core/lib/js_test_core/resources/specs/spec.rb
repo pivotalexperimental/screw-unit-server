@@ -11,10 +11,12 @@ module JsTestCore
               'Content-Length' => ::File.size(absolute_path)
             )
 
-            connection.send_data(
-              JsTestCore::Representations::Spec.new(self, :spec_files => spec_files).to_s
-            )
+            connection.send_data(render_spec)
           end
+        end
+
+        def render_spec
+          JsTestCore::Representations::Spec.new(self, :spec_files => spec_files).to_s
         end
       end
     end
