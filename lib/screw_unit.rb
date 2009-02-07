@@ -5,7 +5,6 @@ $:.unshift(File.expand_path("#{dir}/../vendor/js-test-core/lib"))
 require "js_test_core"
 JsTestCore::Resources::WebRoot.dispatch_specs
 
-require "#{dir}/screw_unit/resources"
 require "#{dir}/screw_unit/representations"
 
 module ScrewUnit
