@@ -17,6 +17,7 @@ class Spec::ExampleGroup
     @spec_root_path = FunctionalSpecServerStarter.spec_root_path
     @public_path = FunctionalSpecServerStarter.public_path
     @implementation_root_path = FunctionalSpecServerStarter.implementation_root_path
+    FunctionalSpecServerStarter.call
   end
 
   def root_url
