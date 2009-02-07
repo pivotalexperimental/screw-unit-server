@@ -2,9 +2,6 @@ module JsTestCore
   module Representations
     class Spec < Page
       protected
-      def body_content
-      end
-
       def title_text
         "Js Test Core Suite"
       end
@@ -17,6 +14,9 @@ module JsTestCore
         spec_files.each do |file|
           script :type => "text/javascript", :src => file.relative_path
         end
+      end
+      
+      def body_content
       end
     end
   end
