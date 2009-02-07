@@ -14,7 +14,7 @@ require "tmpdir"
 require "timeout"
 require "cgi"
 require "net/http"
-require "selenium-client"
+require "selenium/client"
 require "optparse"
 require "erector"
 
