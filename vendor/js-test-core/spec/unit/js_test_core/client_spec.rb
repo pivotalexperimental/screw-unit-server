@@ -78,6 +78,24 @@ module JsTestCore
         end
       end
 
+      context "when passed-in a timeout" do
+        it "wraps a timeout around the run" do
+          mock.proxy(Timeout).timeout(5)
+          mock_post_to_runner("*firefox")
+          mock_polling_returns([running_status, running_status, success_status])
+          Client.run(:timeout => 5)
+        end
+      end
+
+      context "when not passed-in a timeout" do
+        it "does not wrap a timeout around the run" do
+          dont_allow(Timeout).timeout
+          mock_post_to_runner("*firefox")
+          mock_polling_returns([running_status, running_status, success_status])
+          Client.run
+        end
+      end
+
       def mock_post_to_runner(selenium_browser_start_command)
         mock(start_session_response = Object.new).body {"session_id=my_session_id"}
         mock(request).post("/runners", "selenium_browser_start_command=#{CGI.escape(selenium_browser_start_command)}&selenium_host=localhost&selenium_port=4444") do
@@ -112,7 +130,7 @@ module JsTestCore
         stub(Client).puts
       end
 
-      describe "when passed in Hash contains :selenium_browser_start_command" do
+      context "when passed-in Hash contains :selenium_browser_start_command" do
         it "passes the spec_url as a post parameter" do
           selenium_browser_start_command = '*iexplore'
           mock(Client).run(:selenium_browser_start_command => selenium_browser_start_command)
@@ -120,7 +138,7 @@ module JsTestCore
         end
       end
 
-      describe "when passed in Hash contains :spec_url" do
+      context "when passed-in Hash contains :spec_url" do
         it "passes the spec_url as a post parameter" do
           spec_url = 'http://foobar.com/foo'
           mock(Client).run(:spec_url => spec_url)
@@ -128,7 +146,7 @@ module JsTestCore
         end
       end
 
-      describe "when passed in Hash contains :selenium_host" do
+      context "when passed-in Hash contains :selenium_host" do
         it "passes the selenium_host as a post parameter" do
           selenium_host = 'test-runner'
           mock(Client).run(:selenium_host => selenium_host)
@@ -136,11 +154,18 @@ module JsTestCore
         end
       end
 
-      describe "when passed in Hash contains :selenium_port" do
+      context "when passed-in Hash contains :selenium_port" do
         it "passes the selenium_port as a post parameter" do
           selenium_port = "5000"
           mock(Client).run(:selenium_port => selenium_port)
           client = Client.run_argv(['--selenium_port', selenium_port])
+        end
+      end
+
+      context "when passed-in Hash contains :timeout" do
+        it "passes the timeout as a post parameter" do
+          mock(Client).run(:timeout => 5)
+          client = Client.run_argv(['--timeout', "5"])
         end
       end
     end

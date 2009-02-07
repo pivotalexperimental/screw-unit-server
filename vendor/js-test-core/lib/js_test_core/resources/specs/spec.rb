@@ -14,11 +14,12 @@ module JsTestCore
             connection.send_head(
               200,
               'Content-Type' => "text/html",
-              'Last-Modified' => ::File.mtime(absolute_path).rfc822,
-              'Content-Length' => ::File.size(absolute_path)
+              'Last-Modified' => ::File.mtime(absolute_path).rfc822
             )
 
-            connection.send_data(render_spec)
+            body = render_spec
+            connection.send_data("Content-Length: #{body.length}\r\n\r\n")
+            connection.send_data(body)
           end
         end
 

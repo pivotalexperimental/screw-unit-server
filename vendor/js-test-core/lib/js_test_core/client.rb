@@ -37,6 +37,10 @@ module JsTestCore
             params[:spec_url] = spec_url
           end
 
+          o.on('-t', '--timeout=TIMEOUT', "The timeout limit of the test run") do |timeout|
+            params[:timeout] = Integer(timeout)
+          end
+
           o.on_tail
         end
         parser.order!(argv)
@@ -51,11 +55,11 @@ module JsTestCore
     end
 
     def run
-      Net::HTTP.start(DEFAULT_HOST, DEFAULT_PORT) do |@http|
-        start_runner
-        wait_for_session_to_finish
+      if parameters[:timeout]
+        Timeout.timeout(parameters[:timeout]) {do_run}
+      else
+        do_run
       end
-      report_result
     end
 
     def parts_from_query(query)
@@ -67,6 +71,14 @@ module JsTestCore
     end
     
     protected
+    def do_run
+      Net::HTTP.start(DEFAULT_HOST, DEFAULT_PORT) do |@http|
+        start_runner
+        wait_for_session_to_finish
+      end
+      report_result
+    end
+
     def start_runner
       @session_start_response = http.post('/runners', query_string)
     end

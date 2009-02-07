@@ -74,7 +74,8 @@ module JsTestCore
             WebRoot.dispatch_specs
             Thin::Logging.silent = true
             path = "#{spec_root_path}/foo"
-            mock(connection).send_head(200, 'Content-Type' => "text/html", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
+            mock(connection).send_head(200, 'Content-Type' => "text/html", 'Last-Modified' => ::File.mtime(path).rfc822)
+            mock(connection).send_data(/Content-Length: /)
             mock(connection).send_data(Regexp.new("Js Test Core Suite")) do |html|
               doc = Nokogiri::HTML(html)
               js_files = doc.search("script").map {|script| script["src"]}

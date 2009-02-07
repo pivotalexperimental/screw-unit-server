@@ -22,7 +22,8 @@ module JsTestCore
           describe "GET /specs/foo/passing_spec" do
             it "renders a Representations::Spec with passing_spec.js as the spec file" do
               path = "#{spec_root_path}/foo/passing_spec.js"
-              mock(connection).send_head(200, 'Content-Type' => "text/html", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
+              mock(connection).send_head(200, 'Content-Type' => "text/html", 'Last-Modified' => ::File.mtime(path).rfc822)
+              mock(connection).send_data(/Content-Length: /)
               mock(connection).send_data(Regexp.new("Js Test Core Suite")) do |html|
                 doc = Nokogiri::HTML(html)
                 js_files = doc.search("script").map {|script| script["src"]}
