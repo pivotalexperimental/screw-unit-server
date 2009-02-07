@@ -21,7 +21,6 @@ module JsTestCore
 
           describe "GET /specs/foo/passing_spec" do
             it "renders a Representations::Spec with passing_spec.js as the spec file" do
-              Thin::Logging.silent = true
               path = "#{spec_root_path}/foo/passing_spec.js"
               mock(connection).send_head(200, 'Content-Type' => "text/html", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
               mock(connection).send_data(Regexp.new("Js Test Core Suite")) do |html|

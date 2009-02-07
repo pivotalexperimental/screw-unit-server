@@ -9,6 +9,7 @@ end
 require "#{dir}/resources/runner"
 require "#{dir}/resources/file"
 require "#{dir}/resources/dir"
+require "#{dir}/resources/specs/spec"
 require "#{dir}/resources/specs/spec_file"
 require "#{dir}/resources/specs/spec_dir"
 require "#{dir}/resources/web_root"

@@ -1,6 +1,7 @@
 - Added support for custom suite files
 - Added dependency on Erector
 - Better error messages
+- Changed dependency from Selenium to selenium-client
 
 0.2.0
 - Renamed Suite to Session to follow Selenium conventions

@@ -2,6 +2,9 @@ module JsTestCore
   module Representations
     class Spec < Page
       protected
+      def body_content
+      end
+
       def title_text
         "Js Test Core Suite"
       end
