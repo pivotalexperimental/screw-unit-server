@@ -13,6 +13,7 @@ Thin::Logging.debug = true
 class Spec::ExampleGroup
   include WaitFor
   attr_reader :spec_root_path, :implementation_root_path, :public_path
+
   before(:all) do
     @spec_root_path = FunctionalSpecServerStarter.spec_root_path
     @public_path = FunctionalSpecServerStarter.public_path

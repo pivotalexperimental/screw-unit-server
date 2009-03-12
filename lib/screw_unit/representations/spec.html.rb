@@ -4,15 +4,9 @@ module ScrewUnit
       def title_text
         "Screw Unit suite"
       end
-
+      
       def head_content
-        script :src => "/core/jquery-1.2.6.js"
-        script :src => "/core/jquery.fn.js"
-        script :src => "/core/jquery.print.js"
-        script :src => "/core/screw.builder.js"
-        script :src => "/core/screw.matchers.js"
-        script :src => "/core/screw.events.js"
-        script :src => "/core/screw.behaviors.js"
+        js_files
         script(raw(<<-JS), :type => "text/javascript")
           (function($) {
             Screw.Assets = {};
@@ -80,6 +74,20 @@ module ScrewUnit
         link :rel => "stylesheet", :href => "/core/screw.css"
         
         spec_script_elements
+      end
+
+      def js_files
+        script :src => jquery_js_file
+        script :src => "/core/jquery.fn.js"
+        script :src => "/core/jquery.print.js"
+        script :src => "/core/screw.builder.js"
+        script :src => "/core/screw.matchers.js"
+        script :src => "/core/screw.events.js"
+        script :src => "/core/screw.behaviors.js"
+      end
+
+      def jquery_js_file
+        "/core/jquery-1.3.2.js"
       end
 
       def body_content
