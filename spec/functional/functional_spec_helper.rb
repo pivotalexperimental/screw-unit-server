@@ -1,5 +1,6 @@
 require "rubygems"
 require "spec"
+require "spec/autorun"
 dir = File.dirname(__FILE__)
 require "#{dir}/functional_spec_server_starter"
 
