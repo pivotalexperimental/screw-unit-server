@@ -36,7 +36,7 @@
     });
   
     $('body > .describe').fn({
-      selector: function() { return 'body > .describe' }
+      selector: function() { return 'body > .describe'; }
     });
     
     $('.it').fn({
@@ -63,7 +63,7 @@
         $(Screw)
           .queue(function() {
             self.fn('run');
-            setTimeout(function() { $(Screw).dequeue() }, 0);
+            setTimeout(function() { $(Screw).dequeue(); }, 0);
           });
       },
       
@@ -73,12 +73,13 @@
       }
     });
     
-    $('.before').fn({
-      run: function() { $(this).data('screwunit.run')() }
+    $('body .before').fn({
+      run: function() { $(this).data('screwunit.run')(); }
     }); 
   
-    $('.after').fn({
-      run: function() { $(this).data('screwunit.run')() }
+    $('body .after').fn({
+      run: function() {
+        $(this).data('screwunit.run')(); }
     });
 
     $(Screw).trigger('before');
@@ -88,5 +89,5 @@
       .eq(0).trigger('scroll').end()
       .fn('enqueue');
     $(Screw).queue(function() { $(Screw).trigger('after') });
-  })
+  });
 })(jQuery);

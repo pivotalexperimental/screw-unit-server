@@ -10,7 +10,7 @@
       });
       return self;
     }
-  }
+  };
   function define(self, name, fn) {
     self.data(namespacedName(name), fn);
   };
@@ -21,6 +21,7 @@
       if (fn) result = fn.apply(item, args)
       else throw(name + " is not defined");
     });
+    
     return result;
   };
   function namespacedName(name) {

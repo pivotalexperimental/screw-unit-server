@@ -2,13 +2,27 @@ var Screw = (function($) {
   var screw = {
     Unit: function(fn) {
       var contents = fn.toString().match(/^[^\{]*{((.*\n*)*)}/m)[1];
-      var fn = new Function("matchers", "specifications",
+      var wrappedFn;
+      if(fn.length == 0) {
+        wrappedFn = new Function("matchers", "specifications",
         "with (specifications) { with (matchers) { " + contents + " } }"
-      );
+        );
+      } else {
+        wrappedFn = function(matchers, specifications) {
+          var screwContext = {};
+          for(var method in matchers) {
+            screwContext[method] = matchers[method];
+          }
+          for(var method in specifications) {
+            screwContext[method] = specifications[method];
+          }
+          fn(screwContext);
+        }
+      }
 
       $(Screw).queue(function() {
         Screw.Specifications.context.push($('body > .describe'));
-        fn.call(this, Screw.Matchers, Screw.Specifications);
+        wrappedFn.call(this, Screw.Matchers, Screw.Specifications);
         Screw.Specifications.context.pop();
         $(this).dequeue();
       });
@@ -18,12 +32,12 @@ var Screw = (function($) {
       context: [],
 
       describe: function(name, fn) {
-        var describe = $('<li class="describe"></li>')
-          .append($('<h1></h1>').text(name))
-          .append('<ol class="befores"></ol>')
-          .append('<ul class="its"></ul>')
-          .append('<ul class="describes"></ul>')
-          .append('<ol class="afters"></ol>');
+        var describe = $('<li class="describe">')
+          .append($('<h1 />').text(name))
+          .append('<ol class="befores">')
+          .append('<ul class="its">')
+          .append('<ul class="describes">')
+          .append('<ol class="afters">');
 
         this.context.push(describe);
         fn.call();
@@ -35,8 +49,8 @@ var Screw = (function($) {
       },
 
       it: function(name, fn) {
-        var it = $('<li class="it"></li>')
-          .append($('<h2></h2>').text(name))
+        var it = $('<li class="it">')
+          .append($('<h2 />').text(name))
           .data('screwunit.run', fn);
 
         this.context[this.context.length-1]
@@ -66,11 +80,11 @@ var Screw = (function($) {
 
   $(screw).queue(function() { $(screw).trigger('loading') });
   $(function() {
-    $('<div class="describe"></div>')
-      .append('<h3 class="status"></h3>')
-      .append('<ol class="befores"></ol>')
-      .append('<ul class="describes"></ul>')
-      .append('<ol class="afters"></ol>')
+    $('<div class="describe">')
+      .append('<h3 class="status" />')
+      .append('<ol class="befores">')
+      .append('<ul class="describes">')
+      .append('<ol class="afters">')
       .appendTo('body');
 
     $(screw).dequeue();

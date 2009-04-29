@@ -1,6 +1,21 @@
 Screw.Matchers = (function($) {
   return matchers = {
     expect: function(actual) {
+      var funcname = function(f) {
+          var s = f.toString().match(/function (\w*)/)[1];
+          if ((s == null) || (s.length == 0)) return "anonymous";
+          return s;
+      };
+
+      var stacktrace = function() {
+          var s = "";
+          for(var a = arguments.caller; a != null; a = a.caller) {
+              s += funcname(a.callee) + "\n";
+              if (a.caller == a) break;
+          }
+          return s;
+      };
+
       return {
         to: function(matcher, expected, not) {
           var matched = matcher.match(expected, actual);
@@ -38,7 +53,7 @@ Screw.Matchers = (function($) {
         return 'expected ' + $.print(actual) + (not ? ' to not equal ' : ' to equal ') + $.print(expected);
       }
     },
-    
+
     be_gt: {
       match: function(expected, actual) {
         return actual > expected;
@@ -104,6 +119,18 @@ Screw.Matchers = (function($) {
       }
     },
 
+    be_blank: {
+      match: function(expected, actual) {
+        if (actual == undefined) return true;
+        if (typeof(actual) == "string") actual = actual.replace(/^\s*(.*?)\s*$/, "$1");
+        return Screw.Matchers.be_empty.match(expected, actual);
+      },
+
+      failure_message: function(expected, actual, not) {
+        return 'expected ' + $.print(actual) + (not ? ' to not be blank' : ' to be blank');
+      }
+    },
+
     have_length: {
       match: function(expected, actual) {
         if (actual.length == undefined) throw(actual.toString() + " does not respond to length");
@@ -153,6 +180,36 @@ Screw.Matchers = (function($) {
 
       failure_message: function(expected, actual, not) {
         return 'expected ' + $.print(actual) + (not ? ' to not be false' : ' to be false');
+      }
+    },
+
+    match_html: {
+      munge: function(mungee) {
+        if (mungee instanceof jQuery) {
+          mungee = mungee.html();
+        } else if (typeof(mungee) == "string") {
+          var span = document.createElement("span");
+          span.innerHTML = mungee;
+          mungee = span.innerHTML;
+        }
+
+        var regEx = /\sjQuery\d+=['"]\d+['"]/g;
+        mungee = mungee.replace(regEx, "");
+
+        return mungee;
+      },
+
+      match: function(expected, actual) {
+        var trimmedExpected = this.munge(expected);
+        var trimmedActual = this.munge(actual);
+        return trimmedActual.indexOf(trimmedExpected) > -1;
+      },
+
+      failure_message: function(expected, actual, not) {
+        var trimmedExpected = this.munge(expected);
+        var trimmedActual = this.munge(actual);
+        return 'expected ' + $.print(trimmedActual, { max_string: 300 }) +
+               (not ? ' to not contain ' : ' to contain ') + $.print(trimmedExpected, { max_string: 300 });
       }
     },
 
