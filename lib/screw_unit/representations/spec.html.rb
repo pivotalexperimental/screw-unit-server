@@ -73,7 +73,7 @@ module ScrewUnit
         JS
         project_js_files
         link :rel => "stylesheet", :href => "/core/screw.css"
-        project_stylesheets
+        project_css_files
 
         spec_script_elements
       end
@@ -91,7 +91,7 @@ module ScrewUnit
       def project_js_files
       end
 
-      def project_stylesheets
+      def project_css_files
       end
 
       def jquery_js_file

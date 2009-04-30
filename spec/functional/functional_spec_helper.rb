@@ -30,3 +30,4 @@ class Spec::ExampleGroup
     "http://#{ScrewUnit::DEFAULT_HOST}:#{ScrewUnit::DEFAULT_PORT}"
   end
 end
+
