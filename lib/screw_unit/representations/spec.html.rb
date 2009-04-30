@@ -6,7 +6,7 @@ module ScrewUnit
       end
       
       def head_content
-        js_files
+        core_js_files
         script(raw(<<-JS), :type => "text/javascript")
           (function($) {
             Screw.Assets = {};
@@ -71,12 +71,14 @@ module ScrewUnit
             });
           })(jQuery);
         JS
+        project_js_files
         link :rel => "stylesheet", :href => "/core/screw.css"
-        
+        project_stylesheets
+
         spec_script_elements
       end
 
-      def js_files
+      def core_js_files
         script :src => jquery_js_file
         script :src => "/core/jquery.fn.js"
         script :src => "/core/jquery.print.js"
@@ -84,6 +86,12 @@ module ScrewUnit
         script :src => "/core/screw.matchers.js"
         script :src => "/core/screw.events.js"
         script :src => "/core/screw.behaviors.js"
+      end
+
+      def project_js_files
+      end
+
+      def project_stylesheets
       end
 
       def jquery_js_file

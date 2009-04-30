@@ -78,9 +78,9 @@ module JsTestCore
             mock(connection).send_data(/Content-Length: /)
             mock(connection).send_data(Regexp.new("Js Test Core Suite")) do |html|
               doc = Nokogiri::HTML(html)
-              js_files = doc.search("script").map {|script| script["src"]}
-              js_files.should include("/specs/foo/passing_spec.js")
-              js_files.should include("/specs/foo/failing_spec.js")
+              core_js_files = doc.search("script").map {|script| script["src"]}
+              core_js_files.should include("/specs/foo/passing_spec.js")
+              core_js_files.should include("/specs/foo/failing_spec.js")
             end
 
             connection.receive_data("GET /specs/foo HTTP/1.1\r\nHost: _\r\n\r\n")
