@@ -79,16 +79,17 @@ var Screw = (function($) {
   };
 
   $(screw).queue(function() { $(screw).trigger('loading') });
-  $(function() {
+  $(window).load(function(){
     $('<div class="describe">')
       .append('<h3 class="status" />')
       .append('<ol class="befores">')
       .append('<ul class="describes">')
       .append('<ol class="afters">')
       .appendTo('body');
-
+  
     $(screw).dequeue();
     $(screw).trigger('loaded');
   });
+  
   return screw;
 })(jQuery);
