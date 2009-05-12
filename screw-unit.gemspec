@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{screw-unit}
-  s.version = "0.4.0"
+  s.version = "0.4.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pivotal Labs", "Brian Takita"]
@@ -141,7 +141,7 @@ Gem::Specification.new do |s|
   s.rdoc_options = ["--main", "README.markdown"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.1}
-  s.summary = %q{The ScrewUnit client library plus a convenient ruby server.}
+  s.summary = %q{Server and helpers for your Screw Unit tests.}
   s.test_files = [
     "spec/unit_suite.rb",
     "spec/functional/functional_spec_server_starter.rb",
