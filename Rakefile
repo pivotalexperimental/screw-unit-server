@@ -1,9 +1,27 @@
-require "rake"
-require 'rake/gempackagetask'
-require 'rake/contrib/rubyforgepublisher'
-require 'rake/clean'
-require 'rake/testtask'
-require 'rake/rdoctask'
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |s|
+    s.name = "screw-unit"
+    s.executables = ["screw_unit", "screw_unit_server"]
+    s.summary = "The ScrewUnit client library plus a convenient ruby server."
+    s.email = "pivotallabsopensource@googlegroups.com"
+    s.homepage = "http://github.com/pivotal/screw-unit-server"
+    s.description = "The Screw Unit server conveniently serves your Screw Unit specs and implementations javascript files and css stylesheets."
+    s.authors = ["Pivotal Labs", "Brian Takita"]
+    s.files = Dir["[A-Z]*"] +
+      Dir["*.rb"] +
+      Dir["lib/**/*.rb"] +
+      Dir["core/**/**"] +
+      Dir["bin/**"] +
+      Dir["vendor/**/**"] +
+      Dir["spec/**"]
+    s.test_files = Dir['spec/**/*.rb']
+    s.rdoc_options = ["--main", "README.markdown"]
+    s.extra_rdoc_files = ["README.markdown", "CHANGES"]
+  end
+rescue LoadError
+  puts "Jeweler, or one of its dependencies, is not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+end
 
 desc "Runs the Rspec suite"
 task(:default) do
@@ -15,26 +33,7 @@ task(:spec) do
   run_suite
 end
 
-desc "Copies the trunk to a tag with the name of the current release"
-task(:tag_release) do
-  tag_release
-end
-
 def run_suite
   dir = File.dirname(__FILE__)
   system("ruby #{dir}/spec/spec_suite.rb") || raise("Example Suite failed")
-end
-
-spec = eval(File.read("#{File.dirname(__FILE__)}/screw-unit-server.gemspec"))
-PKG_NAME = spec.name
-PKG_VERSION = spec.version
-
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.need_zip = true
-  pkg.need_tar = true
-end
-
-def tag_release
-  dashed_version = PKG_VERSION.gsub('.', '-')
-  system("git tag REL-#{dashed_version} -m 'Version #{PKG_VERSION}'")
 end
