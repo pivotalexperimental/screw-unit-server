@@ -20,9 +20,11 @@ class Spec::ExampleGroup
     @spec_root_path = FunctionalSpecServerStarter.spec_root_path
     @public_path = FunctionalSpecServerStarter.public_path
     @implementation_root_path = FunctionalSpecServerStarter.implementation_root_path
-#    Thread.start do
-#      SeleniumRC::Server.boot
-#    end
+    unless SeleniumRC::Server.service_is_running?
+      Thread.start do
+        SeleniumRC::Server.boot
+      end
+    end
     FunctionalSpecServerStarter.call
     TCPSocket.wait_for_service :host => "0.0.0.0", :port => "4444"
   end
