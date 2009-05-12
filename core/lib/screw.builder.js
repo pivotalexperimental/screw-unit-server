@@ -1,9 +1,9 @@
 var Screw = (function($) {
   var screw = {
     Unit: function(fn) {
-      var contents = fn.toString().match(/^[^\{]*{((.*\n*)*)}/m)[1];
       var wrappedFn;
       if(fn.length == 0) {
+        var contents = fn.toString().match(/^[^\{]*{((.*\n*)*)}/m)[1];
         wrappedFn = new Function("matchers", "specifications",
         "with (specifications) { with (matchers) { " + contents + " } }"
         );
