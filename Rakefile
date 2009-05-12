@@ -3,7 +3,7 @@ begin
   Jeweler::Tasks.new do |s|
     s.name = "screw-unit"
     s.executables = ["screw_unit", "screw_unit_server"]
-    s.summary = "The ScrewUnit client library plus a convenient ruby server."
+    s.summary = "Server and helpers for your Screw Unit tests."
     s.email = "pivotallabsopensource@googlegroups.com"
     s.homepage = "http://github.com/pivotal/screw-unit-server"
     s.description = "The Screw Unit server conveniently serves your Screw Unit specs and implementations javascript files and css stylesheets."
