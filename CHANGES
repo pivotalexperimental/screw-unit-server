@@ -1,3 +1,4 @@
+0.4.0
 - Added ScrewUnit::Representations::Spec#project_js_files and #project_css_files, which can be overridden, so the javascript include mechanism is not needed.
 - Better error message when running using Selenium.
 
