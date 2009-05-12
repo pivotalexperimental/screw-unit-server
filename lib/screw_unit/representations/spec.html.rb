@@ -4,7 +4,7 @@ module ScrewUnit
       def title_text
         "Screw Unit suite"
       end
-      
+
       def head_content
         core_js_files
         script(raw(<<-JS), :type => "text/javascript")
@@ -60,7 +60,9 @@ module ScrewUnit
             var ajax = $.ajax;
             $(Screw).bind('after', function() {
               var error_text = $(".error").map(function(i, element) {
-                return element.innerHTML;
+                var error_parts = [];
+                var parents = $(element).parents("li.describe");
+                return $(parents[parents.length - 1]).text();
               }).get().join("\\n");
 
               ajax({

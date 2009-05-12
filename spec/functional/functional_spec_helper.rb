@@ -1,8 +1,7 @@
 require "rubygems"
 require "spec"
 require "spec/autorun"
-require "webrat"
-require "webrat/selenium"
+require "selenium_rc"
 dir = File.dirname(__FILE__)
 require "#{dir}/functional_spec_server_starter"
 
@@ -21,7 +20,9 @@ class Spec::ExampleGroup
     @spec_root_path = FunctionalSpecServerStarter.spec_root_path
     @public_path = FunctionalSpecServerStarter.public_path
     @implementation_root_path = FunctionalSpecServerStarter.implementation_root_path
-    Webrat::Selenium::SeleniumRCServer.boot
+#    Thread.start do
+#      SeleniumRC::Server.boot
+#    end
     FunctionalSpecServerStarter.call
     TCPSocket.wait_for_service :host => "0.0.0.0", :port => "4444"
   end

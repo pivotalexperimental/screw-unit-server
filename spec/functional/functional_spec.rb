@@ -20,6 +20,6 @@ describe "ScrewUnit" do
   it "runs a full failing Suite" do
     ScrewUnit::Client.run(:spec_url => "#{root_url}/specs/foo/failing_spec")
     stdout.string.strip.should include("FAILURE")
-    stdout.string.strip.should include("expected true to equal false")
+    stdout.string.strip.should include("A failing spec in foo fails: expected true to equal false")
   end
 end
