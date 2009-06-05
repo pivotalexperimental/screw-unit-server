@@ -1,6 +1,7 @@
 module ThinRest
   module Representations
     class ResourceNotFound < Page
+      needs :path_info
       protected
       def body_content
         h1 message
@@ -11,7 +12,7 @@ module ThinRest
       end
 
       def message
-        "File #{path} not found"
+        "File #{path_info} not found"
       end
     end
   end

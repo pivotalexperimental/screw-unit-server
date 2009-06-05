@@ -2,6 +2,7 @@ dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(File.expand_path("#{dir}/../lib"))
 require "thin_rest"
 require "spec"
+require "spec/autorun"
 require "guid"
 
 Spec::Runner.configure do |config|

@@ -10,7 +10,7 @@ module ThinRest
       property :name
       def get
         connection.send_head(404)
-        connection.send_body(Representations::ResourceNotFound.new(self).to_s) do
+        connection.send_body(Representations::ResourceNotFound.new(:path_info => connection.rack_request.path_info).to_s) do
           raise RoutingError, "Invalid route: #{connection.rack_request.path_info} ; name: #{name}"
         end
       end

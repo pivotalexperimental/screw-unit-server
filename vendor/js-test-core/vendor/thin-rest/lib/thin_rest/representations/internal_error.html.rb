@@ -1,11 +1,12 @@
 module ThinRest
   module Representations
     class InternalError < Page
+      needs :error
       protected
       def body_content
         h1 error.message
         ul do
-          error.backtrace.split("\n").each do |line|
+          error.backtrace.each do |line|
             li line
           end
         end
