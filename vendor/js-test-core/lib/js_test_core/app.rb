@@ -1,5 +1,6 @@
 module JsTestCore
   class App < Sinatra::Base
+    set :logging, true
     register(JsTestCore::Resources::WebRoot.route_handler)
     register(JsTestCore::Resources::Runner.route_handler)
     register(JsTestCore::Resources::Session.route_handler)
