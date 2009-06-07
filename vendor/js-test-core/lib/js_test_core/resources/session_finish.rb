@@ -1,9 +1,17 @@
 module JsTestCore
   module Resources
     class SessionFinish < Resources::Resource
-      map("/sessions/:session_id/finish")
+      map("/sessions")
 
-      post "/" do
+      post "/finish" do
+        call
+      end
+
+      post "/:session_id/finish" do
+        call
+      end
+
+      def call
         runner = Runner.find(session_id)
         if runner
           Runner.finalize(session.id, request['text'])

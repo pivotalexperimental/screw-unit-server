@@ -10,10 +10,12 @@ ARGV.push("-b")
 dir = File.dirname(__FILE__)
 $:.unshift File.expand_path("#{dir}/../lib")
 require "lucky_luciano"
+require "lucky_luciano/rspec"
 
 set :environment, :test
 
 class Spec::ExampleGroup
+  include BeHttp
   class << self
     def macro(name, &block)
       eigen do

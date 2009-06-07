@@ -35,15 +35,42 @@ module LuckyLuciano
 
       macro("http verb") do |verb|
         describe ".#{verb}" do
-          it "creates a route to #{verb.upcase} the given path that executes the given block" do
-            ResourceFixture.send(verb, "/") do
-              "He sleeps with the fishes"
+          context "" do
+            before do
+              ResourceFixture.send(verb, "/") do
+                "He sleeps with the fishes"
+              end
             end
-            app.register(ResourceFixture.route_handler)
-            response = send(verb, "/foobar")
-            response.status.should == 200
-            response.body.should include("He sleeps with the fishes")
+            
+            it "creates a route to #{verb.upcase} the given path that executes the given block" do
+              app.register(ResourceFixture.route_handler)
+              response = send(verb, "/foobar")
+              response.should be_http(
+                200,
+                {},
+                "He sleeps with the fishes"
+              )
+            end
           end
+
+          context "when the relative route does not have a leading slash" do
+            before do
+              ResourceFixtureWithSubPaths.send(verb, "no_leading_slash") do
+                "Response from /foobar/no_leading_slash"
+              end
+            end
+
+            it "creates a route to #{verb.upcase} the given path that executes the given block" do
+              app.register(ResourceFixtureWithSubPaths.route_handler)
+              response = send(verb, "/foobar/no_leading_slash")
+              response.should be_http(
+                200,
+                {},
+                "Response from /foobar/no_leading_slash"
+              )
+            end
+          end
+
 
           it "does not respond to another type of http request" do
             ResourceFixture.send(verb, "/") do

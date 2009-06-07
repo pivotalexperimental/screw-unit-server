@@ -88,7 +88,9 @@ module LuckyLuciano
             define_method(:registered) do |app|
               handlers.each do |handler|
                 verb, relative_path, opts, block = handler
-                app.send(verb, "#{resource_class.base_path_definition}#{relative_path.gsub(/\/$/, "")}", opts) do
+                full_path = "#{resource_class.base_path_definition}/#{relative_path}".
+                  gsub("//", "/").gsub(%r{/$}, "")
+                app.send(verb, full_path, opts) do
                   resource_class.new(self).instance_eval(&block)
                 end
               end

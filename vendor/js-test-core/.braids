@@ -4,5 +4,5 @@ vendor/lucky-luciano:
   url: git://github.com/btakita/lucky-luciano.git
   branch: master
   type: git
-  revision: 9c42ecf5d59b52dbe256758a2bdb61b26e77acd5
+  revision: 59168fcadca6a165c3780b05f53431c4390e7067
   remote: braid/vendor/lucky-luciano
