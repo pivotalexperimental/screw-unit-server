@@ -5,33 +5,54 @@ module JsTestCore
     module Specs
       describe SpecFile do
         describe "GET" do
-          before do
-            WebRoot.dispatch_specs
-          end
+          describe "GET /specs/failing_spec" do
+            it "renders a suite only for failing_spec.js as text/html" do
+              absolute_path = "#{spec_root_path}/failing_spec.js"
 
-          describe "GET /specs/custom_suite.html" do
-            it "renders the custom_suite.html file" do
-              path = "#{spec_root_path}/custom_suite.html"
-              mock(connection).send_head(200, 'Content-Type' => "text/html", 'Content-Length' => ::File.size(path), 'Last-Modified' => ::File.mtime(path).rfc822)
-              mock(connection).send_data(::File.read(path))
-
-              connection.receive_data("GET /specs/custom_suite.html HTTP/1.1\r\nHost: _\r\n\r\n")
+              response = get(SpecFile.path("failing_spec"))
+              response.should be_http(
+                200,
+                {
+                  "Content-Type" => "text/html",
+                  "Last-Modified" => ::File.mtime(absolute_path).rfc822
+                },
+                ""
+              )
+              doc = Nokogiri::HTML(response.body)
+              js_files = doc.search("script").map {|script| script["src"]}
+              js_files.should include("/specs/failing_spec.js")
             end
           end
 
-          describe "GET /specs/foo/passing_spec" do
-            it "renders a Representations::Spec with passing_spec.js as the spec file" do
-              path = "#{spec_root_path}/foo/passing_spec.js"
-              mock(connection).send_head(200, 'Content-Type' => "text/html", 'Last-Modified' => ::File.mtime(path).rfc822)
-              mock(connection).send_data(/Content-Length: /)
-              mock(connection).send_data(Regexp.new("Js Test Core Suite")) do |html|
-                doc = Nokogiri::HTML(html)
-                core_js_files = doc.search("script").map {|script| script["src"]}
-                core_js_files.should include("/specs/foo/passing_spec.js")
-                core_js_files.should_not include("/specs/foo/failing_spec.js")
-              end
+          describe "GET /specs/failing_spec.js" do
+            it "renders the contents of failing_spec.js as text/javascript" do
+              absolute_path = "#{spec_root_path}/failing_spec.js"
 
-              connection.receive_data("GET /specs/foo/passing_spec HTTP/1.1\r\nHost: _\r\n\r\n")
+              response = get(SpecFile.path("failing_spec.js"))
+              response.should be_http(
+                200,
+                {
+                  "Content-Type" => "text/javascript",
+                  "Last-Modified" => ::File.mtime(absolute_path).rfc822
+                },
+                ::File.read(absolute_path)
+              )
+            end
+          end
+
+          describe "GET /specs/custom_suite" do
+            it "renders the custom_suite.html file" do
+              path = "#{spec_root_path}/custom_suite.html"
+
+              response = get(SpecFile.path("custom_suite.html"))
+              response.should be_http(
+                200,
+                {
+                  "Content-Type" => "text/html",
+                  "Last-Modified" => ::File.mtime(path).rfc822
+                },
+                ::File.read(path)
+              )
             end
           end
         end

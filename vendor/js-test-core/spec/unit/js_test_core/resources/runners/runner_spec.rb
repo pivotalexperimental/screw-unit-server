@@ -3,14 +3,13 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../../unit_spec_helper")
 module JsTestCore
   module Resources
     describe Runner do
-      attr_reader :request, :driver, :session_id, :selenium_browser_start_command, :body
+      attr_reader :request, :driver, :session_id, :selenium_browser_start_command
 
       def self.before_with_selenium_browser_start_command(selenium_browser_start_command="selenium browser start command")
         before do
           @driver = FakeSeleniumDriver.new
           @session_id = FakeSeleniumDriver::SESSION_ID
           @selenium_browser_start_command = selenium_browser_start_command
-          @body = "selenium_browser_start_command=#{selenium_browser_start_command}"
           stub(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
             driver
           end
@@ -80,14 +79,17 @@ module JsTestCore
         before_with_selenium_browser_start_command
         before do
           stub(Thread).start.yields
-          stub(connection).send_head
-          stub(connection).send_body
         end
 
         it "responds with a 200 and the session_id" do
-          mock(connection).send_head
-          mock(connection).send_body("session_id=#{session_id}")
-          connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+          Runner.find(session_id).should be_nil
+          response = post(Runner.path("/"), {:selenium_browser_start_command => selenium_browser_start_command})
+          body = "session_id=#{session_id}"
+          response.should be_http(
+            200,
+            {'Content-Length' => body.length.to_s},
+            body
+          )
         end
 
         it "starts the Selenium Driver, creates a SessionID cookie, and opens the spec page" do
@@ -100,58 +102,54 @@ module JsTestCore
           mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
             driver
           end
-          connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+          response = post(Runner.path("/"), {:selenium_browser_start_command => selenium_browser_start_command})
         end
 
         describe "when a selenium_host parameter is passed into the request" do
-          before do
-            body << "&selenium_host=another-machine"
-          end
-
           it "starts the Selenium Driver with the passed in selenium_host" do
             mock(Selenium::Client::Driver).new('another-machine', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
-            connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            response = post(Runner.path("/"), {
+              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_host => "another-machine"
+            })
           end
         end
 
         describe "when a selenium_host parameter is not passed into the request" do
-          before do
-            body << "&selenium_host="
-          end
-
           it "starts the Selenium Driver from localhost" do
             mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
-            connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            response = post(Runner.path("/"), {
+              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_host => ""
+            })
           end
         end
 
         describe "when a selenium_port parameter is passed into the request" do
-          before do
-            body << "&selenium_port=4000"
-          end
-
           it "starts the Selenium Driver with the passed in selenium_port" do
             mock(Selenium::Client::Driver).new('localhost', 4000, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
-            connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            response = post(Runner.path("/"), {
+              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_port => "4000"
+            })
           end
         end
 
         describe "when a selenium_port parameter is not passed into the request" do
-          before do
-            body << "&selenium_port="
-          end
-
           it "starts the Selenium Driver from localhost" do
             mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
               driver
             end
-            connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            response = post(Runner.path("/"), {
+              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_port => ""
+            })
           end
         end
 
@@ -166,8 +164,10 @@ module JsTestCore
             mock(driver).open("/specs/subdir")
             mock(driver).session_id {session_id}.at_least(1)
 
-            body << "&spec_url=http://another-host:8080/specs/subdir"
-            connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            response = post(Runner.path("/"), {
+              :selenium_browser_start_command => selenium_browser_start_command,
+              :spec_url => "http://another-host:8080/specs/subdir"
+            })
           end
         end
 
@@ -185,8 +185,10 @@ module JsTestCore
             mock(driver).open("/specs")
             mock(driver).session_id {session_id}.at_least(1)
 
-            body << "&spec_url="
-            connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            response = post(Runner.path("/"), {
+              :selenium_browser_start_command => selenium_browser_start_command,
+              :spec_url => ""
+            })
           end
         end
       end
@@ -195,15 +197,15 @@ module JsTestCore
         before_with_selenium_browser_start_command "*firefox"
 
         it "creates a Runner whose #driver started with '*firefox'" do
-          stub(Thread).start.yields
-          stub(connection).send_head
-          stub(connection).send_body
-
-          mock(connection).send_head
-          mock(connection).send_body("session_id=#{session_id}")
-
           Runner.find(session_id).should be_nil
-          connection.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\n\r\n")
+          response = post(Runner.path("/firefox"))
+          body = "session_id=#{session_id}"
+          response.should be_http(
+            200,
+            {'Content-Length' => body.length.to_s},
+            body
+          )
+
           runner = Runner.find(session_id)
           runner.class.should == Runner
           runner.driver.should == driver
@@ -214,15 +216,15 @@ module JsTestCore
         before_with_selenium_browser_start_command "*iexplore"
 
         it "creates a Runner whose #driver started with '*iexplore'" do
-          stub(Thread).start.yields
-          stub(connection).send_head
-          stub(connection).send_body
-
-          mock(connection).send_head
-          mock(connection).send_body("session_id=#{session_id}")
-
           Runner.find(session_id).should be_nil
-          connection.receive_data("POST /runners/iexplore HTTP/1.1\r\nHost: _\r\n\r\n")
+          response = post(Runner.path("/iexplore"))
+          body = "session_id=#{session_id}"
+          response.should be_http(
+            200,
+            {'Content-Length' => body.length.to_s},
+            body
+          )
+
           runner = Runner.find(session_id)
           runner.class.should == Runner
           runner.driver.should == driver
@@ -233,10 +235,12 @@ module JsTestCore
         before_with_selenium_browser_start_command
         context "when the driver#session_started? is true" do
           it "returns true" do
-            create_runner_connection = create_connection
-            stub(create_runner_connection).send_head
-            stub(create_runner_connection).send_body
-            create_runner_connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            response = post(Runner.path("/"), {:selenium_browser_start_command => selenium_browser_start_command})
+            response.should be_http(
+              200,
+              {},
+              ""
+            )
 
             runner = Resources::Runner.find(session_id)
             runner.driver.session_started?.should be_true
@@ -246,10 +250,12 @@ module JsTestCore
 
         context "when the driver#session_started? is false" do
           it "returns false" do
-            create_runner_connection = create_connection
-            stub(create_runner_connection).send_head
-            stub(create_runner_connection).send_body
-            create_runner_connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+            response = post(Runner.path("/"), {:selenium_browser_start_command => selenium_browser_start_command})
+            response.should be_http(
+              200,
+              {},
+              ""
+            )
 
             runner = Resources::Runner.find(session_id)
             runner.driver.stop
@@ -263,10 +269,8 @@ module JsTestCore
         attr_reader :runner
         before_with_selenium_browser_start_command
         before do
-          create_runner_connection = create_connection
-          stub(create_runner_connection).send_head
-          stub(create_runner_connection).send_body
-          create_runner_connection.receive_data("POST /runners HTTP/1.1\r\nHost: _\r\nContent-Length: #{body.length}\r\n\r\n#{body}")
+          response = post(Runner.path("/"), {:selenium_browser_start_command => selenium_browser_start_command})
+          response.status.should == 200
           @runner = Resources::Runner.find(session_id)
           mock.proxy(driver).stop
         end

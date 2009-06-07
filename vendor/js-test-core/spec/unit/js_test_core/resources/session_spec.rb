@@ -4,22 +4,17 @@ module JsTestCore
   module Resources
     describe Session do
       describe "GET /sessions/:session_id" do
-        attr_reader :driver, :session_id
-
         context "when there is no Runner with the :session_id" do
           it "responds with a 404" do
             session_id = "invalid_session_id"
-            Runner.find(session_id).should be_nil
-
-            mock(connection).send_head(404)
-            mock(connection).send_body("")
-
-            connection.receive_data("GET /sessions/#{session_id} HTTP/1.1\r\nHost: _\r\n\r\n")
+            response = get(Session.path(session_id))
+            response.body.should include("Could not find session #{session_id}")
+            response.status.should == 404
           end
         end
 
         context "when there is a Runner with the :session_id" do
-          attr_reader :session_runner
+          attr_reader :driver, :session_id, :session_runner
           before do
             @driver = FakeSeleniumDriver.new
             @session_id = FakeSeleniumDriver::SESSION_ID
@@ -27,20 +22,17 @@ module JsTestCore
               driver
             end
 
-            connection_that_starts_firefox = create_connection
-            stub(connection_that_starts_firefox).send_head
-            stub(connection_that_starts_firefox).send_body
-            connection_that_starts_firefox.receive_data("POST /runners/firefox HTTP/1.1\r\nHost: _\r\nContent-Length: 0\r\n\r\n")
+            post(Runner.path('firefox'))
             @session_runner = Runner.find(session_id)
             session_runner.should be_running
           end
 
           context "when a Runner with the :session_id is running" do
             it "responds with a 200 and status=running" do
-              mock(connection).send_head
-              mock(connection).send_body("status=#{Resources::Session::RUNNING}")
+              response = get(Session.path(session_id))
 
-              connection.receive_data("GET /sessions/#{session_id} HTTP/1.1\r\nHost: _\r\n\r\n")
+              body = "status=#{Resources::Session::RUNNING}"
+              response.should be_http(200, {'Content-Length' => body.length.to_s}, body)
             end
           end
 
@@ -52,10 +44,10 @@ module JsTestCore
               end
 
               it "responds with a 200 and status=success" do
-                mock(connection).send_head
-                mock(connection).send_body("status=#{Resources::Session::SUCCESSFUL_COMPLETION}")
+                response = get(Session.path(session_id))
 
-                connection.receive_data("GET /sessions/#{session_id} HTTP/1.1\r\nHost: _\r\n\r\n")
+                body = "status=#{Resources::Session::SUCCESSFUL_COMPLETION}"
+                response.should be_http(200, {'Content-Length' => body.length.to_s}, body)
               end
             end
 
@@ -68,10 +60,10 @@ module JsTestCore
               end
 
               it "responds with a 200 and status=failure and reason" do
-                mock(connection).send_head
-                mock(connection).send_body("status=#{Resources::Session::FAILURE_COMPLETION}&reason=#{reason}")
+                response = get(Session.path(session_id))
 
-                connection.receive_data("GET /sessions/#{session_id} HTTP/1.1\r\nHost: _\r\n\r\n")
+                body = "status=#{Resources::Session::FAILURE_COMPLETION}&reason=#{reason}"
+                response.should be_http(200, {'Content-Length' => body.length.to_s}, body)
               end
             end
           end

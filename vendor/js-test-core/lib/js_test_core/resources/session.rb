@@ -1,9 +1,27 @@
 module JsTestCore
   module Resources
     class Session < Resources::Resource
-      class Collection < Resources::Resource
-        route ANY do |env, id|
-          Session.new(env.merge(:id => id))
+      map "/sessions"
+
+      get "/:session_id" do
+        runner = Runner.find(session_id)
+        if runner
+          body = if runner.running?
+            "status=#{RUNNING}"
+          else
+            if runner.successful?
+              "status=#{SUCCESSFUL_COMPLETION}"
+            else
+              "status=#{FAILURE_COMPLETION}&reason=#{runner.session_run_result}"
+            end
+          end
+          [
+            200,
+            {'Content-Length' => body.length},
+            body
+          ]
+        else
+          not_found
         end
       end
 
@@ -11,33 +29,26 @@ module JsTestCore
       SUCCESSFUL_COMPLETION = 'success'
       FAILURE_COMPLETION = 'failure'
 
-      property :id
-
-      def get
-        runner = Runner.find(id)
-        if runner
-          connection.send_head
-          if runner.running?
-            connection.send_body("status=#{RUNNING}")
-          else
-            if runner.successful?
-              connection.send_body("status=#{SUCCESSFUL_COMPLETION}")
-            else
-              connection.send_body("status=#{FAILURE_COMPLETION}&reason=#{runner.session_run_result}")
-            end
-          end
-        else
-          connection.send_head(404)
-          connection.send_body("")
-        end
-      end
-
-      route 'finish' do |env, name|
-        SessionFinish.new(env.merge(:session => self))
-      end
-
       def associated_with_a_runner?
         id.to_s != ""
+      end
+
+      protected
+
+      def session_id
+        params["session_id"]
+      end
+
+      def not_found
+        body = Representations::NotFound.new(:message => "Could not find session #{session_id}").to_s
+        [
+          404,
+          {
+            "Content-Type" => "text/html",
+            "Content-Length" => body.size.to_s
+          },
+          body
+        ]
       end
     end
   end

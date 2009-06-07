@@ -1,8 +1,8 @@
 --- 
-vendor/thin-rest: 
+vendor/lucky-luciano: 
   squashed: true
-  url: git://github.com/pivotal/thin-rest.git
+  url: git://github.com/btakita/lucky-luciano.git
   branch: master
   type: git
-  revision: 61351eddd5d9eeac727e5fa7e36eab0e86d3b411
-  remote: braid/vendor/thin-rest
+  revision: 9c42ecf5d59b52dbe256758a2bdb61b26e77acd5
+  remote: braid/vendor/lucky-luciano

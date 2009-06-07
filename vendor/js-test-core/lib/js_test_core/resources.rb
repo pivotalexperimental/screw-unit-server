@@ -2,10 +2,10 @@ dir = File.dirname(__FILE__)
 
 module JsTestCore
   module Resources
-    include ThinRest::Resources
   end
 end
 
+require "#{dir}/resources/resource"
 require "#{dir}/resources/runner"
 require "#{dir}/resources/file"
 require "#{dir}/resources/dir"

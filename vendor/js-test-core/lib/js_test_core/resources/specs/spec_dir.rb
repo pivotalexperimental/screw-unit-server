@@ -2,46 +2,39 @@ module JsTestCore
   module Resources
     module Specs
       class SpecDir < ::JsTestCore::Resources::Dir
+        map "/specs"
         include Spec
 
-        def get
-          if ::File.file?(absolute_path)
-            super
-          else
-            get_generated_spec
-          end
-        end
-        
-        def spec_files
-          glob("/**/*_spec.js")
-        end
-
-        route ANY do |env, name|
-          if result = (file(name) || subdir(name) || spec_file(name))
-            result
-          else
-            base_path = "#{relative_path}/#{name}"
-            raise "No file or directory found at #{base_path} or spec found at #{base_path}.js."
-          end
+        get "*" do
+          do_get
         end
 
         protected
 
-        def subdir(name)
-          absolute_path, relative_path = determine_child_paths(name)
+        def do_get
           if ::File.directory?(absolute_path)
-            SpecDir.new(env.merge(:absolute_path => absolute_path, :relative_path => relative_path))
+            get_generated_spec
           else
-            nil
+            pass
           end
         end
 
-        def spec_file(name)
-          absolute_path, relative_path = determine_child_paths("#{name}.js")
-          if ::File.exists?(absolute_path) && !::File.directory?(absolute_path)
-            SpecFile.new(env.merge(:absolute_path => absolute_path, :relative_path => relative_path))
-          else
-            nil
+        def get_generated_spec
+          html = render_spec
+          [
+            200,
+            {
+              'Content-Type' => "text/html",
+              'Last-Modified' => ::File.mtime(absolute_path).rfc822,
+              'Content-Length' => html.length
+            },
+            html
+          ]
+        end
+
+        def spec_files
+          ::Dir["#{absolute_path}/**/*_spec.js"].map do |file|
+            ["#{relative_path}#{file.gsub(absolute_path, "")}"]
           end
         end
       end

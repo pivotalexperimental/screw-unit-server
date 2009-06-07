@@ -1,16 +1,21 @@
 module JsTestCore
   module Resources
     class SessionFinish < Resources::Resource
-      property :session
-      
-      def post
-        if session.associated_with_a_runner?
-          Runner.finalize(session.id, rack_request['text'])
+      map("/sessions/:session_id/finish")
+
+      post "/" do
+        runner = Runner.find(session_id)
+        if runner
+          Runner.finalize(session.id, request['text'])
         else
-          STDOUT.puts rack_request['text']
+          STDOUT.puts request['text']
         end
-        connection.send_head
-        connection.send_body("")
+        [200, {}, request['text']]
+      end
+
+      protected
+      def session_id
+        params["session_id"]
       end
     end
   end
