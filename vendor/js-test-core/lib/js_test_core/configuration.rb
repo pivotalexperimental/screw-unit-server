@@ -12,18 +12,16 @@ module JsTestCore
       end
     end
 
-    attr_accessor :host, :port, :spec_root_path, :implementation_root_path, :public_path, :core_path
+    attr_accessor :host, :port, :spec_root_path, :public_path, :core_path
 
     def initialize(params={})
       params = {
         :spec_root_path => File.expand_path("./specs/javascripts"),
-        :implementation_root_path => File.expand_path("./public/javascripts"),
         :public_path => File.expand_path("./public"),
         :host => DEFAULT_HOST,
         :port => DEFAULT_PORT,
       }.merge(params)
       @spec_root_path = ::File.expand_path(params[:spec_root_path])
-      @implementation_root_path = ::File.expand_path(params[:implementation_root_path])
       @public_path = ::File.expand_path(params[:public_path])
       @host = params[:host]
       @port = params[:port]
