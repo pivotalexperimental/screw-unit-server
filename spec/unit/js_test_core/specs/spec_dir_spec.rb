@@ -9,14 +9,14 @@ module JsTestCore
           attr_reader :dir, :html, :doc
 
           before do
-            mock(connection).send_head(200, is_a(Hash))
-            mock(connection).send_data(/Content-Length:/)
-            mock(connection).send_data(anything) do |@html|
-              # do nothing
-            end
-
-            connection.receive_data("GET /specs HTTP/1.1\r\nHost: _\r\n\r\n")
-            @doc = Nokogiri::HTML(html)
+            response = get(SpecDir.path("/"))
+            response.should be_http(
+              200,
+              {},
+              ""
+            )
+            
+            @doc = Nokogiri::HTML(response.body)
           end
 
           it "returns script tags for each test javascript file" do

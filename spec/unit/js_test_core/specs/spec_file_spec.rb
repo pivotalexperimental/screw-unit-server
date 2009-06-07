@@ -7,14 +7,14 @@ module JsTestCore
         describe "GET /specs/failing_spec" do
           attr_reader :html, :doc
           before do
-            mock(connection).send_head(200, is_a(Hash))
-            mock(connection).send_data(/Content-Length:/)
-            mock(connection).send_data(anything) do |@html|
-              # do nothing
-            end
+            response = get(SpecDir.path("/failing_spec"))
+            response.should be_http(
+              200,
+              {},
+              ""
+            )
 
-            connection.receive_data("GET /specs/failing_spec HTTP/1.1\r\nHost: _\r\n\r\n")
-            @doc = Nokogiri::HTML(html)            
+            @doc = Nokogiri::HTML(response.body)
           end
 
           it "returns script tags for the test javascript file" do

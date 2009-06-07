@@ -9,9 +9,6 @@ Spec::Runner.configure do |config|
   config.mock_with :rr
 end
 
-Thin::Logging.silent = false
-Thin::Logging.debug = true
-
 class Spec::ExampleGroup
   include WaitFor
   attr_reader :spec_root_path, :implementation_root_path, :public_path
