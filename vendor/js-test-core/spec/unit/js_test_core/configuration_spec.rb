@@ -33,7 +33,7 @@ module JsTestCore
     end
 
     describe ".implementation_root_path" do
-      it "returns the expanded path to the JsTestCore implementations directory" do
+      it "returns the expanded path to the JsTestCore javascripts directory" do
         dir = ::File.dirname(__FILE__)
         Configuration.implementation_root_path.should == implementation_root_path
       end

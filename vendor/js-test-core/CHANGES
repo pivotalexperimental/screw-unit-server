@@ -1,3 +1,4 @@
+- No longer using the /implementanions directory. Replace all cases of /implementations with /javascripts.
 - Added support for custom suite files
 - Added dependency on Erector
 - Better error messages

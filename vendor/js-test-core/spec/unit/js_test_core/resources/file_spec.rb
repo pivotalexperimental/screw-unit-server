@@ -19,7 +19,7 @@ module JsTestCore
         end
       end
 
-      describe "GET /implementations/foo.js" do
+      describe "GET /javascripts/foo.js" do
         it "returns the foo.js file content as a javascript file" do
           path = "#{public_path}/javascripts/foo.js"
           response = get("/javascripts/foo.js")
