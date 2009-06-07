@@ -148,7 +148,6 @@ Gem::Specification.new do |s|
     "spec/functional/functional_spec.rb",
     "spec/functional/functional_spec_helper.rb",
     "spec/spec_suite.rb",
-    "spec/unit/js_test_core/specs/spec_dir_spec.rb",
     "spec/unit/js_test_core/specs/spec_file_spec.rb",
     "spec/unit/unit_spec_helper.rb",
     "spec/functional_suite.rb"
