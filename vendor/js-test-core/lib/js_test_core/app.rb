@@ -5,9 +5,9 @@ module JsTestCore
     register(JsTestCore::Resources::Runner.route_handler)
     register(JsTestCore::Resources::Session.route_handler)
     register(JsTestCore::Resources::SessionFinish.route_handler)
-    register(JsTestCore::Resources::Specs::SpecDir.route_handler)
-    register(JsTestCore::Resources::Specs::SpecFile.route_handler)
-    register(JsTestCore::Resources::Dir.route_handler)
+    register(JsTestCore::Resources::CoreFile.route_handler)
+    register(JsTestCore::Resources::SpecFile.route_handler)
     register(JsTestCore::Resources::File.route_handler)
+    register(JsTestCore::Resources::NotFound.route_handler)
   end
 end

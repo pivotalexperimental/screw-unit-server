@@ -30,10 +30,18 @@ module JsTestCore
 
       def do_get
         if ::File.exists?(absolute_path)
-          render_file
+          if ::File.directory?(absolute_path)
+            render_dir
+          else
+            render_file
+          end
         else
-          not_found
+          pass
         end
+      end
+
+      def render_dir
+        Representations::Dir.new(:relative_path => relative_path, :absolute_path => absolute_path).to_s
       end
 
       def render_file
@@ -47,18 +55,6 @@ module JsTestCore
             'Content-Length' => ::File.size(absolute_path)
           },
           ::File.read(absolute_path)
-        ]
-      end
-
-      def not_found
-        body = Representations::NotFound.new(:message => "File #{request.path_info} not found").to_s
-        [
-          404,
-          {
-            "Content-Type" => "text/html",
-            "Content-Length" => body.size.to_s
-          },
-          body
         ]
       end
     end
