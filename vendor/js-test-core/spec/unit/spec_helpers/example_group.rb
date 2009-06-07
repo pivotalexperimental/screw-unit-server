@@ -19,10 +19,6 @@ class Spec::ExampleGroup
     )
   end
 
-  after(:each) do
-    JsTestCore::Resources::WebRoot.dispatch_strategy = nil
-  end
-
   def app
     Sinatra::Application
   end
