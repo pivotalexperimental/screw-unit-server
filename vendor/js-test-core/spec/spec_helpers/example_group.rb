@@ -11,12 +11,10 @@ class Spec::ExampleGroup
   end
 
   before(:each) do
-    JsTestCore::Configuration.instance = JsTestCore::Configuration.new(
-      :spec_root_path => spec_root_path,
-      :implementation_root_path => implementation_root_path,
-      :public_path => public_path,
-      :core_path => core_path
-    )
+    JsTestCore::Configuration.instance.spec_root_path = spec_root_path
+    JsTestCore::Configuration.instance.implementation_root_path = implementation_root_path
+    JsTestCore::Configuration.instance.public_path = public_path
+    JsTestCore::Configuration.instance.core_path = core_path
   end
 
   def app
