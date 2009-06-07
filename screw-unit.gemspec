@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pivotal Labs", "Brian Takita"]
   s.date = %q{2009-05-11}
-  s.description = %q{The Screw Unit server conveniently serves your Screw Unit specs and implementations javascript files and css stylesheets.}
+  s.description = %q{The Screw Unit server conveniently serves your Screw Unit specs and javascript files and css stylesheets.}
   s.email = %q{pivotallabsopensource@googlegroups.com}
   s.executables = ["screw_unit", "screw_unit_server"]
   s.extra_rdoc_files = [

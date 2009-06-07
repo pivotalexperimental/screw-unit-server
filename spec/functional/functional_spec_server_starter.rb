@@ -29,10 +29,10 @@ class FunctionalSpecServerStarter
       end
       if threaded
         Thread.start do
-          ScrewUnit::Server.run(spec_root_path, implementation_root_path, public_path)
+          ScrewUnit::Server.run(spec_root_path, public_path)
         end
       else
-        ScrewUnit::Server.run(spec_root_path, implementation_root_path, public_path)
+        ScrewUnit::Server.run(spec_root_path, public_path)
       end
       wait_for do
         Lsof.running?(8080)
@@ -46,10 +46,6 @@ class FunctionalSpecServerStarter
 
     def public_path
       File.expand_path("#{dir}/../example_public")
-    end
-
-    def implementation_root_path
-      File.expand_path("#{public_path}/javascripts")
     end
 
     def dir

@@ -26,17 +26,15 @@ class Spec::ExampleGroup
   include Rack::Test::Methods
   include BeHttp
   
-  attr_reader :spec_root_path, :implementation_root_path, :public_path, :server, :connection
+  attr_reader :spec_root_path, :public_path, :server, :connection
   before(:all) do
     dir = File.dirname(__FILE__)
     @spec_root_path = File.expand_path("#{dir}/../example_specs")
-    @implementation_root_path = File.expand_path("#{dir}/../example_public/javascripts")
     @public_path = File.expand_path("#{dir}/../example_public")
   end
 
   before(:each) do
     JsTestCore::Configuration.instance.spec_root_path = spec_root_path
-    JsTestCore::Configuration.instance.implementation_root_path = implementation_root_path
     JsTestCore::Configuration.instance.public_path = public_path
   end
 

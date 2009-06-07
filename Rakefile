@@ -6,7 +6,7 @@ begin
     s.summary = "Server and helpers for your Screw Unit tests."
     s.email = "pivotallabsopensource@googlegroups.com"
     s.homepage = "http://github.com/pivotal/screw-unit-server"
-    s.description = "The Screw Unit server conveniently serves your Screw Unit specs and implementations javascript files and css stylesheets."
+    s.description = "The Screw Unit server conveniently serves your Screw Unit specs and javascript files and css stylesheets."
     s.authors = ["Pivotal Labs", "Brian Takita"]
     s.files = Dir["[A-Z]*"] +
       Dir["*.rb"] +
