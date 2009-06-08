@@ -89,7 +89,9 @@ module LuckyLuciano
               handlers.each do |handler|
                 verb, relative_path, opts, block = handler
                 full_path = "#{resource_class.base_path_definition}/#{relative_path}".
-                  gsub("//", "/").gsub(%r{/$}, "")
+                  gsub("//", "/").gsub(%r{^.+/$}) do |match|
+                    match.gsub(%r{/$}, "")
+                  end
                 app.send(verb, full_path, opts) do
                   resource_class.new(self).instance_eval(&block)
                 end

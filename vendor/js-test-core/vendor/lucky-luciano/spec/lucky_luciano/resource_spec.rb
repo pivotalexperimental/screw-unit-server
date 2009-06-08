@@ -2,6 +2,10 @@ require File.expand_path("#{File.dirname(__FILE__)}/../spec_helper")
 
 module LuckyLuciano
   module ResourceSpec
+    class Root < Resource
+      map "/"
+    end
+
     class ResourceFixture < Resource
       map "/foobar"
     end
@@ -53,7 +57,25 @@ module LuckyLuciano
             end
           end
 
-          context "when the relative route does not have a leading slash" do
+          context "when the base path is blank and the relative path is blank" do
+            before do
+              Root.send(verb, "") do
+                "Response from /"
+              end
+            end
+
+            it "creates a route to /" do
+              app.register(Root.route_handler)
+              response = send(verb, "/")
+              response.should be_http(
+                200,
+                {},
+                "Response from /"
+              )
+            end
+          end
+
+          context "when the relative path does not have a leading slash" do
             before do
               ResourceFixtureWithSubPaths.send(verb, "no_leading_slash") do
                 "Response from /foobar/no_leading_slash"
