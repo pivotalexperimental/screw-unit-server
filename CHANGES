@@ -1,3 +1,6 @@
+0.5.5
+- Renamed ScrewUnit::ThinRunner to ScrewUnit::Server
+
 0.5.4
 - Added ScrewUnit::ThinRunner.start
 

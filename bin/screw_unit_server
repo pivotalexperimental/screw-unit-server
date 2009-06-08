@@ -13,4 +13,4 @@ unless ENV["SCREW_UNIT_PUBLIC"]
   ENV["SCREW_UNIT_PUBLIC"] = ARGV[1]
 end
 
-ScrewUnit::ThinRunner.start
+ScrewUnit::Server.start

@@ -1,5 +1,5 @@
 module ScrewUnit
-  class ThinRunner
+  class Server
     def self.start
       Thin::Runner.new([
         "--port", "8080",
