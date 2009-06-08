@@ -3,8 +3,18 @@
 dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift("#{dir}/../lib")
 require "screw_unit"
+require "thin"
 
-spec_root_path = ARGV[0] || "./spec"
-implementation_root_path = ARGV[1] || "./public/javascripts"
-public_path = ARGV[2] || "./public"
-ScrewUnit::Server.run(spec_root_path, implementation_root_path, public_path)
+unless ENV["SCREW_UNIT_SPEC_ROOT"]
+  ENV["SCREW_UNIT_SPEC_ROOT"] = ARGV[0]
+end
+
+unless ENV["SCREW_UNIT_PUBLIC"]
+  ENV["SCREW_UNIT_PUBLIC"] = ARGV[1]
+end
+
+Thin::Runner.new([
+  "--port", "8080",
+  "--rackup", File.expand_path("#{dir}/../standalone.ru"),
+  "start"]
+).run!

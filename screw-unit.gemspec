@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pivotal Labs", "Brian Takita"]
-  s.date = %q{2009-06-04}
-  s.description = %q{The Screw Unit server conveniently serves your Screw Unit specs and implementations javascript files and css stylesheets.}
+  s.date = %q{2009-05-11}
+  s.description = %q{The Screw Unit server conveniently serves your Screw Unit specs and javascript files and css stylesheets.}
   s.email = %q{pivotallabsopensource@googlegroups.com}
   s.executables = ["screw_unit", "screw_unit_server"]
   s.extra_rdoc_files = [
@@ -143,14 +143,11 @@ Gem::Specification.new do |s|
   s.summary = %q{Server and helpers for your Screw Unit tests.}
   s.test_files = [
     "spec/functional/functional_spec.rb",
-     "spec/functional/functional_spec_helper.rb",
-     "spec/functional/functional_spec_server_starter.rb",
-     "spec/functional_suite.rb",
-     "spec/spec_suite.rb",
-     "spec/unit/js_test_core/specs/spec_dir_spec.rb",
-     "spec/unit/js_test_core/specs/spec_file_spec.rb",
-     "spec/unit/unit_spec_helper.rb",
-     "spec/unit_suite.rb"
+    "spec/functional/functional_spec_helper.rb",
+    "spec/spec_suite.rb",
+    "spec/unit/js_test_core/specs/spec_file_spec.rb",
+    "spec/unit/unit_spec_helper.rb",
+    "spec/functional_suite.rb"
   ]
 
   if s.respond_to? :specification_version then

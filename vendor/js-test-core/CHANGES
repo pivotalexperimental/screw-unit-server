@@ -1,7 +1,10 @@
+- No longer using the /implementanions directory. Replace all cases of /implementations with /javascripts.
 - Added support for custom suite files
 - Added dependency on Erector
 - Better error messages
 - Changed dependency from Selenium to selenium-client
+- Renamed Resources::Runner to Resources::SeleniumSession
+- Changed /runners to /selenium_sessions
 
 0.2.0
 - Renamed Suite to Session to follow Selenium conventions

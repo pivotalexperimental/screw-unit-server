@@ -23,21 +23,30 @@ class FunctionalSpecServerStarter
     include WaitFor
     def call(threaded=true)
       return if $screw_unit_server_started
+
       Lsof.kill(8080)
       wait_for do
         !Lsof.running?(8080)
       end
-      if threaded
+
+      dir = File.dirname(__FILE__)
+      Dir.chdir("#{dir}/../../") do
         Thread.start do
-          ScrewUnit::Server.run(spec_root_path, implementation_root_path, public_path)
+          start_thin_server
         end
-      else
-        ScrewUnit::Server.run(spec_root_path, implementation_root_path, public_path)
       end
+
       wait_for do
         Lsof.running?(8080)
       end
       $screw_unit_server_started = true
+    end
+
+    def start_thin_server
+      system("bin/screw_unit_server #{spec_root_path} #{public_path}")
+      at_exit do
+        Lsof.kill(8080)
+      end
     end
 
     def spec_root_path
@@ -46,10 +55,6 @@ class FunctionalSpecServerStarter
 
     def public_path
       File.expand_path("#{dir}/../example_public")
-    end
-
-    def implementation_root_path
-      File.expand_path("#{public_path}/javascripts")
     end
 
     def dir

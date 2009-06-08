@@ -2,16 +2,15 @@ dir = File.dirname(__FILE__)
 
 module JsTestCore
   module Resources
-    include ThinRest::Resources
   end
 end
 
-require "#{dir}/resources/runner"
+require "#{dir}/resources/resource"
+require "#{dir}/resources/selenium_session"
 require "#{dir}/resources/file"
-require "#{dir}/resources/dir"
-require "#{dir}/resources/specs/spec"
-require "#{dir}/resources/specs/spec_file"
-require "#{dir}/resources/specs/spec_dir"
+require "#{dir}/resources/spec_file"
+require "#{dir}/resources/core_file"
 require "#{dir}/resources/web_root"
-require "#{dir}/resources/session"
-require "#{dir}/resources/session_finish"
+require "#{dir}/resources/not_found"
+
+require "#{dir}/resources/implementations_deprecation"

@@ -62,7 +62,7 @@ module JsTestCore
       context "when the Session is not found" do
         it "raises a SessionNotFound error" do
           mock_post_to_runner("*firefox")
-          mock(request).get("/sessions/my_session_id") do
+          mock(request).get(Resources::SeleniumSession.path(":session_id", :session_id => "my_session_id")) do
             stub(session_response = Object.new).code {"404"}
             session_response
           end
@@ -98,13 +98,13 @@ module JsTestCore
 
       def mock_post_to_runner(selenium_browser_start_command)
         mock(start_session_response = Object.new).body {"session_id=my_session_id"}
-        mock(request).post("/runners", "selenium_browser_start_command=#{CGI.escape(selenium_browser_start_command)}&selenium_host=localhost&selenium_port=4444") do
+        mock(request).post(Resources::SeleniumSession.path, "selenium_browser_start_command=#{CGI.escape(selenium_browser_start_command)}&selenium_host=localhost&selenium_port=4444") do
           start_session_response
         end
       end
 
       def mock_polling_returns(session_statuses=[])
-        mock(request).get("/sessions/my_session_id") do
+        mock(request).get(Resources::SeleniumSession.path(":session_id", :session_id => "my_session_id")) do
           stub(session_response = Object.new).body {session_statuses.shift}
           stub(session_response).code {"200"}
           session_response
@@ -112,15 +112,15 @@ module JsTestCore
       end
 
       def running_status
-        "status=#{Resources::Session::RUNNING}"
+        "status=#{Resources::SeleniumSession::RUNNING}"
       end
 
       def success_status
-        "status=#{Resources::Session::SUCCESSFUL_COMPLETION}"
+        "status=#{Resources::SeleniumSession::SUCCESSFUL_COMPLETION}"
       end
 
       def failure_status(reason)
-        "status=#{Resources::Session::FAILURE_COMPLETION}&reason=#{reason}"
+        "status=#{Resources::SeleniumSession::FAILURE_COMPLETION}&reason=#{reason}"
       end
     end
 

@@ -80,7 +80,7 @@ module JsTestCore
     end
 
     def start_runner
-      @session_start_response = http.post('/runners', query_string)
+      @session_start_response = http.post(Resources::SeleniumSession.path, query_string)
     end
 
     def wait_for_session_to_finish
@@ -92,10 +92,10 @@ module JsTestCore
 
     def report_result
       case last_poll_status
-      when Resources::Session::SUCCESSFUL_COMPLETION
+      when Resources::SeleniumSession::SUCCESSFUL_COMPLETION
         STDOUT.puts "SUCCESS"
         true
-      when Resources::Session::FAILURE_COMPLETION
+      when Resources::SeleniumSession::FAILURE_COMPLETION
         STDOUT.puts "FAILURE"
         STDOUT.puts last_poll_reason
         false
@@ -105,11 +105,11 @@ module JsTestCore
     end
 
     def session_not_completed?
-      last_poll_status.nil? || last_poll_status == Resources::Session::RUNNING
+      last_poll_status.nil? || last_poll_status == Resources::SeleniumSession::RUNNING
     end
 
     def poll
-      @last_poll = http.get("/sessions/#{session_id}")
+      @last_poll = http.get(Resources::SeleniumSession.path("/:session_id", :session_id => session_id))
       ensure_session_exists!
       parts = parts_from_query(last_poll.body)
       @last_poll_status = parts['status']

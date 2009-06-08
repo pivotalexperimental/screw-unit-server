@@ -1,14 +1,11 @@
 require "rubygems"
-gem "thin", ">=0.8.0"
+gem "thin", ">=1.2.1"
+gem "erector", ">=0.6.6"
 gem "selenium-client"
 
 dir = File.dirname(__FILE__)
-$LOAD_PATH.unshift File.expand_path("#{dir}/../vendor/thin-rest/lib")
-require "thin_rest"
-
-# This causes errors to be printed to STDOUT.
-Thin::Logging.silent = false
-Thin::Logging.debug = true
+$LOAD_PATH.unshift File.expand_path("#{dir}/../vendor/lucky-luciano/lib")
+require "lucky_luciano"
 
 require "fileutils"
 require "tmpdir"
@@ -19,23 +16,31 @@ require "selenium/client"
 require "optparse"
 require "erector"
 
+require "#{dir}/js_test_core/configuration"
+
 require "#{dir}/js_test_core/extensions"
-require "#{dir}/js_test_core/thin"
-require "#{dir}/js_test_core/rack"
+require "#{dir}/js_test_core/models"
 require "#{dir}/js_test_core/resources"
 require "#{dir}/js_test_core/representations"
-require "#{dir}/js_test_core/selenium"
 
 require "#{dir}/js_test_core/client"
 require "#{dir}/js_test_core/selenium_server_configuration"
-require "#{dir}/js_test_core/server"
-require "#{dir}/js_test_core/rails_server"
+
+require "#{dir}/js_test_core/app"
 
 module JsTestCore
   DEFAULT_HOST = "0.0.0.0"
   DEFAULT_PORT = 8080
 
   class << self
-    attr_accessor :core_path
+    Configuration.instance = Configuration.new
+
+    def method_missing(method_name, *args, &block)
+      if Configuration.instance.respond_to?(method_name)
+        Configuration.instance.send(method_name, *args, &block)
+      else
+        super
+      end
+    end
   end
 end
