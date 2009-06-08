@@ -1,4 +1,3 @@
-puts "#{__FILE__}:#{__LINE__}"
 dir = File.dirname(__FILE__)
 require "#{dir}/lib/screw_unit"
 require "sinatra"
