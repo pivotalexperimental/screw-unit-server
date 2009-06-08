@@ -31,8 +31,10 @@ module JsTestCore
           else
             super
           end
-        else
+        elsif ::File.exists?("#{absolute_path}.js")
           get_generated_spec("#{absolute_path}.js", ["#{relative_path}.js"])
+        else
+          pass
         end
       end
 

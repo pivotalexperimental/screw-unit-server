@@ -104,6 +104,17 @@ module JsTestCore
           end
         end
       end
+
+      describe "GET /specs/i_dont_exist" do
+        it "renders a 404" do
+          response = get(SpecFile.path("i_dont_exist"))
+          response.should be_http(
+            404,
+            {},
+            "/specs/i_dont_exist not found"
+          )
+        end
+      end
     end
   end
 end
