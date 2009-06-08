@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{screw-unit}
-  s.version = "0.5.0"
+  s.version = "0.5.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pivotal Labs", "Brian Takita"]
@@ -50,7 +50,6 @@ Gem::Specification.new do |s|
     "lib/screw_unit.rb",
     "lib/screw_unit/representations.rb",
     "lib/screw_unit/representations/spec.html.rb",
-    "lib/screw_unit/resources/core_file.rb",
     "spec/functional_suite.rb",
     "spec/spec_suite.rb",
     "spec/unit_suite.rb",
