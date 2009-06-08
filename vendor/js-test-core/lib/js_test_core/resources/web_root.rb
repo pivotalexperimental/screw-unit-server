@@ -1,6 +1,6 @@
 module JsTestCore
   module Resources
-    class WebRoot < Resources::Resource
+    class WebRoot < Resource
       map "/"
       
       get("") do

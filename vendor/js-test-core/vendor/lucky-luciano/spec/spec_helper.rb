@@ -43,6 +43,6 @@ class Spec::ExampleGroup
   end
 end
 
-Spec::Runner.configure do |config|
+Spec::SeleniumSession.configure do |config|
   config.mock_with :rr
 end
