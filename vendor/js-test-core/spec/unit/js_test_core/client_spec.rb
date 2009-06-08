@@ -62,7 +62,7 @@ module JsTestCore
       context "when the Session is not found" do
         it "raises a SessionNotFound error" do
           mock_post_to_runner("*firefox")
-          mock(request).get("/sessions/my_session_id") do
+          mock(request).get(Resources::SeleniumSession.path(":session_id", :session_id => "my_session_id")) do
             stub(session_response = Object.new).code {"404"}
             session_response
           end
@@ -104,7 +104,7 @@ module JsTestCore
       end
 
       def mock_polling_returns(session_statuses=[])
-        mock(request).get("/sessions/my_session_id") do
+        mock(request).get(Resources::SeleniumSession.path(":session_id", :session_id => "my_session_id")) do
           stub(session_response = Object.new).body {session_statuses.shift}
           stub(session_response).code {"200"}
           session_response

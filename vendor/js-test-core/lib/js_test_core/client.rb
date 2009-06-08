@@ -109,7 +109,7 @@ module JsTestCore
     end
 
     def poll
-      @last_poll = http.get("/sessions/#{session_id}")
+      @last_poll = http.get(Resources::SeleniumSession.path("/:session_id", :session_id => session_id))
       ensure_session_exists!
       parts = parts_from_query(last_poll.body)
       @last_poll_status = parts['status']

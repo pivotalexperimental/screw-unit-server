@@ -1,16 +1,10 @@
 module LuckyLuciano
   class Resource
     class << self
-      attr_reader :base_path_definition, :base_path_param_keys
+      attr_reader :base_path_definition
 
       def map(base_path_definition)
         @base_path_definition = base_path_definition
-        @base_path_param_keys = base_path_definition.split("/").find_all do |segment|
-          segment_param_key(segment)
-        end.map do |param|
-          param[1..-1].to_sym
-        end
-        @base_path_definition
       end
 
       def recorded_http_handlers
@@ -32,10 +26,19 @@ module LuckyLuciano
       def path(*sub_paths)
         params = sub_paths.last.is_a?(Hash) ? sub_paths.pop : {}
 
-        full_path = "#{base_path(params)}/#{sub_paths.join("/")}".gsub("//", "/").gsub(/\/$/, "")
+        sub_path_definition = sub_paths.join("/")
 
+        full_path = "#{base_path(params)}/#{path_from_definition(sub_path_definition, params)}".
+          gsub("//", "/").gsub(/\/$/, "")
+
+        base_path_param_keys = param_keys_from(base_path_definition)
         query_params = params.delete_if do |key, value|
           base_path_param_keys.include?(key)
+        end
+
+        sub_path_param_keys = param_keys_from(sub_path_definition)
+        query_params = params.delete_if do |key, value|
+          sub_path_param_keys.include?(key)
         end
 
         if query_params.empty?
@@ -47,15 +50,22 @@ module LuckyLuciano
       end
 
       def base_path(params={})
-        base_path = if base_path_param_keys.empty?
-          base_path_definition.dup
+        path_from_definition(base_path_definition, params)
+      end
+
+      protected
+
+      def path_from_definition(definition, params={})
+        param_keys = param_keys_from(definition)
+        if param_keys.empty?
+          definition.dup
         else
-          base_path_param_keys.each do |base_path_param|
+          param_keys.each do |base_path_param|
             unless params.include?(base_path_param.to_sym)
               raise ArgumentError, "Expected #{base_path_param.inspect} to have a value"
             end
           end
-          base_path_definition.split("/").map do |segment|
+          definition.split("/").map do |segment|
             if param_key = segment_param_key(segment)
               params[param_key]
             else
@@ -65,7 +75,13 @@ module LuckyLuciano
         end
       end
 
-      protected
+      def param_keys_from(definition)
+        definition.split("/").find_all do |segment|
+          segment_param_key(segment)
+        end.map do |param|
+          param[1..-1].to_sym
+        end
+      end
 
       def segment_param_key(segment)
         segment[0..0] == ':' ? segment[1..-1].to_sym : nil
