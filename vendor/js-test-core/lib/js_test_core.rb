@@ -1,5 +1,6 @@
 require "rubygems"
-gem "thin", ">=0.8.0"
+gem "thin", ">=1.2.1"
+gem "erector", ">=0.6.6"
 gem "selenium-client"
 
 dir = File.dirname(__FILE__)
