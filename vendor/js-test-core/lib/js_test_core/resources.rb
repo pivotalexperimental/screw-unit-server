@@ -12,3 +12,5 @@ require "#{dir}/resources/spec_file"
 require "#{dir}/resources/core_file"
 require "#{dir}/resources/web_root"
 require "#{dir}/resources/not_found"
+
+require "#{dir}/resources/implementations_deprecation"

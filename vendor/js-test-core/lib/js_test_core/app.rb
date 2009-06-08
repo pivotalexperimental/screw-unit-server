@@ -6,6 +6,7 @@ module JsTestCore
     register(JsTestCore::Resources::CoreFile.route_handler)
     register(JsTestCore::Resources::SpecFile.route_handler)
     register(JsTestCore::Resources::File.route_handler)
+    register(JsTestCore::Resources::ImplementationsDeprecation.route_handler)
     register(JsTestCore::Resources::NotFound.route_handler)
   end
 end
