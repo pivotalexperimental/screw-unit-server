@@ -76,7 +76,7 @@ module ScrewUnit
 
               ajax({
                 type: "POST",
-                url: '/sessions/finish',
+                url: '#{ScrewUnit::Resources::SeleniumSession.path("/finish")}',
                 data: {"text": error_text}
               });
             });
