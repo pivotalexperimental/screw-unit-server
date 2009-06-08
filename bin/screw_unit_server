@@ -5,11 +5,13 @@ $LOAD_PATH.unshift("#{dir}/../lib")
 require "screw_unit"
 require "thin"
 
-spec_root_path = ARGV[0] || raise("You need to pass in a spec root")
-public_path = ARGV[1] || raise("You need to pass in a public path")
+unless ENV["SCREW_UNIT_SPEC_ROOT"]
+  ENV["SCREW_UNIT_SPEC_ROOT"] = ARGV[0]
+end
 
-ScrewUnit.spec_root_path = spec_root_path
-ScrewUnit.public_path = public_path
+unless ENV["SCREW_UNIT_PUBLIC"]
+  ENV["SCREW_UNIT_PUBLIC"] = ARGV[1]
+end
 
 Thin::Runner.new([
   "--port", "8080",
