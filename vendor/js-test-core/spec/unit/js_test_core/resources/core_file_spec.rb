@@ -22,8 +22,30 @@ module JsTestCore
       end
 
       describe "Directories" do
+        macro "returns a page with the files in the root core directory" do |relative_path|
+          it "returns a page with the files in the root core directory" do
+            response = get(CoreFile.path(relative_path))
+            response.should be_http(
+              200,
+              {},
+              ""
+            )
+            doc = Nokogiri::HTML(response.body)
+            links = doc.search("a").map {|script| script["href"]}
+            links.should include("/core/JsTestCore.js")
+            links.should include("/core/JsTestCore.css")
+            links.should include("/core/subdir")
+          end
+        end
+        describe "GET /core" do
+          send("returns a page with the files in the root core directory", "")
+        end
+        describe "GET /core/" do
+          send("returns a page with the files in the root core directory", "/")
+        end
+
         describe "GET /core/subdir" do
-          it "returns a page with a of files in the directory" do
+          it "returns a page with the files in the directory" do
             response = get(CoreFile.path("subdir"))
             response.should be_http(
               200,

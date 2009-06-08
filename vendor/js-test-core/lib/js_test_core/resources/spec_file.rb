@@ -11,6 +11,10 @@ module JsTestCore
 
       map "/specs"
 
+      get "/?" do
+        do_get
+      end
+
       get "*" do
         do_get
       end

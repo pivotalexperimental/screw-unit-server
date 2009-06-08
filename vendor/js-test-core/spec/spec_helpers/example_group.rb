@@ -1,4 +1,18 @@
 class Spec::ExampleGroup
+  class << self
+    def macro(name, &block)
+      eigen do
+        define_method(name, &block)
+      end
+    end
+
+    def eigen(&block)
+      eigen_class = (class << self; self; end)
+      eigen_class.class_eval(&block)
+      eigen_class
+    end
+  end
+  
   include Rack::Test::Methods
   include BeHttp
   attr_reader :core_path, :spec_root_path, :public_path, :server, :connection

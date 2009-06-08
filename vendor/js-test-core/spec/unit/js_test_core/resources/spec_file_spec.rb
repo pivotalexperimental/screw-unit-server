@@ -57,6 +57,33 @@ module JsTestCore
       end
 
       describe "Directories" do
+        describe "GET /specs" do
+          macro "renders a suite for all specs" do |relative_path|
+            it "renders a suite for all specs" do
+              path = "#{spec_root_path}"
+
+              response = get(relative_path)
+              response.should be_http(
+                200,
+                {
+                  "Content-Type" => "text/html",
+                  "Last-Modified" => ::File.mtime(path).rfc822
+                },
+                ""
+              )
+              doc = Nokogiri::HTML(response.body)
+              js_files = doc.search("script").map {|script| script["src"]}
+              js_files.should include("/specs/failing_spec.js")
+              js_files.should include("/specs/custom_dir_and_suite/passing_spec.js")
+              js_files.should include("/specs/foo/passing_spec.js")
+              js_files.should include("/specs/foo/failing_spec.js")
+            end
+          end
+
+          send("renders a suite for all specs", SpecFile.path)
+          send("renders a suite for all specs", SpecFile.path("/"))
+        end
+
         describe "GET /specs/foo" do
           it "renders a spec suite that includes all of the javascript spec files in the directory" do
             path = "#{spec_root_path}/foo"

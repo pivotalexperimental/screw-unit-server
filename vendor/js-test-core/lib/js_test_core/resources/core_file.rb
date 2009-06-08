@@ -3,6 +3,10 @@ module JsTestCore
     class CoreFile < File
       map "/core"
 
+      get "/?" do
+        do_get
+      end
+
       get "*" do
         do_get
       end
