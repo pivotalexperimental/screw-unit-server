@@ -3,7 +3,16 @@
 dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift("#{dir}/../lib")
 require "screw_unit"
+require "thin"
 
 spec_root_path = ARGV[0] || raise("You need to pass in a spec root")
 public_path = ARGV[1] || raise("You need to pass in a public path")
-ScrewUnit::Server.run(spec_root_path, public_path)
+
+ScrewUnit.spec_root_path = spec_root_path
+ScrewUnit.public_path = public_path
+
+Thin::Runner.new([
+  "--port", "8080",
+  "--rackup", File.expand_path("#{dir}/../standalone.ru"),
+  "start"]
+).run!

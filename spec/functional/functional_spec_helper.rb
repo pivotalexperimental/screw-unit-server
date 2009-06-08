@@ -4,12 +4,21 @@ require "spec/autorun"
 require "selenium_rc"
 require "thin"
 dir = File.dirname(__FILE__)
+LIBRARY_ROOT_DIR = File.expand_path("#{dir}/../..")
+require "#{LIBRARY_ROOT_DIR}/vendor/js-test-core/spec/spec_helpers/be_http"
+require "#{LIBRARY_ROOT_DIR}/vendor/js-test-core/spec/spec_helpers/show_test_exceptions"
 require "#{dir}/functional_spec_server_starter"
 ARGV.push("-b")
 
 Spec::Runner.configure do |config|
   config.mock_with :rr
 end
+
+Sinatra::Application.use ShowTestExceptions
+Sinatra::Application.set :raise_errors, true
+
+Sinatra::Application.use(ScrewUnit::App)
+
 
 class Spec::ExampleGroup
   include WaitFor
