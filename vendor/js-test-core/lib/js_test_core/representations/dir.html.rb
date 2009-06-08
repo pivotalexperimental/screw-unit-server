@@ -6,9 +6,11 @@ module JsTestCore
       def body_content
         ul do
           ::Dir.glob("#{absolute_path}/*").inject("") do |html, file|
-            file_basename = ::File.basename(file)
             li do
-              a(file_basename, :href => file_basename)
+              a(
+                ::File.basename(file),
+                :href => "#{relative_path}/#{::File.basename(file)}".gsub("//", "/")
+              )
             end
           end
         end

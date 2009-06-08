@@ -60,7 +60,7 @@ module JsTestCore
             response.should be_http(
               200,
               {},
-              %r(<a href="example.css">example.css</a>)
+              %r(<a href="/stylesheets/example.css">example.css</a>)
             )
           end
         end
@@ -71,7 +71,7 @@ module JsTestCore
             response.should be_http(
               200,
               {},
-              %r(<a href="bar.js">bar.js</a>)
+              %r(<a href="/javascripts/subdir/bar.js">bar.js</a>)
             )
           end
         end

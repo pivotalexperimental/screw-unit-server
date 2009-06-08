@@ -28,7 +28,7 @@ module JsTestCore
             response.should be_http(
               200,
               {},
-              %r(<a href="SubDirFile.js">SubDirFile.js</a>)
+              %r(<a href="/core/subdir/SubDirFile.js">SubDirFile.js</a>)
             )
           end
         end
