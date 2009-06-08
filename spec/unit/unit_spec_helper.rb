@@ -19,6 +19,9 @@ end
 
 Sinatra::Application.use ShowTestExceptions
 Sinatra::Application.set :raise_errors, true
+Sinatra::Application.set :show_exceptions, false
+JsTestCore::App.set :raise_errors, true
+JsTestCore::App.set :show_exceptions, false
 
 Sinatra::Application.use(ScrewUnit::App)
 
