@@ -13,8 +13,4 @@ unless ENV["SCREW_UNIT_PUBLIC"]
   ENV["SCREW_UNIT_PUBLIC"] = ARGV[1]
 end
 
-Thin::Runner.new([
-  "--port", "8080",
-  "--rackup", File.expand_path("#{dir}/../standalone.ru"),
-  "start"]
-).run!
+ScrewUnit::ThinRunner.start

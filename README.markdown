@@ -4,7 +4,7 @@ The Screw Unit ruby library is a server runner for the Screw Unit javascript lib
 # Installing Screw Unit
 You can use Screw Unit as a gem or as a Rails plugin.
 To install the gem, run:
-  sudo gem install screw_unit
+  sudo gem install pivotal-screw-unit-server
 
 To install the plugin with Rails 2.1.0:
   script/plugin install git://github.com/pivotal/screw-unit-server.git
@@ -19,7 +19,12 @@ After installing screw unit server, run:
 The Rails plugin gives you generators when using Screw Unit in a Rails environment.
 
 # Running Screw Unit Server
-First you need to start your Screw Unit server.
+You can run the Screw Unit Server from the command line or via a Rails script.
+You can pass in the spec_file_path and public_path to the runner scripts,
+or by setting the SCREW_UNIT_SPEC_ROOT and SCREW_UNIT_PUBLIC environment variables.
+
+To run from the command line:
+  screw_unit_server [spec_file_path] [public_path]
 
 If you are using screw_unit_server as a Rails plugin, you can simply run:
   script/screw_unit_server

@@ -5,4 +5,4 @@ root = File.expand_path("#{dir}/..")
 require "#{root}/config/boot"
 require "activesupport"
 require File.join(dir, '..', 'vendor', 'plugins', 'screw-unit-server', 'lib', 'screw_unit')
-ScrewUnit::RailsServer.run(root)
+ScrewUnit::ThinRunner.start

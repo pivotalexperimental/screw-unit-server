@@ -1,3 +1,5 @@
+- Added ScrewUnit::ThinRunner.start
+
 0.5.0
 - Replaced thin-rest with Sinatra and Lucky Luciano as the server base.
 - The Screw Unit Server is now Rake middleware.
