@@ -1,6 +1,7 @@
 module ScrewUnit
   module Representations
     class Spec < JsTestCore::Representations::Spec
+      needs :spec_files
       def title_text
         "Screw Unit suite"
       end
