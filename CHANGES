@@ -1,3 +1,6 @@
+0.5.6
+- Fixed require thin issue in ScrewUnit::Server.start
+
 0.5.5
 - Renamed ScrewUnit::ThinRunner to ScrewUnit::Server
 
