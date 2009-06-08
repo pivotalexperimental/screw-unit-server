@@ -10,6 +10,7 @@ begin
     s.authors = ["Pivotal Labs", "Brian Takita"]
     s.files = Dir["[A-Z]*"] +
       Dir["*.rb"] +
+      Dir["*.ru"] +
       Dir["lib/**/*.rb"] +
       Dir["core/**/**"] +
       Dir["bin/**"] +
