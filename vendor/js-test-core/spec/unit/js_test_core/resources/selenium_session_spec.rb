@@ -5,25 +5,17 @@ module JsTestCore
     describe SeleniumSession do
       attr_reader :request, :driver, :session_id, :selenium_browser_start_command
 
-      def self.before_with_selenium_browser_start_command(selenium_browser_start_command="selenium browser start command")
-        before do
-          @driver = FakeSeleniumDriver.new
-          @session_id = FakeSeleniumDriver::SESSION_ID
-          @selenium_browser_start_command = selenium_browser_start_command
-          stub(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
-            driver
-          end
-        end
-      end
-
       after do
         Models::SeleniumSession.send(:instances).clear
       end
 
       describe "POST /selenium_sessions" do
-        before_with_selenium_browser_start_command
         before do
-          stub(Thread).start.yields
+          @session_id = FakeSeleniumDriver::SESSION_ID
+          @driver = FakeSeleniumDriver.new
+          stub.proxy(Selenium::Client::Driver).new do
+            driver
+          end
         end
 
         it "responds with a 200 and the session_id" do
@@ -37,112 +29,144 @@ module JsTestCore
           )
         end
 
-        it "starts the Selenium Driver, creates a SessionID cookie, and opens the spec page" do
-          mock(driver).start
-          stub(driver).session_id {session_id}
-          mock(driver).create_cookie("session_id=#{session_id}")
-          mock(driver).open("/")
-          mock(driver).open("/specs")
-
-          mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
-            driver
+        it "creates and starts a Models::SeleniumSession" do
+          mock.proxy(Models::SeleniumSession).new({
+            :selenium_host => 'localhost',
+            :selenium_port => 4444,
+            :selenium_browser_start_command => "*firefox",
+            :spec_url => 'http://0.0.0.0:8080/specs'
+          }) do |selenium_session|
+            mock.strong(selenium_session).start
           end
-          response = post(SeleniumSession.path("/"), {:selenium_browser_start_command => selenium_browser_start_command})
+
+          response = post(SeleniumSession.path("/"), {:selenium_browser_start_command => "*firefox"})
         end
 
         describe "when a selenium_host parameter is passed into the request" do
-          it "starts the Selenium Driver with the passed in selenium_host" do
-            mock(Selenium::Client::Driver).new('another-machine', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
-              driver
+          it "creates and starts the Models::SeleniumSession with the given selenium_host" do
+            mock.proxy(Models::SeleniumSession).new({
+              :selenium_host => 'another-machine',
+              :selenium_port => 4444,
+              :selenium_browser_start_command => "*firefox",
+              :spec_url => 'http://0.0.0.0:8080/specs'
+            }) do |selenium_session|
+              mock.strong(selenium_session).start
             end
+
             response = post(SeleniumSession.path("/"), {
-              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_browser_start_command => "*firefox",
               :selenium_host => "another-machine"
             })
           end
         end
 
         describe "when a selenium_host parameter is not passed into the request" do
-          it "starts the Selenium Driver from localhost" do
-            mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
-              driver
+          it "creates and starts the Models::SeleniumSession with localhost" do
+            mock.proxy(Models::SeleniumSession).new({
+              :selenium_host => 'localhost',
+              :selenium_port => 4444,
+              :selenium_browser_start_command => "*firefox",
+              :spec_url => 'http://0.0.0.0:8080/specs'
+            }) do |selenium_session|
+              mock.strong(selenium_session).start
             end
+
             response = post(SeleniumSession.path("/"), {
-              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_browser_start_command => "*firefox",
               :selenium_host => ""
             })
           end
         end
 
         describe "when a selenium_port parameter is passed into the request" do
-          it "starts the Selenium Driver with the passed in selenium_port" do
-            mock(Selenium::Client::Driver).new('localhost', 4000, selenium_browser_start_command, 'http://0.0.0.0:8080') do
-              driver
+          it "creates and starts the Models::SeleniumSession with the given selenium_port" do
+            mock.proxy(Models::SeleniumSession).new({
+              :selenium_host => 'localhost',
+              :selenium_port => 4000,
+              :selenium_browser_start_command => "*firefox",
+              :spec_url => 'http://0.0.0.0:8080/specs'
+            }) do |selenium_session|
+              mock.strong(selenium_session).start
             end
             response = post(SeleniumSession.path("/"), {
-              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_browser_start_command => "*firefox",
               :selenium_port => "4000"
             })
           end
         end
 
         describe "when a selenium_port parameter is not passed into the request" do
-          it "starts the Selenium Driver from localhost" do
-            mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
-              driver
+          it "creates and starts the Models::SeleniumSession on port 4444" do
+            mock.proxy(Models::SeleniumSession).new({
+              :selenium_host => 'localhost',
+              :selenium_port => 4444,
+              :selenium_browser_start_command => "*firefox",
+              :spec_url => 'http://0.0.0.0:8080/specs'
+            }) do |selenium_session|
+              mock.strong(selenium_session).start
             end
             response = post(SeleniumSession.path("/"), {
-              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_browser_start_command => "*firefox",
               :selenium_port => ""
             })
           end
         end
 
         describe "when a spec_url is passed into the request" do
-          it "runs Selenium with the passed in host and part to run the specified spec session in Firefox" do
-            mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://another-host:8080') do
-              driver
+          it "creates and starts the Models::SeleniumSession with the given spec_url" do
+            mock.proxy(Models::SeleniumSession).new({
+              :selenium_host => 'localhost',
+              :selenium_port => 4444,
+              :selenium_browser_start_command => "*firefox",
+              :spec_url => 'http://another-host:8080/specs/subdir'
+            }) do |selenium_session|
+              mock.strong(selenium_session).start
             end
-            mock(driver).start
-            stub(driver).create_cookie
-            mock(driver).open("/")
-            mock(driver).open("/specs/subdir")
-            mock(driver).session_id {session_id}.at_least(1)
 
             response = post(SeleniumSession.path("/"), {
-              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_browser_start_command => "*firefox",
               :spec_url => "http://another-host:8080/specs/subdir"
             })
           end
         end
 
         describe "when a spec_url is not passed into the request" do
-          before do
-            mock(Selenium::Client::Driver).new('localhost', 4444, selenium_browser_start_command, 'http://0.0.0.0:8080') do
-              driver
+          it "creates and starts the Models::SeleniumSession with a spec_url of http://0.0.0.0:8080/specs" do
+            mock.proxy(Models::SeleniumSession).new({
+              :selenium_host => 'localhost',
+              :selenium_port => 4444,
+              :selenium_browser_start_command => "*firefox",
+              :spec_url => 'http://0.0.0.0:8080/specs'
+            }) do |selenium_session|
+              mock.strong(selenium_session).start
             end
-          end
-
-          it "uses Selenium to run the entire spec session in Firefox" do
-            mock(driver).start
-            stub(driver).create_cookie
-            mock(driver).open("/")
-            mock(driver).open("/specs")
-            mock(driver).session_id {session_id}.at_least(1)
 
             response = post(SeleniumSession.path("/"), {
-              :selenium_browser_start_command => selenium_browser_start_command,
+              :selenium_browser_start_command => "*firefox",
               :spec_url => ""
             })
           end
         end
       end
 
-      describe "POST /selenium_sessions/firefox" do
-        before_with_selenium_browser_start_command "*firefox"
+      def self.before_with_selenium_browser_start_command(selenium_browser_start_command)
+        before do
+          @session_id = FakeSeleniumDriver::SESSION_ID
+          @selenium_browser_start_command = selenium_browser_start_command
+        end
+      end
 
+      describe "POST /selenium_sessions/firefox" do
         it "creates a selenium_session whose #driver started with '*firefox'" do
-          Models::SeleniumSession.find(session_id).should be_nil
+          mock.proxy(Models::SeleniumSession).new({
+            :selenium_host => 'localhost',
+            :selenium_port => 4444,
+            :selenium_browser_start_command => "*firefox",
+            :spec_url => 'http://0.0.0.0:8080/specs'
+          }) do |selenium_session|
+            mock.strong(selenium_session).start
+          end
+
           response = post(SeleniumSession.path("/firefox"))
           body = "session_id=#{session_id}"
           response.should be_http(
@@ -150,18 +174,20 @@ module JsTestCore
             {'Content-Length' => body.length.to_s},
             body
           )
-
-          selenium_session = Models::SeleniumSession.find(session_id)
-          selenium_session.class.should == Models::SeleniumSession
-          selenium_session.driver.should == driver
         end
       end
 
       describe "POST /selenium_sessions/iexplore" do
-        before_with_selenium_browser_start_command "*iexplore"
-
         it "creates a selenium_session whose #driver started with '*iexplore'" do
-          Models::SeleniumSession.find(session_id).should be_nil
+          mock.proxy(Models::SeleniumSession).new({
+            :selenium_host => 'localhost',
+            :selenium_port => 4444,
+            :selenium_browser_start_command => "*iexplore",
+            :spec_url => 'http://0.0.0.0:8080/specs'
+          }) do |selenium_session|
+            mock.strong(selenium_session).start
+          end
+
           response = post(SeleniumSession.path("/iexplore"))
           body = "session_id=#{session_id}"
           response.should be_http(
@@ -169,10 +195,6 @@ module JsTestCore
             {'Content-Length' => body.length.to_s},
             body
           )
-
-          selenium_session = Models::SeleniumSession.find(session_id)
-          selenium_session.class.should == Models::SeleniumSession
-          selenium_session.driver.should == driver
         end
       end
 

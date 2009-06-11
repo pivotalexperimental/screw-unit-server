@@ -34,6 +34,25 @@ module JsTestCore
 
       protected
 
+      def do_post(selenium_browser_start_command)
+        selenium_session = Models::SeleniumSession.new({
+          :spec_url => request['spec_url'].to_s == "" ? full_spec_suite_url : request['spec_url'],
+          :selenium_browser_start_command => selenium_browser_start_command,
+          :selenium_host => request['selenium_host'].to_s == "" ? 'localhost' : request['selenium_host'].to_s,
+          :selenium_port => request['selenium_port'].to_s == "" ? 4444 : Integer(request['selenium_port'])
+        })
+        selenium_session.start
+
+        body = "session_id=#{selenium_session.session_id}"
+        [
+          200,
+          {
+            "Content-Length" => body.length
+          },
+          body
+        ]
+      end
+
       def do_get
         selenium_session = Models::SeleniumSession.find(session_id)
         if selenium_session
@@ -75,25 +94,6 @@ module JsTestCore
 
       def session_id
         params["session_id"] || request.cookies["session_id"]
-      end
-
-      def do_post(selenium_browser_start_command)
-        selenium_session = Models::SeleniumSession.new({
-          :spec_url => request['spec_url'].to_s == "" ? full_spec_suite_url : request['spec_url'],
-          :selenium_browser_start_command => selenium_browser_start_command,
-          :selenium_host => request['selenium_host'].to_s == "" ? 'localhost' : request['selenium_host'].to_s,
-          :selenium_port => request['selenium_port'].to_s == "" ? 4444 : Integer(request['selenium_port'])
-        })
-        selenium_session.start
-
-        body = "session_id=#{selenium_session.session_id}"
-        [
-          200,
-          {
-            "Content-Length" => body.length  
-          },
-          body
-        ]
       end
 
       def full_spec_suite_url

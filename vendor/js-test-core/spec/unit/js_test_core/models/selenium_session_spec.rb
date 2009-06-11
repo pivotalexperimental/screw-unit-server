@@ -3,18 +3,45 @@ require File.expand_path("#{File.dirname(__FILE__)}/../../unit_spec_helper")
 module JsTestCore
   module Models
     describe SeleniumSession do
-      attr_reader :driver, :session_id, :selenium_session
+      attr_reader :driver, :selenium_session, :browser_host, :spec_url, :selenium_browser_start_command, :selenium_host, :selenium_port
 
       before do
         @driver = FakeSeleniumDriver.new
-        @selenium_session = SeleniumSession.new(:spec_url => "http://localhost:8080/specs")
-        stub(selenium_session).driver {driver}
-        driver.start
-        @session_id = driver.session_id
-        SeleniumSession.register(selenium_session)
+
+        @browser_host = "http://localhost:8080"
+        @spec_url = "#{browser_host}/specs"
+        @selenium_browser_start_command = "*firefox"
+        @selenium_host = "localhost"
+        @selenium_port = 4444
+
+        stub.proxy(Selenium::Client::Driver).new do
+          driver
+        end
+
+        @selenium_session = SeleniumSession.new(
+          :spec_url => spec_url,
+          :selenium_browser_start_command => selenium_browser_start_command,
+          :selenium_host => selenium_host,
+          :selenium_port => selenium_port
+        )
+      end
+
+      def self.started
+        attr_reader :session_id
+        before do
+          selenium_session.start
+          @session_id = selenium_session.session_id
+        end
+      end
+
+      describe "#initialize" do
+        it "creates a Selenium Driver" do
+          Selenium::Client::Driver.should have_received.new(selenium_host, selenium_port, selenium_browser_start_command, browser_host)
+        end
       end
 
       describe ".find" do
+        started
         context "when passed an id for which there is a corresponding selenium_session" do
           it "returns the selenium_session" do
             SeleniumSession.find(session_id).should == selenium_session
@@ -29,7 +56,19 @@ module JsTestCore
         end
       end
 
+      describe "#start" do
+        it "starts the Selenium Driver and opens the spec page with the session_id in the params" do
+          stub(Thread).start.yields
+          mock.proxy(driver).start
+          mock.proxy(driver).open("/")
+          mock.proxy(driver).open("/specs?session_id=#{FakeSeleniumDriver::SESSION_ID}")
+
+          selenium_session.start
+        end
+      end
+
       describe "#running?" do
+        started
         context "when the driver#session_started? is true" do
           it "returns true" do
             driver.session_started?.should be_true
@@ -46,8 +85,8 @@ module JsTestCore
         end
       end
 
-      describe "#finalize" do
-        attr_reader :selenium_session
+      describe "#finish" do
+        started
         
         before do
           mock.proxy(driver).stop

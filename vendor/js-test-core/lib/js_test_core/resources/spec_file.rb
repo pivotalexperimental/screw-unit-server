@@ -52,7 +52,7 @@ module JsTestCore
       end
 
       def render_spec(spec_files)
-        self.class.spec_representation_class.new(:spec_files => spec_files).to_s
+        self.class.spec_representation_class.new(:spec_files => spec_files, :session_id => params[:session_id]).to_s
       end
 
       def absolute_path

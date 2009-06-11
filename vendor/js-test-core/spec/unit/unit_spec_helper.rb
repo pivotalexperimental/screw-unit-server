@@ -2,6 +2,7 @@ require "rubygems"
 require "spec"
 require "spec/autorun"
 require "rack/test"
+require "rr"
 ARGV.push("-b")
 
 dir = File.dirname(__FILE__)
@@ -16,7 +17,7 @@ require "#{LIBRARY_ROOT_DIR}/spec/spec_helpers/fake_selenium_driver"
 require "#{LIBRARY_ROOT_DIR}/spec/spec_helpers/show_test_exceptions"
 
 Spec::Runner.configure do |config|
-  config.mock_with :rr
+  config.mock_with RR::Adapters::Rspec
 end
 
 Sinatra::Application.use ShowTestExceptions

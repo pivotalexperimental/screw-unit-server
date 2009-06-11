@@ -105,6 +105,18 @@ module JsTestCore
         end
       end
 
+      context "when passed a :session_id param" do
+        it "instantiates the Representation with the :session_id and renders window._session_id=:session_id" do
+          session_id = "DEADBEEF"
+
+          response = get(SpecFile.path("failing_spec"), :session_id => session_id)
+          doc = Nokogiri::HTML(response.body)
+          doc.css("script").any? do |script|
+            script.inner_html.include?("window._session_id = '#{session_id}';")
+          end.should be_true
+        end
+      end
+
       describe "GET /specs/i_dont_exist" do
         it "renders a 404" do
           response = get(SpecFile.path("i_dont_exist"))
