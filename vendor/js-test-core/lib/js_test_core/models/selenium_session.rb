@@ -43,6 +43,7 @@ module JsTestCore
         end
         self.class.register(self)
         Thread.start do
+          driver.open("/")
           driver.create_cookie("session_id=#{session_id}")
           driver.open("#{parsed_spec_url.path}")
         end
