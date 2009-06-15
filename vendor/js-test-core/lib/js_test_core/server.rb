@@ -1,7 +1,7 @@
 module JsTestCore
   class Server
     class << self
-      attr_reader :rackup_path
+      attr_accessor :rackup_path
       def start
         require "thin"
         Thin::Runner.new([
