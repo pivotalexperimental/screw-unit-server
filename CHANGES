@@ -1,3 +1,6 @@
+0.5.9
+- Allow test suite to clear all cookies
+
 0.5.7
 - Fixed Server runner
 
