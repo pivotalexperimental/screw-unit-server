@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{screw-unit-server}
-  s.version = "0.5.8"
+  s.version = "0.5.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pivotal Labs", "Brian Takita"]
-  s.date = %q{2009-06-08}
+  s.date = %q{2009-06-14}
   s.description = %q{The Screw Unit server conveniently serves your Screw Unit specs and javascript files and css stylesheets.}
   s.email = %q{pivotallabsopensource@googlegroups.com}
   s.executables = ["screw_unit", "screw_unit_server"]
@@ -124,25 +124,26 @@ Gem::Specification.new do |s|
     "vendor/js-test-core/vendor/lucky-luciano/spec/spec_helper.rb",
     "vendor/js-test-core/vendor/lucky-luciano/spec/spec_suite.rb"
   ]
+  s.has_rdoc = true
   s.homepage = %q{http://github.com/pivotal/screw-unit-server}
   s.rdoc_options = ["--main", "README.markdown"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.3}
+  s.rubygems_version = %q{1.3.1}
   s.summary = %q{Server and helpers for your Screw Unit tests.}
   s.test_files = [
+    "spec/unit_suite.rb",
+    "spec/functional/functional_spec_server_starter.rb",
     "spec/functional/functional_spec.rb",
     "spec/functional/functional_spec_helper.rb",
-    "spec/functional/functional_spec_server_starter.rb",
-    "spec/functional_suite.rb",
     "spec/spec_suite.rb",
     "spec/unit/js_test_core/specs/spec_file_spec.rb",
     "spec/unit/unit_spec_helper.rb",
-    "spec/unit_suite.rb"
+    "spec/functional_suite.rb"
   ]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
-    s.specification_version = 3
+    s.specification_version = 2
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<thin>, [">= 1.2.1"])
