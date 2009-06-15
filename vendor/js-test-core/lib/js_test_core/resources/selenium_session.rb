@@ -44,13 +44,7 @@ module JsTestCore
         selenium_session.start
 
         body = "session_id=#{selenium_session.session_id}"
-        [
-          200,
-          {
-            "Content-Length" => body.length
-          },
-          body
-        ]
+        [ 200, { }, body ]
       end
 
       def do_get
@@ -65,21 +59,10 @@ module JsTestCore
               "status=#{FAILURE_COMPLETION}&reason=#{selenium_session.run_result}"
             end
           end
-          [
-            200,
-            {'Content-Length' => body.length},
-            body
-          ]
+          [ 200, {}, body ]
         else
           body = Representations::NotFound.new(:message => "Could not find session #{session_id}").to_s
-          [
-            404,
-            {
-              "Content-Type" => "text/html",
-              "Content-Length" => body.size.to_s
-            },
-            body
-          ]
+          [ 404, { "Content-Type" => "text/html" }, body ]
         end
       end
 

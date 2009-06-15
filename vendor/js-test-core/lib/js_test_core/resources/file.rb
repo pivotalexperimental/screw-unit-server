@@ -51,8 +51,7 @@ module JsTestCore
           200,
           {
             'Content-Type' => content_type,
-            'Last-Modified' => ::File.mtime(absolute_path).rfc822,
-            'Content-Length' => ::File.size(absolute_path)
+            'Last-Modified' => ::File.mtime(absolute_path).rfc822
           },
           ::File.read(absolute_path)
         ]

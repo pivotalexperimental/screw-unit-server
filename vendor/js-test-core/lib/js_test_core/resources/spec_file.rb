@@ -44,15 +44,18 @@ module JsTestCore
           200,
           {
             'Content-Type' => "text/html",
-            'Last-Modified' => ::File.mtime(real_path).rfc822,
-            'Content-Length' => html.length
+            'Last-Modified' => ::File.mtime(real_path).rfc822
           },
           html
         ]
       end
 
       def render_spec(spec_files)
-        self.class.spec_representation_class.new(:spec_files => spec_files, :session_id => params[:session_id]).to_s
+        self.class.spec_representation_class.new(:spec_files => spec_files, :session_id => session_id).to_s
+      end
+
+      def session_id
+        params[:session_id] || request.cookies["session_id"]
       end
 
       def absolute_path

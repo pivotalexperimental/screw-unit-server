@@ -21,14 +21,7 @@ module JsTestCore
 
       def call
         body = Representations::NotFound.new(:message => "File #{request.path_info} not found").to_s
-        [
-          404,
-          {
-            "Content-Type" => "text/html",
-            "Content-Length" => body.size.to_s
-          },
-          body
-        ]
+        [ 404, { "Content-Type" => "text/html" }, body ]
       end
     end
   end
