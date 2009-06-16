@@ -1,6 +1,6 @@
 require File.expand_path("#{File.dirname(__FILE__)}/functional_spec_helper")
 
-describe "ScrewUnit" do
+describe ScrewUnit do
   attr_reader :stdout, :request
   before do
     @stdout = StringIO.new
