@@ -11,19 +11,19 @@ module JsTestCore
         ).run!
       end
 
-      def standalone_rackup(rack_builder, spec_root_env_var_name="JS_SPEC_ROOT", public_env_var_name="JS_PUBLIC")
+      def standalone_rackup(rack_builder, spec_root_path=File.expand_path("./spec/javascripts"), public_path=File.expand_path("./public"))
         require "sinatra"
 
-        JsTestCore.spec_root_path = ENV[spec_root_env_var_name] || File.expand_path("./spec/javascripts")
+        JsTestCore.spec_root_path = spec_root_path
         if File.directory?(JsTestCore.spec_root_path)
-          puts "#{spec_root_env_var_name} is #{JsTestCore.spec_root_path}"
+          puts "Spec root path is #{JsTestCore.spec_root_path}"
         else
           raise "#{spec_root_env_var_name} #{JsTestCore.spec_root_path} must be a directory"
         end
 
-        JsTestCore.public_path = ENV[public_env_var_name] || File.expand_path("./public")
+        JsTestCore.public_path = public_path
         if File.directory?(JsTestCore.public_path)
-          puts "#{public_env_var_name} is #{JsTestCore.public_path}"
+          puts "Public path is #{JsTestCore.public_path}"
         else
           raise "#{public_env_var_name} #{JsTestCore.public_path} must be a directory"
         end
