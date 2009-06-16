@@ -11,17 +11,17 @@ module JsTestCore
         ).run!
       end
 
-      def standalone_rackup(rack_builder, spec_root_path=File.expand_path("./spec/javascripts"), public_path=File.expand_path("./public"))
+      def standalone_rackup(rack_builder, spec_root_path=nil, public_path=nil)
         require "sinatra"
 
-        JsTestCore.spec_root_path = spec_root_path
+        JsTestCore.spec_root_path = spec_root_path || File.expand_path("./spec/javascripts")
         if File.directory?(JsTestCore.spec_root_path)
           puts "Spec root path is #{JsTestCore.spec_root_path}"
         else
           raise "#{spec_root_env_var_name} #{JsTestCore.spec_root_path} must be a directory"
         end
 
-        JsTestCore.public_path = public_path
+        JsTestCore.public_path = public_path || File.expand_path("./public")
         if File.directory?(JsTestCore.public_path)
           puts "Public path is #{JsTestCore.public_path}"
         else
