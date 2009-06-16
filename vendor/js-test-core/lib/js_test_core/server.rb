@@ -18,14 +18,14 @@ module JsTestCore
         if File.directory?(JsTestCore.spec_root_path)
           puts "Spec root path is #{JsTestCore.spec_root_path}"
         else
-          raise "#{spec_root_env_var_name} #{JsTestCore.spec_root_path} must be a directory"
+          raise ArgumentError, "#{spec_root_path} #{JsTestCore.spec_root_path} must be a directory"
         end
 
         JsTestCore.public_path = public_path || File.expand_path("./public")
         if File.directory?(JsTestCore.public_path)
           puts "Public path is #{JsTestCore.public_path}"
         else
-          raise "#{public_env_var_name} #{JsTestCore.public_path} must be a directory"
+          raise ArgumentError, "#{public_path} #{JsTestCore.public_path} must be a directory"
         end
 
         rack_builder.use JsTestCore::App
