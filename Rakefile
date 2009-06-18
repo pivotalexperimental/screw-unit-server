@@ -20,7 +20,7 @@ begin
     s.rdoc_options = ["--main", "README.markdown"]
     s.extra_rdoc_files = ["README.markdown", "CHANGES"]
     s.add_dependency("thin", ">=1.2.1")
-    s.add_dependency("erector", ">=0.6.6")
+    s.add_dependency("erector", ">=0.6.7")
     s.add_dependency("selenium-client")
   end
 rescue LoadError
