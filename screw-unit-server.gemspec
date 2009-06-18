@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{screw-unit-server}
-  s.version = "0.5.9"
+  s.version = "0.5.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pivotal Labs", "Brian Takita"]
-  s.date = %q{2009-06-14}
+  s.date = %q{2009-06-17}
   s.description = %q{The Screw Unit server conveniently serves your Screw Unit specs and javascript files and css stylesheets.}
   s.email = %q{pivotallabsopensource@googlegroups.com}
   s.executables = ["screw_unit", "screw_unit_server"]
@@ -48,9 +48,7 @@ Gem::Specification.new do |s|
     "core/spec/with_screw_context_spec.js",
     "init.rb",
     "lib/screw_unit.rb",
-    "lib/screw_unit/representations.rb",
     "lib/screw_unit/representations/spec.html.rb",
-    "lib/screw_unit/server.rb",
     "spec/functional_suite.rb",
     "spec/spec_suite.rb",
     "spec/unit_suite.rb",
@@ -82,6 +80,7 @@ Gem::Specification.new do |s|
     "vendor/js-test-core/lib/js_test_core/resources/spec_file.rb",
     "vendor/js-test-core/lib/js_test_core/resources/web_root.rb",
     "vendor/js-test-core/lib/js_test_core/selenium_server_configuration.rb",
+    "vendor/js-test-core/lib/js_test_core/server.rb",
     "vendor/js-test-core/spec/example_core/JsTestCore.css",
     "vendor/js-test-core/spec/example_core/JsTestCore.js",
     "vendor/js-test-core/spec/example_core/subdir/SubDirFile.js",
@@ -113,6 +112,7 @@ Gem::Specification.new do |s|
     "vendor/js-test-core/spec/unit/js_test_core/resources/spec_file_spec.rb",
     "vendor/js-test-core/spec/unit/js_test_core/resources/web_root_spec.rb",
     "vendor/js-test-core/spec/unit/js_test_core/selenium_server_configuration_spec.rb",
+    "vendor/js-test-core/spec/unit/js_test_core/server_spec.rb",
     "vendor/js-test-core/spec/unit/unit_spec_helper.rb",
     "vendor/js-test-core/spec/unit_suite.rb",
     "vendor/js-test-core/vendor/lucky-luciano/README.markdown",
@@ -136,8 +136,8 @@ Gem::Specification.new do |s|
     "spec/functional/functional_spec.rb",
     "spec/functional/functional_spec_helper.rb",
     "spec/spec_suite.rb",
-    "spec/unit/js_test_core/specs/spec_file_spec.rb",
     "spec/unit/unit_spec_helper.rb",
+    "spec/unit/spec_file_spec.rb",
     "spec/functional_suite.rb"
   ]
 
@@ -147,16 +147,16 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<thin>, [">= 1.2.1"])
-      s.add_runtime_dependency(%q<erector>, [">= 0.6.6"])
+      s.add_runtime_dependency(%q<erector>, [">= 0.6.7"])
       s.add_runtime_dependency(%q<selenium-client>, [">= 0"])
     else
       s.add_dependency(%q<thin>, [">= 1.2.1"])
-      s.add_dependency(%q<erector>, [">= 0.6.6"])
+      s.add_dependency(%q<erector>, [">= 0.6.7"])
       s.add_dependency(%q<selenium-client>, [">= 0"])
     end
   else
     s.add_dependency(%q<thin>, [">= 1.2.1"])
-    s.add_dependency(%q<erector>, [">= 0.6.6"])
+    s.add_dependency(%q<erector>, [">= 0.6.7"])
     s.add_dependency(%q<selenium-client>, [">= 0"])
   end
 end
