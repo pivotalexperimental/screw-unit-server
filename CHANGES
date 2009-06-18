@@ -1,3 +1,4 @@
+0.5.11
 - Added ScrewUnit::Representations::Spec.project_js_files, .project_css_files, and .jquery_js_file.
 
 0.5.10
