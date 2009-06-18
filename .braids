@@ -4,12 +4,12 @@ vendor/js-test-core:
   branch: master
   url: git://github.com/pivotal/js-test-core.git
   type: git
-  revision: 6a29c5cd30998f1a0e18e250c7ec5fe87b6c34a0
+  revision: d53f707f2f660c318dc7d975e63d5ef3c560f1d4
   remote: braid/vendor/js-test-core
 core: 
   squashed: true
-  url: git://github.com/pivotal/screw-unit.git
   branch: master
+  url: git://github.com/pivotal/screw-unit.git
   type: git
   revision: 71297e3e425052448a8591d011f364f5486d7b35
   remote: braid/core

@@ -1,3 +1,4 @@
+- Updated to erector 0.6.7, which fixes a bug related to including modules into Representations.
 - Allow test suite to clear all cookies
 - No longer using the /implementanions directory. Replace all cases of /implementations with /javascripts.
 - Added support for custom suite files
