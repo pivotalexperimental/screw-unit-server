@@ -1,3 +1,5 @@
+- Added ScrewUnit::Representations::Spec.project_js_files, .project_css_files, and .jquery_js_file.
+
 0.5.10
 - Updated to erector 0.6.7, which fixes a bug related to including modules into Representations.
 
