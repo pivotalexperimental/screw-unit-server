@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{screw-unit-server}
-  s.version = "0.5.11"
+  s.version = "0.5.12"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Pivotal Labs", "Brian Takita"]
-  s.date = %q{2009-06-17}
+  s.date = %q{2009-06-18}
   s.description = %q{The Screw Unit server conveniently serves your Screw Unit specs and javascript files and css stylesheets.}
   s.email = %q{pivotallabsopensource@googlegroups.com}
   s.executables = ["screw_unit", "screw_unit_server"]
