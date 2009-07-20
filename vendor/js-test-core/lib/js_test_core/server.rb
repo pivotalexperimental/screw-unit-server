@@ -7,35 +7,44 @@ module JsTestCore
       end
     end
 
+    DEFAULTS = {
+      :host => "0.0.0.0",
+      :port => 8080,
+      :spec_path => "./spec/javascripts",
+      :root_path => "./public",
+    }
+
     def cli(*argv)
       opts = Trollop.options(argv) do
         opt(
           :framework_name,
           "The name of the test framework you want to use. e.g. --framework-name=jasmine",
-          :type => String
+          :type => String,
+          :default => DEFAULTS[:framework_name]
         )
         opt(
           :framework_path,
           "The name of the test framework you want to use. e.g. --framework-path=./specs/jasmine_core",
-          :type => String
+          :type => String,
+          :default => DEFAULTS[:framework_path]
         )
         opt(
           :spec_path,
           "The path to the spec files. e.g. --spec-path=./specs",
           :type => String,
-          :default => "./spec/javascripts"
+          :default => DEFAULTS[:spec_path]
         )
         opt(
           :root_path,
           "The root path of the server. e.g. --root-path=./public",
           :type => String,
-          :default => "./public"
+          :default => DEFAULTS[:root_path]
         )
         opt(
           :port,
           "The server port",
-          :default => DEFAULT_PORT,
-          :type => Integer
+          :type => Integer,
+          :default => DEFAULTS[:port]
         )
       end
 
