@@ -7,8 +7,6 @@ module JsTestCore
       before do
         @stdout = StringIO.new
         Client.const_set(:STDOUT, stdout)
-        @request = "http request"
-        mock(Net::HTTP).start(DEFAULT_HOST, DEFAULT_PORT).yields(request)
         stub.instance_of(Client).sleep
       end
 
@@ -16,111 +14,111 @@ module JsTestCore
         Client.__send__(:remove_const, :STDOUT)
       end
 
-      it "tells the server to start a session run in Firefox and polls the status of the session until the session is complete" do
-        mock_post_to_runner("*firefox")
-        mock_polling_returns([running_status, running_status, success_status])
-        Client.run
-      end
+      describe "#start" do
+        attr_reader :driver, :browser_host, :spec_url, :selenium_browser_start_command, :selenium_host, :selenium_port
 
-      context "when the Session run ends in 'success'" do
-        before do
-          mock_post_to_runner("*firefox")
-          mock_polling_returns([running_status, running_status, success_status])
-        end
+        context "with default runner parameters" do
+          before do
+            @driver = FakeSeleniumDriver.new
 
-        it "reports success" do
-          Client.run
-          stdout.string.strip.should == "SUCCESS"
-        end
+            expected_selenium_client_params = {
+              :host => "0.0.0.0", :port => 4444, :browser => "*firefox", :url => "http://localhost:8080"
+            }
 
-        it "returns true" do
-          Client.run.should be_true
-        end
-      end
-
-      context "when the Session run ends in 'failure'" do
-        attr_reader :failure_reason
-        before do
-          mock_post_to_runner("*firefox")
-          @failure_reason = "I have a failed test"
-          mock_polling_returns([running_status, running_status, failure_status(failure_reason)])
-        end
-
-        it "reports failure and reason" do
-          Client.run
-          stdout.string.strip.should include("FAILURE")
-          stdout.string.strip.should include(failure_reason)
-        end
-
-        it "returns false" do
-          Client.run.should be_false
-        end
-
-        it "reports the reason for failure"
-      end
-
-      context "when the Session is not found" do
-        it "raises a SessionNotFound error" do
-          mock_post_to_runner("*firefox")
-          mock(request).get(Resources::SeleniumSession.path(":session_id", :session_id => "my_session_id")) do
-            stub(session_response = Object.new).code {"404"}
-            session_response
+            mock.proxy(Selenium::Client::Driver).new(expected_selenium_client_params) do
+              driver
+            end
           end
-          lambda {Client.run}.should raise_error(Client::SessionNotFound)
+
+          context "when the suite fails" do
+            it "returns false" do
+              mock.proxy(driver).start.ordered
+              mock.proxy(driver).open("/specs").ordered
+
+              mock.strong(driver).get_eval("window.JsTestServer.status()") do
+                {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => ""}.to_json
+              end
+
+              mock.strong(driver).get_eval("window.JsTestServer.status()") do
+                {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => ".."}.to_json
+              end
+
+              mock.strong(driver).get_eval("window.JsTestServer.status()") do
+                {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => "...F."}.to_json
+              end
+
+              mock.strong(driver).get_eval("window.JsTestServer.status()") do
+                {"runner_state" => Client::FAILED_RUNNER_STATE, "console" => "...F..\n\nFailure\n/specs/foo_spec.js"}.to_json
+              end
+
+              Client.run.should be_false
+            end
+          end
+
+          context "when the suite passes" do
+            it "returns true" do
+              mock.proxy(driver).start.ordered
+              mock.proxy(driver).open("/specs").ordered
+
+              mock.strong(driver).get_eval("window.JsTestServer.status()") do
+                {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => ""}.to_json
+              end
+
+              mock.strong(driver).get_eval("window.JsTestServer.status()") do
+                {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => ".."}.to_json
+              end
+
+              mock.strong(driver).get_eval("window.JsTestServer.status()") do
+                {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => "....."}.to_json
+              end
+
+              mock.strong(driver).get_eval("window.JsTestServer.status()") do
+                {"runner_state" => Client::PASSED_RUNNER_STATE, "console" => "......\n\nPassed"}.to_json
+              end
+
+              Client.run.should be_true
+            end
+          end
         end
-      end
 
-      context "when the Session run ends in with invalid status" do
-        it "raises an InvalidStatusResponse" do
-          mock_post_to_runner("*firefox")
-          mock_polling_returns([running_status, running_status, "status=this is an unexpected status result"])
-          lambda {Client.run}.should raise_error(Client::InvalidStatusResponse)
+        describe "with overridden runner parameters" do
+          it "allows overrides for :host, :port, :browser, and :url" do
+            driver = FakeSeleniumDriver.new
+
+            host = "myhost"
+            port = 9999
+            browser = "*iexplore"
+            spec_url = "http://myspechost:7777/specs/path"
+            expected_selenium_client_params = {
+              :host => host, :port => port, :browser => browser, :url => "http://myspechost:7777"
+            }
+            mock.proxy(Selenium::Client::Driver).new(expected_selenium_client_params) do
+              driver
+            end
+
+            mock.proxy(driver).start.ordered
+            mock.proxy(driver).open("/specs/path").ordered
+
+            mock.strong(driver).get_eval("window.JsTestServer.status()") do
+              {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => ""}.to_json
+            end
+
+            mock.strong(driver).get_eval("window.JsTestServer.status()") do
+              {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => ".."}.to_json
+            end
+
+            mock.strong(driver).get_eval("window.JsTestServer.status()") do
+              {"runner_state" => Client::RUNNING_RUNNER_STATE, "console" => "....."}.to_json
+            end
+
+            mock.strong(driver).get_eval("window.JsTestServer.status()") do
+              {"runner_state" => Client::PASSED_RUNNER_STATE, "console" => "......\n\nPassed"}.to_json
+            end
+
+            Client.run(:selenium_host => host, :selenium_port => port, :selenium_browser => browser, :spec_url => spec_url).
+              should be_true
+          end
         end
-      end
-
-      context "when passed-in a timeout" do
-        it "wraps a timeout around the run" do
-          mock.proxy(Timeout).timeout(5)
-          mock_post_to_runner("*firefox")
-          mock_polling_returns([running_status, running_status, success_status])
-          Client.run(:timeout => 5)
-        end
-      end
-
-      context "when not passed-in a timeout" do
-        it "does not wrap a timeout around the run" do
-          dont_allow(Timeout).timeout
-          mock_post_to_runner("*firefox")
-          mock_polling_returns([running_status, running_status, success_status])
-          Client.run
-        end
-      end
-
-      def mock_post_to_runner(selenium_browser_start_command)
-        mock(start_session_response = Object.new).body {"session_id=my_session_id"}
-        mock(request).post(Resources::SeleniumSession.path, "selenium_browser_start_command=#{CGI.escape(selenium_browser_start_command)}&selenium_host=localhost&selenium_port=4444") do
-          start_session_response
-        end
-      end
-
-      def mock_polling_returns(session_statuses=[])
-        mock(request).get(Resources::SeleniumSession.path(":session_id", :session_id => "my_session_id")) do
-          stub(session_response = Object.new).body {session_statuses.shift}
-          stub(session_response).code {"200"}
-          session_response
-        end.times(session_statuses.length)
-      end
-
-      def running_status
-        "status=#{Resources::SeleniumSession::RUNNING}"
-      end
-
-      def success_status
-        "status=#{Resources::SeleniumSession::SUCCESSFUL_COMPLETION}"
-      end
-
-      def failure_status(reason)
-        "status=#{Resources::SeleniumSession::FAILURE_COMPLETION}&reason=#{reason}"
       end
     end
 
@@ -130,62 +128,68 @@ module JsTestCore
         stub(Client).puts
       end
 
-      context "when passed-in Hash contains :selenium_browser_start_command" do
+      context "when passed-in Hash contains :selenium_browser" do
         it "passes the spec_url as a post parameter" do
-          selenium_browser_start_command = '*iexplore'
-          mock(Client).run(:selenium_browser_start_command => selenium_browser_start_command)
-          client = Client.run_argv(['--selenium_browser_start_command', selenium_browser_start_command])
+          selenium_browser = '*iexplore'
+          mock(Client).run(satisfy do |params|
+            default_params.merge(:selenium_browser => selenium_browser).
+              to_set.subset?(params.to_set)
+          end)
+          client = Client.run_argv(['--selenium-browser', selenium_browser])
         end
       end
 
       context "when passed-in Hash contains :spec_url" do
         it "passes the spec_url as a post parameter" do
           spec_url = 'http://foobar.com/foo'
-          mock(Client).run(:spec_url => spec_url)
-          client = Client.run_argv(['--spec_url', spec_url])
+          mock(Client).run(satisfy do |params|
+            default_params.merge(:spec_url => spec_url).
+              to_set.subset?(params.to_set)
+          end)
+          client = Client.run_argv(['--spec-url', spec_url])
         end
       end
 
       context "when passed-in Hash contains :selenium_host" do
         it "passes the selenium_host as a post parameter" do
           selenium_host = 'test-runner'
-          mock(Client).run(:selenium_host => selenium_host)
-          client = Client.run_argv(['--selenium_host', selenium_host])
+          mock(Client).run(satisfy do |params|
+            default_params.merge(:selenium_host => selenium_host).
+              to_set.subset?(params.to_set)
+          end)
+          client = Client.run_argv(['--selenium-host', selenium_host])
         end
       end
 
       context "when passed-in Hash contains :selenium_port" do
         it "passes the selenium_port as a post parameter" do
-          selenium_port = "5000"
-          mock(Client).run(:selenium_port => selenium_port)
-          client = Client.run_argv(['--selenium_port', selenium_port])
+          selenium_port = 5000
+          mock(Client).run(satisfy do |params|
+            default_params.merge(:selenium_port => selenium_port).
+              to_set.subset?(params.to_set)
+          end)
+          client = Client.run_argv(['--selenium-port', selenium_port.to_s])
         end
       end
 
       context "when passed-in Hash contains :timeout" do
         it "passes the timeout as a post parameter" do
-          mock(Client).run(:timeout => 5)
+          mock(Client).run(satisfy do |params|
+            default_params.merge(:timeout => 5).
+              to_set.subset?(params.to_set)
+          end)
           client = Client.run_argv(['--timeout', "5"])
         end
       end
-    end
 
-    describe '#parts_from_query' do
-      attr_reader :client
-      before do
-        @client = Client.new(params_does_not_matter = {})
-      end
-
-      it "parses empty query into an empty hash" do
-        client.parts_from_query("").should == {}
-      end
-
-      it "parses a single key value pair into a single-element hash" do
-        client.parts_from_query("foo=bar").should == {'foo' => 'bar'}
-      end
-
-      it "parses a multiple key value pairs into a multi-element hash" do
-        client.parts_from_query("foo=bar&baz=quux").should == {'foo' => 'bar', 'baz' => 'quux'}
+      def default_params
+        {
+          :selenium_browser => "*firefox",
+          :selenium_host => "0.0.0.0",
+          :selenium_port => 4444,
+          :spec_url => "http://localhost:8080/specs",
+          :timeout => 60
+        }
       end
     end
   end

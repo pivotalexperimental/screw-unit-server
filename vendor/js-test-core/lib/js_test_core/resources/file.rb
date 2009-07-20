@@ -12,7 +12,7 @@ module JsTestCore
         '.jpg' => 'image/jpeg',
         '.jpeg' => 'image/jpeg',
         '.gif' => 'image/gif',
-        }
+      }
 
       get "*" do
         do_get
@@ -23,7 +23,7 @@ module JsTestCore
       end
 
       def absolute_path
-        @absolute_path ||= ::File.expand_path("#{public_path}#{relative_path}")
+        @absolute_path ||= ::File.expand_path("#{root_path}#{relative_path}")
       end
 
       protected
@@ -47,14 +47,11 @@ module JsTestCore
       def render_file
         extension = ::File.extname(absolute_path)
         content_type = MIME_TYPES[extension] || 'text/html'
-        [
-          200,
-          {
-            'Content-Type' => content_type,
-            'Last-Modified' => ::File.mtime(absolute_path).rfc822
-          },
-          ::File.read(absolute_path)
-        ]
+        headers = {
+          'Content-Type' => content_type,
+          'Last-Modified' => ::File.mtime(absolute_path).rfc822
+        }
+        [200, headers, ::File.read(absolute_path)]
       end
     end
   end

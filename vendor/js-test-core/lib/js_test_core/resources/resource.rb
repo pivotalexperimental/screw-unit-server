@@ -3,9 +3,9 @@ module JsTestCore
     class Resource < LuckyLuciano::Resource
       protected
       
-      def spec_root_path; server.spec_root_path; end
-      def public_path; server.public_path; end
-      def core_path; server.core_path; end
+      def spec_path; server.spec_path; end
+      def root_path; server.root_path; end
+      def framework_path; server.framework_path; end
       def root_url; server.root_url; end
 
       def server

@@ -12,24 +12,50 @@ module JsTestCore
       end
     end
 
-    attr_accessor :host, :port, :spec_root_path, :public_path, :core_path
+    attr_reader :host, :port, :spec_path, :root_path, :framework_path, :framework_name
+    attr_writer :host, :port, :framework_path, :framework_name
 
     def initialize(params={})
       params = {
-        :spec_root_path => File.expand_path("./specs/javascripts"),
-        :public_path => File.expand_path("./public"),
+        :spec_path => File.expand_path("./specs/javascripts"),
+        :root_path => File.expand_path("./public"),
         :host => DEFAULT_HOST,
         :port => DEFAULT_PORT,
       }.merge(params)
-      @spec_root_path = ::File.expand_path(params[:spec_root_path])
-      @public_path = ::File.expand_path(params[:public_path])
+      @spec_path = ::File.expand_path(params[:spec_path])
+      @root_path = ::File.expand_path(params[:root_path])
       @host = params[:host]
       @port = params[:port]
-      @core_path = params[:core_path]
+      @framework_path = params[:framework_path]
+      @framework_name = params[:framework_name]
+    end
+
+    def suite_representation_class
+      if framework_name
+        JsTestCore::Representations::Suites.const_get(framework_name.gsub("-", "_").camelcase)
+      end
+    end
+
+    def spec_path=(path)
+      validate_path(path)
+      @spec_path = path
+    end
+
+    def root_path=(path)
+      validate_path(path)
+      @root_path = path
     end
 
     def root_url
       "http://#{host}:#{port}"
+    end
+
+    protected
+
+    def validate_path(path)
+      unless File.directory?(path)
+        raise ArgumentError, "#{path} must be a directory"
+      end
     end
   end
 end

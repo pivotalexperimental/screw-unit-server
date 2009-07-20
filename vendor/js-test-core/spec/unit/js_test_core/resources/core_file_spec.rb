@@ -6,7 +6,7 @@ module JsTestCore
       describe "Files" do
         describe "GET /core/JsTestCore.js" do
           it "renders the JsTestCore.js file, which lives in the core framework directory" do
-            absolute_path = "#{core_path}/JsTestCore.js"
+            absolute_path = "#{framework_path}/JsTestCore.js"
 
             response = get(CoreFile.path("JsTestCore.js"))
             response.should be_http(

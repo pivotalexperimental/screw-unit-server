@@ -6,7 +6,7 @@ module JsTestCore
       describe "Files" do
         describe "GET /stylesheets/example.css" do
           it "returns the example.css file content as a css file" do
-            path = "#{public_path}/stylesheets/example.css"
+            path = "#{root_path}/stylesheets/example.css"
             response = get("/stylesheets/example.css")
             response.should be_http(
               200,
@@ -22,7 +22,7 @@ module JsTestCore
 
         describe "GET /javascripts/foo.js" do
           it "returns the foo.js file content as a javascript file" do
-            path = "#{public_path}/javascripts/foo.js"
+            path = "#{root_path}/javascripts/foo.js"
             response = get("/javascripts/foo.js")
             response.should be_http(
               200,
@@ -38,7 +38,7 @@ module JsTestCore
 
         describe "GET /javascripts/subdir/bar.js - Subdirectory" do
           it "returns the subdir/bar.js file content as a javascript file" do
-            path = "#{public_path}/javascripts/subdir/bar.js"
+            path = "#{root_path}/javascripts/subdir/bar.js"
             response = get("/javascripts/subdir/bar.js")
             response.should be_http(
               200,

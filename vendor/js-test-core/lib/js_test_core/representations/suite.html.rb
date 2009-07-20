@@ -1,19 +1,25 @@
 module JsTestCore
   module Representations
-    class Spec < Page
+    class Suite < Page
       class << self
         def project_js_files
-          @project_js_files ||= []
+          @@project_js_files ||= []
         end
-        attr_writer :project_js_files
+
+        def project_js_files=(files)
+          @@project_js_files = files
+        end
 
         def project_css_files
-          @project_css_files ||= []
+          @@project_css_files ||= []
         end
-        attr_writer :project_css_files
+
+        def project_css_files=(files)
+          @@project_css_files = files
+        end
       end
 
-      needs :spec_files, :session_id
+      needs :spec_files
       protected
       def title_text
         "Js Test Core Suite"
@@ -29,11 +35,6 @@ module JsTestCore
         spec_files.each do |file|
           script :type => "text/javascript", :src => file
         end
-        script_to_set_window_session_id
-      end
-
-      def script_to_set_window_session_id
-        script "window._session_id = '#{session_id}';", :type => "text/javascript"
       end
 
       def project_js_files

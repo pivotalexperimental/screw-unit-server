@@ -6,8 +6,9 @@ module JsTestCore
       describe "Configuration" do
         attr_reader :doc
         before do
-          JsTestCore::Representations::Spec.project_js_files += ["/javascripts/test_file_1.js", "/javascripts/test_file_2.js"]
-          JsTestCore::Representations::Spec.project_css_files += ["/stylesheets/test_file_1.css", "/stylesheets/test_file_2.css"]
+          JsTestCore.framework_name = "screw-unit"
+          JsTestCore::Representations::Suite.project_js_files += ["/javascripts/test_file_1.js", "/javascripts/test_file_2.js"]
+          JsTestCore::Representations::Suite.project_css_files += ["/stylesheets/test_file_1.css", "/stylesheets/test_file_2.css"]
 
           response = get(SpecFile.path("/failing_spec"))
           response.should be_http( 200, {}, "" )
@@ -16,8 +17,8 @@ module JsTestCore
         end
 
         after do
-          JsTestCore::Representations::Spec.project_js_files.clear
-          JsTestCore::Representations::Spec.project_css_files.clear
+          JsTestCore::Representations::Suite.project_js_files.clear
+          JsTestCore::Representations::Suite.project_css_files.clear
         end
 
         it "renders project js files" do
@@ -34,7 +35,7 @@ module JsTestCore
       describe "Files" do
         describe "GET /specs/failing_spec" do
           it "renders a suite only for failing_spec.js as text/html" do
-            absolute_path = "#{spec_root_path}/failing_spec.js"
+            absolute_path = "#{spec_path}/failing_spec.js"
 
             response = get(SpecFile.path("failing_spec"))
             response.should be_http(
@@ -53,7 +54,7 @@ module JsTestCore
 
         describe "GET /specs/failing_spec.js" do
           it "renders the contents of failing_spec.js as text/javascript" do
-            absolute_path = "#{spec_root_path}/failing_spec.js"
+            absolute_path = "#{spec_path}/failing_spec.js"
 
             response = get(SpecFile.path("failing_spec.js"))
             response.should be_http(
@@ -69,7 +70,7 @@ module JsTestCore
 
         describe "GET /specs/custom_suite" do
           it "renders the custom_suite.html file" do
-            path = "#{spec_root_path}/custom_suite.html"
+            path = "#{spec_path}/custom_suite.html"
 
             response = get(SpecFile.path("custom_suite.html"))
             response.should be_http(
@@ -88,7 +89,7 @@ module JsTestCore
         describe "GET /specs" do
           macro "renders a suite for all specs" do |relative_path|
             it "renders a suite for all specs" do
-              path = "#{spec_root_path}"
+              path = "#{spec_path}"
 
               response = get(relative_path)
               response.should be_http(
@@ -114,7 +115,7 @@ module JsTestCore
 
         describe "GET /specs/foo" do
           it "renders a spec suite that includes all of the javascript spec files in the directory" do
-            path = "#{spec_root_path}/foo"
+            path = "#{spec_path}/foo"
 
             response = get(SpecFile.path("foo"))
             response.should be_http(
@@ -130,30 +131,6 @@ module JsTestCore
             js_files.should include("/specs/foo/passing_spec.js")
             js_files.should include("/specs/foo/failing_spec.js")
           end
-        end
-      end
-
-      context "when passed a :session_id param" do
-        it "instantiates the Representation with the :session_id and renders window._session_id=:session_id" do
-          session_id = "DEADBEEF"
-
-          response = get(SpecFile.path("failing_spec"), :session_id => session_id)
-          doc = Nokogiri::HTML(response.body)
-          doc.css("script").any? do |script|
-            script.inner_html.include?("window._session_id = '#{session_id}';")
-          end.should be_true
-        end
-      end
-
-      context "when the :session_id cookie is set" do
-        it "instantiates the Representation with the :session_id and renders window._session_id=:session_id" do
-          session_id = "DEADBEEF"
-
-          response = get(SpecFile.path("failing_spec"), {}, {:cookie => "session_id=#{session_id}"})
-          doc = Nokogiri::HTML(response.body)
-          doc.css("script").any? do |script|
-            script.inner_html.include?("window._session_id = '#{session_id}';")
-          end.should be_true
         end
       end
 
