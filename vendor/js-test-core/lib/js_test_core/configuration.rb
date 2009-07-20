@@ -16,12 +16,7 @@ module JsTestCore
     attr_writer :host, :port, :framework_path, :framework_name
 
     def initialize(params={})
-      params = {
-        :spec_path => File.expand_path("./specs/javascripts"),
-        :root_path => File.expand_path("./public"),
-        :host => DEFAULT_HOST,
-        :port => DEFAULT_PORT,
-      }.merge(params)
+      params = Server::DEFAULTS.dup.merge(params)
       @spec_path = ::File.expand_path(params[:spec_path])
       @root_path = ::File.expand_path(params[:root_path])
       @host = params[:host]

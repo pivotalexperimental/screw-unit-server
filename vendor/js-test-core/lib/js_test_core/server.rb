@@ -10,8 +10,8 @@ module JsTestCore
     DEFAULTS = {
       :host => "0.0.0.0",
       :port => 8080,
-      :spec_path => "./spec/javascripts",
-      :root_path => "./public",
+      :spec_path => File.expand_path("./spec/javascripts"),
+      :root_path => File.expand_path("./public"),
     }
 
     def cli(*argv)

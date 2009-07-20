@@ -22,9 +22,6 @@ require "#{dir}/js_test_core/client"
 require "#{dir}/js_test_core/app"
 
 module JsTestCore
-  DEFAULT_HOST = "0.0.0.0"
-  DEFAULT_PORT = 8080
-
   class << self
     Configuration.instance = Configuration.new
 
