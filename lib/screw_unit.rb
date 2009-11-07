@@ -4,11 +4,8 @@ dir = File.dirname(__FILE__)
 $:.unshift(File.expand_path("#{dir}/../vendor/js-test-core/lib"))
 require "js_test_core"
 
-require "#{dir}/screw_unit/representations/spec.html"
-
-JsTestCore.core_path = File.expand_path("#{dir}/../core/lib")
-JsTestCore::Resources::SpecFile.spec_representation_class = ScrewUnit::Representations::Spec
-JsTestCore::Server.rackup_path = File.expand_path("#{dir}/../standalone.ru")
+JsTestCore::Server::DEFAULTS[:framework_path] = File.expand_path("#{dir}/../core/lib")
+JsTestCore::Server::DEFAULTS[:framework_name] = "screw-unit"
 module ScrewUnit
   include JsTestCore
 

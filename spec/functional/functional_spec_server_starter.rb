@@ -43,10 +43,10 @@ class FunctionalSpecServerStarter
     end
 
     def start_thin_server
-      system("bin/screw_unit_server #{spec_root_path} #{public_path}")
       at_exit do
         Lsof.kill(8080)
       end
+      system("bin/screw_unit_server --spec-path=#{spec_root_path} --root-path=#{public_path}")
     end
 
     def spec_root_path

@@ -37,7 +37,6 @@ class Spec::ExampleGroup
   end
 
   def root_url
-    "http://#{ScrewUnit::DEFAULT_HOST}:#{ScrewUnit::DEFAULT_PORT}"
+    "http://localhost:8080"
   end
 end
-

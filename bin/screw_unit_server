@@ -2,14 +2,13 @@
 
 dir = File.dirname(__FILE__)
 $LOAD_PATH.unshift("#{dir}/../lib")
+
 require "screw_unit"
-
-unless ENV["SCREW_UNIT_SPEC_ROOT"]
-  ENV["SCREW_UNIT_SPEC_ROOT"] = ARGV[0]
+require "thin"
+class << Thin::Logging
+  def debug?
+    true
+  end
 end
 
-unless ENV["SCREW_UNIT_PUBLIC"]
-  ENV["SCREW_UNIT_PUBLIC"] = ARGV[1]
-end
-
-ScrewUnit::Server.start
+JsTestCore::Server.new.cli(*ARGV)
