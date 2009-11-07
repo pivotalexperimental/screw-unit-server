@@ -31,7 +31,13 @@ module JsTestCore
         Configuration.framework_path.should == framework_path
       end
     end
-
+    
+    describe "#js_test_core_js_path" do
+      it "returns the path to js_test_core.js" do
+        ::File.read(Configuration.js_test_core_js_path).should include("function JsTestServer()")
+      end
+    end
+    
     describe "#root_url" do
       it "returns the url of the site's root" do
         configuration = Configuration.new

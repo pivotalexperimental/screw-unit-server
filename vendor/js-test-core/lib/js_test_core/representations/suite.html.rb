@@ -19,6 +19,7 @@ module JsTestCore
         end
       end
 
+      attr_reader :spec_files
       needs :spec_files
       protected
       def title_text

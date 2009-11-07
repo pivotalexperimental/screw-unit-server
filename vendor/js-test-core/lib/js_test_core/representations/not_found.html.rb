@@ -1,6 +1,7 @@
 module JsTestCore
   module Representations
     class NotFound < Page
+      attr_reader :message
       needs :message
       protected
       def body_content

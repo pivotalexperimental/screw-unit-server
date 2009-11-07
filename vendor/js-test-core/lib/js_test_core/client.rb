@@ -99,6 +99,11 @@ module JsTestCore
         flush_console
         sleep 0.25
       end
+      if suite_passed?
+        STDOUT.puts(PASSED_RUNNER_STATE.capitalize)
+      else
+        STDOUT.puts(FAILED_RUNNER_STATE.capitalize)
+      end
     end
 
     def poll
@@ -113,8 +118,8 @@ module JsTestCore
     end
 
     def flush_console
-      if current_status
-        STDOUT.print console.gsub(flushed_console)
+      if current_status && console != ""
+        STDOUT.print(console.gsub(flushed_console, ""))
         @flushed_console = console
       end
     end

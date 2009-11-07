@@ -1,0 +1,34 @@
+    users_path(@user)
+    Users.path(@user)
+
+    a "Bob", :href => Users.path(@user.id)
+    a "Bob", :href => UserComments.path(@comment)
+    a "Bob", :href => UserComments.path(@user.id, @comment.id)
+    a "Bob", :href => user_comment_path(@user.id, @comment.id)
+
+    a "Bob", :href => "/users/#{@user.id}"
+    a "Bob", :href => "/users/#{@user.id}/comments/#{@comment.id}"
+
+    path("/users/:user_id/comments")[@user]
+    path("/users/:user_id/comments/:comment_id")[@user, @comment.id]
+    user_comments_path[@user]
+    paths[:user_comments][@user]
+    paths.user_comments(@user)
+
+    <a href="/users/<%= @user.id %>">Bob</a>
+    a "Bob", :href => "/users/#{@user.id}"
+    a "Bob", :href => path(User, @user.id)
+    a "Bob", :href => Users.path(@user.id)
+    a "Bob", :href => paths.users(@user.id)
+
+    Path.new("/users/:user_id")[@user.id]
+
+    a "Bob", :href => UserComment.path(@user)
+    a "Bob", :href => paths.user_comments(@user)
+    a "Bob", :href => path(UserComment, @user.id)
+
+    <a href="<%= Users[@user.id][:additional_param => "param 1"] %>">Bob</a>
+    a "Bob", :href => Users[@user.id][:additional_param => "param 1"]
+
+    <a href="<%= UserComments[:user_id => @user.id, :comment_id => @comment.id][:additional_param => "param 1"] %>">Bob's Comment</a>
+    a "Bob's Comment", :href => Resource::UserComments.path("/:comment_id", :user_id => @user.id, :comment_id => @comment.id, :additional_param => "param 1")

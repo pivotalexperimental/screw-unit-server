@@ -41,11 +41,20 @@ module JsTestCore
       @root_path = path
     end
 
+    def js_test_core_js_path
+      "#{library_root_dir}/public/js_test_server.js"
+    end
+
     def root_url
       "http://#{host}:#{port}"
     end
 
     protected
+
+    def library_root_dir
+      dir = File.dirname(__FILE__)
+      File.expand_path("#{dir}/../..")
+    end
 
     def validate_path(path)
       unless File.directory?(path)

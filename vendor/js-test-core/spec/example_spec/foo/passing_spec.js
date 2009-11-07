@@ -1,6 +1,8 @@
 require("/javascripts/foo");
-describe("A passing spec", {
-	'passes': function() {
-		value_of(Foo.value).should_be(true);
-	}
-})
+Screw.Unit(function() {
+  describe("A passing spec in foo", function() {
+    it("passes", function() {
+      expect(Foo.value).to(equal, true);
+    });
+  });
+});

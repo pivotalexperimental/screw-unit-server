@@ -1,6 +1,7 @@
 module JsTestCore
   module Representations
     class Dir < Page
+      attr_reader :relative_path, :absolute_path
       needs :relative_path, :absolute_path
       protected
       def body_content

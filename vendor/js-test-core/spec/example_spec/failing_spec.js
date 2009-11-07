@@ -1,5 +1,7 @@
-describe("A failing spec", {
-	'fails': function() {
-		value_of(true).should_be(false);
-	}
-})
+Screw.Unit(function() {
+  describe("A failing spec", function() {
+    it("fails", function() {
+      expect(true).to(equal, false);
+    });
+  });
+});

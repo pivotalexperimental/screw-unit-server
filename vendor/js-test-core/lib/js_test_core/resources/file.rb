@@ -1,6 +1,16 @@
 module JsTestCore
   module Resources
     class File < Resource
+      def self.render_file(absolute_path)
+        extension = ::File.extname(absolute_path)
+        content_type = MIME_TYPES[extension] || 'text/html'
+        headers = {
+          'Content-Type' => content_type,
+          'Last-Modified' => ::File.mtime(absolute_path).rfc822
+        }
+        [200, headers, ::File.read(absolute_path)]
+      end
+
       map "*"
 
       MIME_TYPES = {
@@ -45,13 +55,7 @@ module JsTestCore
       end
 
       def render_file
-        extension = ::File.extname(absolute_path)
-        content_type = MIME_TYPES[extension] || 'text/html'
-        headers = {
-          'Content-Type' => content_type,
-          'Last-Modified' => ::File.mtime(absolute_path).rfc822
-        }
-        [200, headers, ::File.read(absolute_path)]
+        self.class.render_file(absolute_path)
       end
     end
   end

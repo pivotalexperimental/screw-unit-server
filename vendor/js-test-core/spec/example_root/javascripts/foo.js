@@ -1,3 +1,3 @@
 var Foo = {
   value: true
-}
+};

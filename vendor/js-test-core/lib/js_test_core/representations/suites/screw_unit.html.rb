@@ -9,6 +9,7 @@ module JsTestCore
           attr_writer :jquery_js_file
         end
 
+        attr_reader :spec_files
         needs :spec_files
         def title_text
           "Screw Unit suite"
@@ -18,55 +19,12 @@ module JsTestCore
           core_js_files
           script(raw(<<-JS), :type => "text/javascript")
             (function($) {
-              Screw.Assets = {};
-              Screw.Assets.use_cache_buster = false; // TODO: NS/CTI - make this configurable from the UI.
-              var required_paths = [];
-              var included_stylesheets = {};
-              var cache_buster = parseInt(new Date().getTime()/(1*1000));
+              var jsTestServerStatus = {"runner_state": "#{Client::RUNNING_RUNNER_STATE}", "console": ""};
 
-              function tag(name, attributes) {
-                var html = "<" + name;
-                for(var attribute in attributes) {
-                  html += (" " + attribute + "='" + attributes[attribute]) + "'";
-                };
-                html += "></";
-                html += name;
-                html += ">";
-                return html;
-              }
-
-              Screw.Assets.require = function(javascript_path, onload) {
-                if(!required_paths[javascript_path]) {
-                  var full_path = javascript_path + ".js";
-                  if (Screw.Assets.use_cache_buster) {
-                    full_path += '?' + cache_buster;
-                  }
-                  document.write(tag("script", {src: full_path, type: 'text/javascript'}));
-                  if(onload) {
-                    var scripts = document.getElementsByTagName('script');
-                    scripts[scripts.length-1].onload = onload;
-                  }
-                  required_paths[javascript_path] = true;
-                }
+              JsTestServer.status = function() {
+                return JsTestServer.JSON.stringify(jsTestServerStatus);
               };
 
-              Screw.Assets.stylesheet = function(stylesheet_path) {
-                if(!included_stylesheets[stylesheet_path]) {
-                  var full_path = stylesheet_path + ".css";
-                  if(Screw.Assets.use_cache_buster) {
-                    full_path += '?' + cache_buster;
-                  }
-                  document.write(tag("link", {rel: 'stylesheet', type: 'text/css', href: full_path}));
-                  included_stylesheets[stylesheet_path] = true;
-                }
-              };
-
-              window.require = Screw.Assets.require;
-              window.stylesheet = Screw.Assets.stylesheet;
-            })(jQuery);
-
-            (function($) {
-              var ajax = $.ajax;
               $(Screw).bind('after', function() {
                 var error_text = $(".error").map(function(i, error_element) {
                   var element = $(error_element);
@@ -83,11 +41,12 @@ module JsTestCore
                   return parent_description_text.join(" ") + " " + it_text + ": " + element.text();
                 }).get().join("\\n");
 
-                ajax({
-                  type: "POST",
-                  url: '/',
-                  data: {"text": error_text}
-                });
+                jsTestServerStatus["console"] = error_text;
+                if(error_text) {
+                  jsTestServerStatus["runner_state"] = "#{Client::FAILED_RUNNER_STATE}";
+                } else {
+                  jsTestServerStatus["runner_state"] = "#{Client::PASSED_RUNNER_STATE}";
+                }
               });
             })(jQuery);
           JS
@@ -100,6 +59,7 @@ module JsTestCore
 
         def core_js_files
           script :src => jquery_js_file
+          script :src => "/js_test_server.js"
           script :src => "/core/jquery.fn.js"
           script :src => "/core/jquery.print.js"
           script :src => "/core/screw.builder.js"

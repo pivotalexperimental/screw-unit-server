@@ -13,6 +13,8 @@ require "trollop"
 require "json"
 require "erector"
 
+Erector::Widget.prettyprint_default = true
+
 require "#{dir}/js_test_core/configuration"
 
 require "#{dir}/js_test_core/resources"
