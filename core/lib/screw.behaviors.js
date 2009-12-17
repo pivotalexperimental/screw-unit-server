@@ -20,8 +20,8 @@
       },
       
       run_afters: function() {
-        $(this).fn('parent').fn('run_afters');
         $(this).children('.afters').children('.after').fn('run');
+        $(this).fn('parent').fn('run_afters');
       },
       
       enqueue: function() {
