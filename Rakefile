@@ -1,7 +1,7 @@
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
-    s.name = "screw-unit-server"
+    s.name = ENV["GEM_PREFIX"] ? "#{ENV["GEM_PREFIX"]}-screw-unit-server" : "screw-unit-server"
     s.executables = ["screw_unit", "screw_unit_server"]
     s.summary = "Server and helpers for your Screw Unit tests."
     s.email = "pivotallabsopensource@googlegroups.com"

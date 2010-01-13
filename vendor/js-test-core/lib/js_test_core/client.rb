@@ -78,6 +78,7 @@ module JsTestCore
       start_selenium_client
       wait_for_session_to_finish
       flush_console
+      shutdown_selenium_client
       suite_passed?
     end
 
@@ -91,6 +92,10 @@ module JsTestCore
       )
       selenium_client.start
       selenium_client.open([uri.path, uri.query].compact.join("?"))
+    end
+
+    def shutdown_selenium_client
+      selenium_client.stop
     end
 
     def wait_for_session_to_finish
