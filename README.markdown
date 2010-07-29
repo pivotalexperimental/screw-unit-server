@@ -357,3 +357,5 @@ You can [download the source](http://github.com/nkallen/screw-unit/tree/master) 
 * Brian Takita
 * Aman Gupta
 * Tim Connor
+
+Copyright (c) 2010 Pivotal Labs. This software is licensed under the MIT License.
